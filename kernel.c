@@ -22,8 +22,9 @@ int main(void) {
   first_stack_start = activate(first_stack_start);
   cputs("Back from user mode into main 2!\n");
 
+  halt();
 
-  while(1);
+  /*  while(1);*/
   return 0;
 }
 

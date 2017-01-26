@@ -13,7 +13,8 @@ activate:
     pop {r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
     msr CPSR_c, #0xD3 /* Supervisor mode */
 
-    movs pc, lr /* Returns to lr and restores SPSR into CPSR */
+    movs pc, lr /* Jump to user mode:
+                   returns to lr and restores SPSR into CPSR */
 
 .global svc_entry
 svc_entry:
@@ -29,4 +30,9 @@ svc_entry:
     /* Load kernel state */
     pop {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
     mov sp, ip
+    bx lr
+
+.global halt
+halt:
+    wfe
     bx lr
