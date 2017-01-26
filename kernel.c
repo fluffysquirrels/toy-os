@@ -26,20 +26,15 @@ int main(void) {
   };
 
   cputs("Hello, World from main!\n");
-  cprint_thread(&first_thread);
-  activate(&first_thread);
-  cputs("Back from user mode into main 1!\n");
-  cprint_thread(&first_thread);
-  activate(&first_thread);
-  cputs("Back from user mode into main 2!\n");
-  cprint_thread(&first_thread);
-  activate(&first_thread);
-  cputs("Back from user mode into main 3!\n");
-  cprint_thread(&first_thread);
+
+  while(1) {
+    struct thread_t *thread = &first_thread;
+    cprint_thread(thread);
+    activate(thread);
+  }
 
   halt();
 
-  /*  while(1);*/
   return 0;
 }
 
@@ -47,11 +42,13 @@ int main(void) {
 void first(void) {
   cputs("In user mode 1\n");
   syscall();
-  first_sub(17);
-  cputs("In user mode 2\n");
-  syscall();
-  cputs("In user mode 3\n");
-  while(1);
+  unsigned int n = 17;
+  while(1) {
+    n++;
+    first_sub(n);
+    cputs("In user mode 2\n");
+    syscall();
+  }
 }
 
 void first_sub(unsigned int arg1) {
