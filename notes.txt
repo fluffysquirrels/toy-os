@@ -1,0 +1,12 @@
+Registers
+r0-r1 (arguments, scratch, return values)
+r2-r3 (arguments, scratch)
+r4-r10
+r11 aka fp (frame pointer, prev stack frame?)
+r12 aka ip (intra-procedure-call scratch register)
+r13 aka sp (stack pointer)
+r14 aka lr (link register, call return address)
+r15 aka pc (program counter)
+
+In supervisor mode all registers are as user mode except for r13 (sp), r14 (lr). SPSR is available, reflects CPSR before switching to supervisor mode.
+In system mode SPSR is not available, all variables are the same as in user mode, CPSR is writable.
