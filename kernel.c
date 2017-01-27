@@ -22,26 +22,23 @@ void cprint_thread(struct thread_t*);
 void cprint_hex(char);
 void cprint_word(unsigned int);
 
-int main(void) {
-  unsigned int first_stack[256];
-  unsigned int *first_stack_start = first_stack + 256 - 16;
-  unsigned int second_stack[256];
-  unsigned int *second_stack_start = second_stack + 256 - 16;
+#define STACK_SIZE 256
+#define THREAD_LIMIT 2
+unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
+struct thread_t threads[THREAD_LIMIT];
 
-  struct thread_t first_thread = {
+
+int main(void) {
+
+  (threads[0]) = (struct thread_t) {
     .cpsr = 0x10,
     .pc = &first,
-    .sp = first_stack_start,
+    .sp = stacks[0] + STACK_SIZE - 16,
   };
-  struct thread_t second_thread = {
+  (threads[1]) = (struct thread_t){
     .cpsr = 0x10,
     .pc = &second,
-    .sp = second_stack_start,
-  };
-
-  struct thread_t *threads[2] = {
-    &first_thread,
-    &second_thread,
+    .sp = stacks[1] + STACK_SIZE - 16,
   };
 
   cputs("Hello, World from main!\n");
@@ -53,7 +50,7 @@ int main(void) {
   unsigned int num_threads = 2;
 
   while(1) {
-    struct thread_t *thread = threads[thread_idx];
+    struct thread_t *thread = &threads[thread_idx];
     /* Can't use % to calculate new thread_idx because that requires a
        runtime library function */
     thread_idx++;
