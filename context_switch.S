@@ -1,3 +1,5 @@
+#include "asm_constants.h"
+
 .global activate
 activate:
     /* Arguments:
@@ -42,7 +44,7 @@ svc_entry:
     pop {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
     mov sp, ip    /* Restore old sp */
 
-    mov r0, #0x2     /* Return 0x2 = execution stopped by syscall */
+    mov r0, #ACTIVATE_RET_SYSCALL
     bx lr
 
 .global irq_entry
@@ -65,7 +67,7 @@ irq_entry:
     pop {r4,r5,r6,r7,r8,r9,r10,fp,ip,lr}
     mov sp, ip    /* Restore old sp */
 
-    mov r0, #0x1     /* Return 0x1 = execution stopped by interrupt */
+    mov r0, #ACTIVATE_RET_IRQ
     bx lr
 
 .global sleep

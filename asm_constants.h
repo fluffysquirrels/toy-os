@@ -1,0 +1,3 @@
+#define ACTIVATE_RET_IRQ 0x1
+#define ACTIVATE_RET_SYSCALL 0x2
+

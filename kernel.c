@@ -1,5 +1,6 @@
-#include "versatilepb.h"
 #include "asm.h"
+#include "asm_constants.h"
+#include "versatilepb.h"
 
 struct thread_t{
   unsigned int cpsr;
@@ -7,11 +8,15 @@ struct thread_t{
   void* sp;
 };
 
-void cputs(char *);
-void cputch(char);
+void enable_timer0_interrupt(void);
+void start_periodic_timer0(void);
+
 void first(void);
 void first_sub(unsigned int);
 void second(void);
+
+void cputs(char *);
+void cputch(char);
 void cprint_thread(struct thread_t*);
 void cprint_hex(char);
 void cprint_word(unsigned int);
@@ -40,14 +45,11 @@ int main(void) {
 
   cputs("Hello, World from main!\n");
 
+  enable_timer0_interrupt();
+  start_periodic_timer0();
+
   unsigned int thread_idx = 0;
   unsigned int num_threads = 2;
-
-
-  *(PIC + VIC_INTENABLE) = PIC_TIMER01;
-  *(TIMER0 + TIMER_LOAD) = 100000;
-  *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
-  *(TIMER0 + TIMER_BGLOAD) = 100000;
 
   while(1) {
     struct thread_t *thread = threads[thread_idx];
@@ -57,25 +59,35 @@ int main(void) {
     if(thread_idx >= num_threads) {
       thread_idx = 0;
     }
-    cprint_thread(thread);
+    //    cprint_thread(thread);
 
     unsigned int stop_reason = activate(thread);
-    cputs("activate returned ");
-    cprint_word(stop_reason);
-    cputs("\n");
-    if(stop_reason == 0x1) {
+    //    cputs("activate returned ");
+    //    cprint_word(stop_reason);
+    //    cputs("\n");
+    if(stop_reason == ACTIVATE_RET_IRQ) {
       /* Handle interrupt */
       if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
         *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
         cputs("TIMER0 tick\n");
       }
-    } else if (stop_reason == 0x2) {
+    } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
       /* Handle syscall */
     }
   }
 
   sleep();
   return 0;
+}
+
+void enable_timer0_interrupt() {
+  *(PIC + VIC_INTENABLE) = PIC_TIMER01;
+}
+
+void start_periodic_timer0() {
+  *(TIMER0 + TIMER_LOAD) = 100000;
+  *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
+  *(TIMER0 + TIMER_BGLOAD) = 100000;
 }
 
 /* First user mode program */
