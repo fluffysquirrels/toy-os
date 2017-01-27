@@ -24,6 +24,9 @@ void cprint_word(unsigned int);
 
 #define STACK_SIZE 256
 #define THREAD_LIMIT 2
+
+#define TRACE_SCHEDULER 1
+
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
 
@@ -57,24 +60,49 @@ int main(void) {
     if(thread_idx >= num_threads) {
       thread_idx = 0;
     }
-    //    cprint_thread(thread);
+
+#if TRACE_SCHEDULER
+    cputs("main() thread_idx=");
+    cprint_word(thread_idx);
+    cputs("\n");
+    cprint_thread(thread);
+#endif // TRACE_SCHEDULER
 
     unsigned int stop_reason = activate(thread);
-    //    cputs("activate returned ");
-    //    cprint_word(stop_reason);
-    //    cputs("\n");
+
+#if TRACE_SCHEDULER
+    cputs("activate returned ");
+    cprint_word(stop_reason);
+    cputs("\n");
+#endif // TRACE_SCHEDULER
+
     if(stop_reason == ACTIVATE_RET_IRQ) {
       /* Handle interrupt */
       if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
         *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+#if TRACE_SCHEDULER
         cputs("TIMER0 tick\n");
+#endif // TRACE_SCHEDULER
       }
     } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
       /* Handle syscall */
+      unsigned int syscall_num = 1; // TODO: Extract this from thread.
+      switch(syscall_num) {
+      case SYSCALL_NUM_YIELD:
+#if TRACE_SCHEDULER
+        cputs("In yield\n");
+#endif // TRACE_SCHEDULER
+        break;
+      default:
+        warn("syscall with unknown syscall_num = ");
+        cputs("  ");
+        cprint_word(syscall_num);
+        cputs("\n");
+      }
     }
   }
 
-  sleep();
+  /* Not reached */
   return 0;
 }
 
@@ -112,6 +140,18 @@ void second(void) {
   }
 }
 
+void panic(char *string) {
+  cputs("panic: ");
+  cputs(string);
+  cputs("\n");
+  while(1) {}
+}
+
+void warn(char *string) {
+  cputs("warn: ");
+  cputs(string);
+  cputs("\n");
+}
 
 void cputs(char *string) {
   while(*string) {
