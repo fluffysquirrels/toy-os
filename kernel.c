@@ -1,5 +1,6 @@
-#include "asm.h"
 #include "asm_constants.h"
+#include "context_switch.h"
+#include "syscalls.h"
 #include "versatilepb.h"
 
 struct thread_t{
@@ -92,35 +93,25 @@ void start_periodic_timer0() {
 
 /* First user mode program */
 void first(void) {
-  //  cputs("In first() 1\n");
-  syscall();
+  cputs("Start first()\n");
+  sys_yield();
   unsigned int n = 17;
   while(1) {
-    //    cputs("In first() 2\n");
+    cputs("In first() loop\n");
     n++;
     first_sub(n);
-    //    cputs("In first() 3\n");
-    syscall();
+    sys_yield();
   }
 }
 
 void first_sub(unsigned int arg1) {
-  //  cputs("In first_sub 1 arg1=");
-  //  cprint_word(arg1);
-  //  cputs("\n");
-  syscall();
-  //  cputs("In first_sub 2 arg1=");
-  //  cprint_word(arg1);
-  //  cputs("\n");
+  sys_yield();
 }
 
 /* Second user mode program */
 void second(void) {
-  //  cputs("In second() 1\n");
-  //  syscall();
+  cputs("Start second()\n");
   while(1) {
-    //cputs("In second() 2\n");
-    //    syscall();
   }
 }
 

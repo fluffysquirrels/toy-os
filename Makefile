@@ -11,10 +11,14 @@ LDFLAGS=-N -Ttext=0x10000
 %.o: %.s
 	$(CC) $(CFLAGS) -o $@ -c $^
 
-kernel.o: asm.h asm_constants.h versatilepb.h
+# Disable built-in rule to build .o from .S with the C++ compiler.
+%.o: %.S
+
+kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c
+context_switch.s: context_switch.S asm_constants.h
 kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o
-context_switch.o: context_switch.s
-context_switch.s: context_switch.S
+syscalls.s: syscalls.S asm_constants.h
+
 QEMU_CMD = qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel kernel.elf
 
 qemu: build
