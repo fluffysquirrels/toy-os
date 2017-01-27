@@ -16,11 +16,16 @@ void first(void);
 void first_sub(unsigned int);
 void second(void);
 
+void warn(char *);
+void panic(char *);
+
 void cputs(char *);
 void cputch(char);
 void cprint_thread(struct thread_t*);
 void cprint_hex(char);
 void cprint_word(unsigned int);
+
+#define UNUSED(x) (void)(x)
 
 #define STACK_SIZE 256
 #define THREAD_LIMIT 2
@@ -29,7 +34,6 @@ void cprint_word(unsigned int);
 
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
-
 
 int main(void) {
 
@@ -130,6 +134,7 @@ void first(void) {
 }
 
 void first_sub(unsigned int arg1) {
+  UNUSED(arg1);
   sys_yield();
 }
 
