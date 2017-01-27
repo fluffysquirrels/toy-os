@@ -12,13 +12,20 @@ keep_copying_interrupt_table:
     cmp r1, r3
     bne keep_copying_interrupt_table
 
+    /* Set supervisor stack */
     ldr sp, =0x07ffffff
+    msr CPSR_c, #0xD2 /* IRQ mode, interrupts disabled */
+    msr CPSR_c, #0xD3 /* Supervisor mode, interrupts disabled */
     bl main
 
 interrupt_table:
-    ldr pc, dummy_interrupt
-    ldr pc, dummy_interrupt
+    nop
+    nop
     ldr pc, svc_entry_address
+    nop
+    nop
+    nop
+    ldr pc, irq_entry_address
 svc_entry_address:   .word svc_entry
-dummy_interrupt:     .word 0
+irq_entry_address:   .word irq_entry
 interrupt_table_end:

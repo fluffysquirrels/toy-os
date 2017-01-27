@@ -11,6 +11,7 @@ void cputs(char *);
 void cputch(char);
 void first(void);
 void first_sub(unsigned int);
+void second(void);
 void cprint_thread(struct thread_t*);
 void cprint_hex(char);
 void cprint_word(unsigned int);
@@ -18,48 +19,99 @@ void cprint_word(unsigned int);
 int main(void) {
   unsigned int first_stack[256];
   unsigned int *first_stack_start = first_stack + 256 - 16;
+  unsigned int second_stack[256];
+  unsigned int *second_stack_start = second_stack + 256 - 16;
 
   struct thread_t first_thread = {
     .cpsr = 0x10,
     .pc = &first,
     .sp = first_stack_start,
   };
+  struct thread_t second_thread = {
+    .cpsr = 0x10,
+    .pc = &second,
+    .sp = second_stack_start,
+  };
+
+  struct thread_t *threads[2] = {
+    &first_thread,
+    &second_thread,
+  };
 
   cputs("Hello, World from main!\n");
 
+  unsigned int thread_idx = 0;
+  unsigned int num_threads = 2;
+
+
+  *(PIC + VIC_INTENABLE) = PIC_TIMER01;
+  *(TIMER0 + TIMER_LOAD) = 100000;
+  *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
+  *(TIMER0 + TIMER_BGLOAD) = 100000;
+
   while(1) {
-    struct thread_t *thread = &first_thread;
+    struct thread_t *thread = threads[thread_idx];
+    /* Can't use % to calculate new thread_idx because that requires a
+       runtime library function */
+    thread_idx++;
+    if(thread_idx >= num_threads) {
+      thread_idx = 0;
+    }
     cprint_thread(thread);
-    activate(thread);
+
+    unsigned int stop_reason = activate(thread);
+    cputs("activate returned ");
+    cprint_word(stop_reason);
+    cputs("\n");
+    if(stop_reason == 0x1) {
+      /* Handle interrupt */
+      if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
+        *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+        cputs("TIMER0 tick\n");
+      }
+    } else if (stop_reason == 0x2) {
+      /* Handle syscall */
+    }
   }
 
-  halt();
-
+  sleep();
   return 0;
 }
 
 /* First user mode program */
 void first(void) {
-  cputs("In user mode 1\n");
+  //  cputs("In first() 1\n");
   syscall();
   unsigned int n = 17;
   while(1) {
+    //    cputs("In first() 2\n");
     n++;
     first_sub(n);
-    cputs("In user mode 2\n");
+    //    cputs("In first() 3\n");
     syscall();
   }
 }
 
 void first_sub(unsigned int arg1) {
-  cputs("In first_sub 1 arg1=");
-  cprint_word(arg1);
-  cputs("\n");
+  //  cputs("In first_sub 1 arg1=");
+  //  cprint_word(arg1);
+  //  cputs("\n");
   syscall();
-  cputs("In first_sub 2 arg1=");
-  cprint_word(arg1);
-  cputs("\n");
+  //  cputs("In first_sub 2 arg1=");
+  //  cprint_word(arg1);
+  //  cputs("\n");
 }
+
+/* Second user mode program */
+void second(void) {
+  //  cputs("In second() 1\n");
+  //  syscall();
+  while(1) {
+    //cputs("In second() 2\n");
+    //    syscall();
+  }
+}
+
 
 void cputs(char *string) {
   while(*string) {

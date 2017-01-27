@@ -10,3 +10,12 @@ r15 aka pc (program counter)
 
 In supervisor mode all registers are as user mode except for r13 (sp), r14 (lr). SPSR is available, reflects CPSR before switching to supervisor mode.
 In system mode SPSR is not available, all variables are the same as in user mode, CPSR is writable.
+
+ARM and Thumb instruction reference:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489e/Cihedhif.html
+
+Board documentation:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html
+
+ARM Dual-Timer Module (SP804) manual:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html
