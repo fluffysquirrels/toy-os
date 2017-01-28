@@ -15,8 +15,6 @@ void sc_print_thread(struct thread_t*);
 
 void *memset(void*, int, int);
 
-#define UNUSED(x) (void)(x)
-
 #define TRACE_SCHEDULER 1
 
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
