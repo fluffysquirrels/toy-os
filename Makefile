@@ -5,21 +5,6 @@ LDFLAGS=-N -Ttext=0x10000
 
 .PHONY: build clean qemu qemu-debug gdb-attach
 
-%.elf: %.o
-	$(LD) $(LDFLAGS) -o $@ $^
-
-%.o: %.s
-	$(CC) $(CFLAGS) -o $@ -c $^
-
-# Disable built-in rule to build .o from .S with the C++ compiler.
-%.o: %.S
-
-kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c synchronous_console.h
-context_switch.s: context_switch.S asm_constants.h
-kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o synchronous_console.o
-synchronous_console.o: synchronous_console.h versatilepb.h synchronous_console.c
-syscalls.s: syscalls.S asm_constants.h
-
 QEMU_CMD = qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel kernel.elf
 
 qemu: build
@@ -35,3 +20,18 @@ clean:
 	rm -f *.o *.elf
 
 build: kernel.elf
+
+%.elf: %.o
+	$(LD) $(LDFLAGS) -o $@ $^
+
+%.o: %.s
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+# Disable built-in rule to build .o from .S with the C++ compiler.
+%.o: %.S
+
+kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o synchronous_console.o
+kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c synchronous_console.h
+context_switch.s: context_switch.S asm_constants.h
+synchronous_console.o: synchronous_console.h versatilepb.h synchronous_console.c
+syscalls.s: syscalls.S asm_constants.h
