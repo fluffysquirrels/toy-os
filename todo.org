@@ -19,7 +19,6 @@
 ** Disk I/O
 
 * Nice:
-** init_thread function to clean up boilerplate
 ** Extract synchronous logging to a new .c file
 ** Extract UNUSED and memset to a util file
 ** Use macro constants to refer to processor modes
