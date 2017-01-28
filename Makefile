@@ -28,7 +28,7 @@ qemu-debug: build
 	$(QEMU_CMD) -s -S
 
 gdb-attach:
-	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file kernel.elf'
+	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file kernel.elf' -tui
 
 clean:
 	rm -f *.o *.elf
