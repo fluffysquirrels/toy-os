@@ -12,13 +12,13 @@ keep_copying_interrupt_table:
     cmp r1, r3
     bne keep_copying_interrupt_table
 
-    /* Set supervisor stack */
-    ldr sp, =0x07ffffff
-
     /* Switch to IRQ, Supervisor modes so their CPSR's are set with
        interrupts disabled */
     msr CPSR_c, #0xD2 /* IRQ mode, interrupts disabled */
     msr CPSR_c, #0xD3 /* Supervisor mode, interrupts disabled */
+
+    /* Set supervisor stack */
+    ldr sp, =0x07ffffff
 
     bl main
 
