@@ -19,3 +19,10 @@ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.ht
 
 ARM Dual-Timer Module (SP804) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html
+PrimeCell VectoredInterrupt Controller (PL190) manual:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0181e/index.html
+CPU interrupt vector:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0211h/Babfeega.html
+
+Makefiles that build into a subdirectory:
+http://make.mad-scientist.net/papers/multi-architecture-builds/
