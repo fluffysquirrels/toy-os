@@ -1,5 +1,5 @@
 CC=arm-linux-gnueabi-gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
+CFLAGS=-std=c99 -pedantic -Wall -Wextra -Werror -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
 LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
 
