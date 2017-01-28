@@ -29,7 +29,7 @@ void first(void);
 void first_sub(unsigned int);
 void second(void);
 
-void cprint_thread(struct thread_t*);
+void sc_print_thread(struct thread_t*);
 
 void *memset(void*, int, int);
 
@@ -85,7 +85,7 @@ void scheduler_loop() {
     sc_puts("scheduler_loop() thread_idx=");
     sc_print_uint32_hex(thread_idx);
     sc_puts("\n");
-    cprint_thread(thread);
+    sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
     thread_idx++;
@@ -253,7 +253,7 @@ void second(void) {
   }
 }
 
-void cprint_thread(struct thread_t *thread) {
+void sc_print_thread(struct thread_t *thread) {
   sc_puts("thread {\n");
   sc_puts("  .cpsr = ");
   sc_print_uint32_hex(thread->cpsr);
