@@ -51,9 +51,19 @@ void syscall_handler_spawn(struct thread_t* thread) {
 
   UNUSED(pargs);
 
+  struct thread_t* spawned_thread = NULL;
+  syscall_error_t err = SE_INVALID;
+
+  err = kspawn(0x10, pargs->pc, &spawned_thread);
+  if(err != SE_SUCCESS) {
+    thread->registers[0] = err;
+    return;
+  }
+
   presult->thread_id = 91;
-  syscall_return_t ret = 17;
-  thread->registers[0] = ret;
+  err = SE_SUCCESS;
+  thread->registers[0] = err;
+  return;
 }
 
 void set_syscall_handlers() {

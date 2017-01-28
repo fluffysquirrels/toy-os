@@ -21,6 +21,9 @@ void *memset(void*, int, int);
 
 #define TRACE_SCHEDULER 1
 
+#define STACK_SIZE 256
+#define THREAD_LIMIT 4
+
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
 unsigned int num_threads = 0;
@@ -28,11 +31,28 @@ unsigned int num_threads = 0;
 typedef void (*isr_t)(void);
 isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
-void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
-  out_thread->cpsr = cpsr;
-  memset(out_thread->registers, '\0', sizeof(out_thread->registers));
-  out_thread->registers[13] = (unsigned int) (stack_base + stack_size - 16 /* why -16? */);
-  out_thread->registers[15] = (unsigned int) pc;
+
+syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
+
+  if (num_threads >= THREAD_LIMIT) {
+    return SE_LIMIT;
+  }
+
+  unsigned int thread_idx = num_threads;
+  num_threads++;
+  struct thread_t *thread = &threads[thread_idx];
+
+  unsigned int *stack_base = stacks[thread_idx];
+
+  thread->cpsr = cpsr;
+  thread->registers[13] = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
+  thread->registers[15] = (unsigned int) pc;
+
+  if(out_thread != NULL) {
+    *out_thread = thread;
+  }
+
+  return SE_SUCCESS;
 }
 
 void scheduler_run() {

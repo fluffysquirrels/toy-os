@@ -14,16 +14,11 @@ void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
 void handle_interrupt(struct thread_t*);
 
-void init_thread(struct thread_t *, unsigned int *, unsigned int, unsigned int, void (*)(void));
+#include "syscalls.h"
 
-#define STACK_SIZE 256
-#define THREAD_LIMIT 4
-
-// TODO: Access these with more checks via kernel.c functions
-extern unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
-extern struct thread_t threads[THREAD_LIMIT];
-extern unsigned int num_threads;
+syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
 
 void scheduler_run(void);
 
 #define UNUSED(x) (void)(x)
+#define NULL 0

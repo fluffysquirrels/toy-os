@@ -8,10 +8,9 @@ void second(void);
 void spawn_thread(void);
 
 int main(void) {
-  init_thread(&threads[0], stacks[0], STACK_SIZE, 0x10, &first);
-  init_thread(&threads[1], stacks[1], STACK_SIZE, 0x10, &second);
-  init_thread(&threads[2], stacks[2], STACK_SIZE, 0x10, &spawn_thread);
-  num_threads = 3;
+  kspawn(0x10, &first, NULL);
+  kspawn(0x10, &second, NULL);
+  kspawn(0x10, &spawn_thread, NULL);
 
   sc_puts("Hello, World from main!\n");
 
@@ -116,7 +115,7 @@ void spawn_thread(void) {
     .pc = &second,
   };
   struct spawn_result_t result;
-  syscall_return_t ret = sys_spawn(&args, &result);
+  syscall_error_t ret = sys_spawn(&args, &result);
 
   sc_puts("spawn_thread() sys_spawn returned\n");
   sc_puts("  result.thread_id = ");
@@ -125,5 +124,13 @@ void spawn_thread(void) {
   sc_print_uint32_hex(ret);
   sc_puts("\n");
 
-  while(1) {}
+  if(ret == SE_SUCCESS) {
+    sc_puts("spawn_thread() sys_spawn success\n");
+  } else {
+    sc_puts("spawn_thread() sys_spawn error\n");
+  }
+
+  while(1) {
+    sys_yield();
+  }
 }

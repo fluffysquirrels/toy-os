@@ -3,8 +3,7 @@
 ** Returning thread functions hang the system.
 
 * Features:
-** Implement sys_spawn().
-** main() creates threads using accessor functions in kernel.c
+** Threads can exit.
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
 ** fork
