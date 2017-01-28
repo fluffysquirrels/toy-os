@@ -2,17 +2,16 @@
 #include "context_switch.h"
 #include "kernel.h"
 #include "synchronous_console.h"
+#include "syscall_handlers.h"
 #include "syscalls.h"
 #include "versatilepb.h"
 
-void handle_syscall(struct thread_t*);
-void handle_interrupt(struct thread_t*);
 
 void scheduler_init(void);
 void scheduler_loop(void);
 
+void handle_interrupt(struct thread_t*);
 void set_interrupt_handlers();
-void set_syscall_handlers();
 void enable_timer01_interrupt(void);
 void start_scheduler_timer(void);
 
@@ -28,9 +27,6 @@ unsigned int num_threads = 0;
 
 typedef void (*isr_t)(void);
 isr_t interrupt_handlers[PIC_INTNUM_COUNT];
-
-typedef void (*syscall_t)(struct thread_t*);
-syscall_t syscall_handlers[SYSCALL_NUM_MAX + 1];
 
 void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
   out_thread->cpsr = cpsr;
@@ -153,38 +149,6 @@ void handle_interrupt(struct thread_t* thread) {
 #endif // TRACE_SCHEDULER
 }
 
-void handle_syscall(struct thread_t* thread) {
-  unsigned int syscall_num = thread->registers[12];
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() syscall_num = ");
-  sc_print_uint32_hex(syscall_num);
-  sc_puts("\n");
-#endif // TRACE_SCHEDULER
-
-  assert(syscall_num <= SYSCALL_NUM_MAX, "assert failed: syscall_num <= SYSCALL_NUM_MAX");
-
-  syscall_t handler = syscall_handlers[syscall_num];
-  if (!handler) {
-    warn("handle_syscall() syscall with unknown syscall_num = ");
-    sc_puts("  ");
-    sc_print_uint32_hex(syscall_num);
-    sc_puts("\n");
-    return;
-  }
-
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() calling syscall handler @ ");
-  sc_print_uint32_hex((unsigned int) handler);
-  sc_puts("\n");
-#endif // TRACE_SCHEDULER
-
-  handler(thread);
-
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() returned from syscall handler\n");
-#endif // TRACE_SCHEDULER
-}
-
 void isr_timer01() {
 #if TRACE_SCHEDULER
     sc_puts("isr_timer01()\n");
@@ -207,29 +171,6 @@ void isr_timer01() {
 
 void set_interrupt_handlers() {
   interrupt_handlers[PIC_INTNUM_TIMER01] = &isr_timer01;
-}
-
-void syscall_handler_yield(struct thread_t* thread) {
-  UNUSED(thread);
-  sc_puts("handle_syscall() handling yield\n");
-}
-
-void syscall_handler_spawn(struct thread_t* thread) {
-  warn("spawn not yet implemented");
-
-  struct spawn_args_t *pargs = (struct spawn_args_t *) thread->registers[0];
-  struct spawn_result_t *presult = (struct spawn_result_t *) thread->registers[1];
-
-  UNUSED(pargs);
-
-  presult->thread_id = 91;
-  syscall_return_t ret = 17;
-  thread->registers[0] = ret;
-}
-
-void set_syscall_handlers() {
-  syscall_handlers[SYSCALL_NUM_YIELD] = &syscall_handler_yield;
-  syscall_handlers[SYSCALL_NUM_SPAWN] = &syscall_handler_spawn;
 }
 
 void enable_timer01_interrupt() {

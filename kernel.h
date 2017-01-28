@@ -17,7 +17,7 @@ void handle_interrupt(struct thread_t*);
 void init_thread(struct thread_t *, unsigned int *, unsigned int, unsigned int, void (*)(void));
 
 #define STACK_SIZE 256
-#define THREAD_LIMIT 3
+#define THREAD_LIMIT 4
 
 // TODO: Access these with more checks via kernel.c functions
 extern unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
