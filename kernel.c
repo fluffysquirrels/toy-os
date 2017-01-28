@@ -4,9 +4,14 @@
 #include "versatilepb.h"
 
 struct thread_t{
+  /* Referenced by offset from assembly in context_switch.S, be careful! */
   unsigned int cpsr;
   void (*pc)(void);
   void* sp;
+  unsigned int registers[16];
+  /* End of Referenced by offset from assembly */
+
+  unsigned int state;
 };
 
 void enable_timer0_interrupt(void);
@@ -25,6 +30,8 @@ void cprint_thread(struct thread_t*);
 void cprint_hex(char);
 void cprint_word(unsigned int);
 
+void *memset(void*, int, int);
+
 #define UNUSED(x) (void)(x)
 
 #define STACK_SIZE 256
@@ -41,11 +48,15 @@ int main(void) {
     .cpsr = 0x10,
     .pc = &first,
     .sp = stacks[0] + STACK_SIZE - 16,
+    .registers = { 0 },
+    .state = 0
   };
   (threads[1]) = (struct thread_t){
     .cpsr = 0x10,
     .pc = &second,
     .sp = stacks[1] + STACK_SIZE - 16,
+    .registers = { 0 },
+    .state = 0
   };
 
   cputs("Hello, World from main!\n");
@@ -123,12 +134,53 @@ void start_periodic_timer0() {
 /* First user mode program */
 void first(void) {
   cputs("Start first()\n");
+  __asm__ volatile(
+    "mov    r0,  #10 " "\n\t"
+    "mov    r1,  #1  " "\n\t"
+    "mov    r2,  #2  " "\n\t"
+    "mov    r3,  #3  " "\n\t"
+    "mov    r4,  #4  " "\n\t"
+    "mov    r5,  #5  " "\n\t"
+    "mov    r6,  #6  " "\n\t"
+    "mov    r7,  #7  " "\n\t"
+    "mov    r8,  #8  " "\n\t"
+    "mov    r9,  #9  " "\n\t"
+    "mov    r10, #10 " "\n\t"
+    "mov    r12, #12 " "\n\t"
+    :
+    :
+    : "cc",
+      "r0", "r1", "r2" , "r3" ,
+      "r4", "r5", "r6" , "r7" ,
+      "r8", "r9", "r10", "r12"
+  );
   sys_yield();
   unsigned int n = 17;
   while(1) {
     cputs("In first() loop\n");
     n++;
     first_sub(n);
+
+    __asm__ volatile(
+      "mov    r0,  #10 " "\n\t"
+      "mov    r1,  #1  " "\n\t"
+      "mov    r2,  #2  " "\n\t"
+      "mov    r3,  #3  " "\n\t"
+      "mov    r4,  #4  " "\n\t"
+      "mov    r5,  #5  " "\n\t"
+      "mov    r6,  #6  " "\n\t"
+      "mov    r7,  #7  " "\n\t"
+      "mov    r8,  #8  " "\n\t"
+      "mov    r9,  #9  " "\n\t"
+      "mov    r10, #10 " "\n\t"
+      "mov    r12, #12 " "\n\t"
+      :
+      :
+      : "cc",
+        "r0", "r1", "r2" , "r3" ,
+        "r4", "r5", "r6" , "r7" ,
+        "r8", "r9", "r10", "r12"
+    );
     sys_yield();
   }
 }
@@ -199,11 +251,65 @@ void cprint_thread(struct thread_t *thread) {
   cputs("  .cpsr = ");
   cprint_word(thread->cpsr);
   cputs("\n");
-  cputs("  .pc = ");
+  cputs("    .pc = ");
   cprint_word((unsigned int) thread->pc);
   cputs("\n");
-  cputs("  .sp = ");
+  cputs("    .sp = ");
   cprint_word((unsigned int) thread->sp);
   cputs("\n");
+
+  cputs("     r0 = ");
+  cprint_word(thread->registers[0]);
+  cputs("     r1 = ");
+  cprint_word(thread->registers[1]);
+  cputs("     r2 = ");
+  cprint_word(thread->registers[2]);
+  cputs("     r3 = ");
+  cprint_word(thread->registers[3]);
+  cputs("\n");
+
+  cputs("     r4 = ");
+  cprint_word(thread->registers[4]);
+  cputs("     r5 = ");
+  cprint_word(thread->registers[5]);
+  cputs("     r6 = ");
+  cprint_word(thread->registers[6]);
+  cputs("     r7 = ");
+  cprint_word(thread->registers[7]);
+  cputs("\n");
+
+  cputs("     r8 = ");
+  cprint_word(thread->registers[8]);
+  cputs("     r9 = ");
+  cprint_word(thread->registers[9]);
+  cputs("    r10 = ");
+  cprint_word(thread->registers[10]);
+  cputs(" r11/fp = ");
+  cprint_word(thread->registers[11]);
+  cputs("\n");
+
+  cputs(" r12/ip = ");
+  cprint_word(thread->registers[12]);
+  cputs(" r13/sp = ");
+  cprint_word(thread->registers[13]);
+  cputs(" r14/lr = ");
+  cprint_word(thread->registers[14]);
+  cputs(" r15/pc = ");
+  cprint_word(thread->registers[15]);
+  cputs("\n");
+
+
+  
   cputs("}\n");
+}
+
+void *memset(void *b, int c, int len) {
+  unsigned char *p = b;
+  while(len > 0)
+    {
+      *p = c;
+      p++;
+      len--;
+    }
+  return(b);
 }
