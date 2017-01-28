@@ -112,7 +112,18 @@ void second(void) {
 
 void spawn_thread(void) {
   sc_puts("spawn_thread()\n");
-  sys_spawn();
+  struct spawn_args_t args = {
+    .pc = &second,
+  };
+  struct spawn_result_t result;
+  syscall_return_t ret = sys_spawn(&args, &result);
+
+  sc_puts("spawn_thread() sys_spawn returned\n");
+  sc_puts("  result.thread_id = ");
+  sc_print_uint32_hex(result.thread_id);
+  sc_puts("  ret = ");
+  sc_print_uint32_hex(ret);
+  sc_puts("\n");
 
   while(1) {}
 }

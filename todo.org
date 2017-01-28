@@ -4,11 +4,6 @@
 
 * Features:
 ** main() creates threads using accessor functions in kernel.c
-** Establish syscall patterns
-*** Read register arguments
-*** Return value in r0 register
-*** Read from user mode buffer
-*** Write to user mode buffer
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
 ** fork

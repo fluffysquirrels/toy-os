@@ -215,15 +215,22 @@ void syscall_handler_yield(struct thread_t* thread) {
 }
 
 void syscall_handler_spawn(struct thread_t* thread) {
-  UNUSED(thread);
   warn("spawn not yet implemented");
+
+  struct spawn_args_t *pargs = (struct spawn_args_t *) thread->registers[0];
+  struct spawn_result_t *presult = (struct spawn_result_t *) thread->registers[1];
+
+  UNUSED(pargs);
+
+  presult->thread_id = 91;
+  syscall_return_t ret = 17;
+  thread->registers[0] = ret;
 }
 
 void set_syscall_handlers() {
   syscall_handlers[SYSCALL_NUM_YIELD] = &syscall_handler_yield;
   syscall_handlers[SYSCALL_NUM_SPAWN] = &syscall_handler_spawn;
 }
-
 
 void enable_timer01_interrupt() {
   *(PIC + VIC_INTENABLE) |= PIC_INTMASK_TIMER01;
