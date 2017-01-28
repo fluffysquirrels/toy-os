@@ -1,0 +1,19 @@
+* Bugs
+** User mode thread_t.cpsr ends up 0x60000010 = irq, why?
+
+* Features:
+** some syscall that reads arguments
+** some syscall that returns a value
+** User mode can wait for timers.
+** User mode can read from / write to console in a pre-emptible way.
+** fork
+** Jump to interrupt handler selected from a configured array of them
+
+* Nice features:
+** Memory protection
+*** Stack overflow detection
+*** User-mode lockdown
+
+* Nice:
+** Use macro constants to refer to processor modes
+** Tests
