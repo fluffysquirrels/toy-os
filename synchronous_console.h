@@ -1,3 +1,6 @@
+#include "stdbool.h"
+
+void assert(bool cond, char *string);
 void panic(char *string);
 void warn(char *string);
 void sc_puts(char *string);

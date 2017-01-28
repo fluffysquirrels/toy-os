@@ -8,8 +8,12 @@
 void handle_syscall(struct thread_t*);
 void handle_interrupt(struct thread_t*);
 
-void enable_timer0_interrupt(void);
-void start_periodic_timer0(void);
+void scheduler_init(void);
+void scheduler_loop(void);
+
+void set_interrupt_handlers();
+void enable_timer01_interrupt(void);
+void start_scheduler_timer(void);
 
 void sc_print_thread(struct thread_t*);
 
@@ -21,11 +25,25 @@ unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
 unsigned int num_threads = 0;
 
+typedef void (*isr_t)(void);
+isr_t interrupt_handlers[PIC_INTNUM_COUNT];
+
 void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
   out_thread->cpsr = cpsr;
   memset(out_thread->registers, '\0', sizeof(out_thread->registers));
   out_thread->registers[13] = (unsigned int) (stack_base + stack_size - 16 /* why -16? */);
   out_thread->registers[15] = (unsigned int) pc;
+}
+
+void scheduler_run() {
+  scheduler_init();
+  scheduler_loop();
+}
+
+void scheduler_init() {
+  set_interrupt_handlers();
+  enable_timer01_interrupt();
+  start_scheduler_timer();
 }
 
 void scheduler_loop() {
@@ -82,14 +100,51 @@ void handle_interrupt(struct thread_t* thread) {
   sc_puts("handle_interrupt()\n");
 #endif // TRACE_SCHEDULER
 
-  if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
-    *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+  unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
+
 #if TRACE_SCHEDULER
-    sc_puts("TIMER0 tick\n");
-#endif // TRACE_SCHEDULER
-  } else {
-    warn("Unknown interrupt was not acknowledged");
+  sc_puts("handle_interrupt() pic_irqstatus = ");
+  sc_print_uint32_hex(pic_irqstatus);
+  sc_puts("\n");
+#endif
+
+  if(pic_irqstatus == 0) {
+    panic("handle_interrupt() no interrupt active?");
+    return;
   }
+
+  int irq = __builtin_ctz(pic_irqstatus);
+
+#if TRACE_SCHEDULER
+  sc_puts("handle_interrupt() irq = ");
+  sc_print_uint32_hex(irq);
+  sc_puts("\n");
+#endif // TRACE_SCHEDULER
+
+  assert(irq >= 0, "irq >= 0");
+  assert(irq < PIC_INTNUM_COUNT, "irq <= PIC_INTNUM_COUNT");
+
+  isr_t isr = interrupt_handlers[irq];
+
+  if(!isr) {
+    warn("Interrupt with no isr");
+    sc_puts("irq = ");
+    sc_print_uint32_hex(irq);
+    sc_puts("\n");
+    panic("Interrupt with no isr");
+    // Not reached.
+    return;
+  }
+
+#if TRACE_SCHEDULER
+  sc_puts("handle_interrupt() running isr\n");
+#endif // TRACE_SCHEDULER
+
+  isr();
+
+#if TRACE_SCHEDULER
+  sc_puts("handle_interrupt() back from isr\n");
+#endif // TRACE_SCHEDULER
 }
 
 void handle_syscall(struct thread_t* thread) {
@@ -113,14 +168,43 @@ void handle_syscall(struct thread_t* thread) {
   }
 }
 
-void enable_timer0_interrupt() {
-  *(PIC + VIC_INTENABLE) = PIC_TIMER01;
+void isr_timer01() {
+#if TRACE_SCHEDULER
+    sc_puts("isr_timer01()\n");
+#endif // TRACE_SCHEDULER
+
+  if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
+    *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+#if TRACE_SCHEDULER
+    sc_puts("isr_timer01() TIMER0 tick\n");
+#endif // TRACE_SCHEDULER
+  }  else if(*(TIMER1 + TIMER_MIS)) { /* Timer1 went off */
+    *(TIMER1 + TIMER_INTCLR) = 1; /* Clear interrupt */
+#if TRACE_SCHEDULER
+    sc_puts("isr_timer01() TIMER1 tick\n");
+#endif // TRACE_SCHEDULER
+  } else {
+    panic("isr_timer01() *(TIMER0/1 + TIMER_MIS) was clear");
+  }
 }
 
-void start_periodic_timer0() {
+void set_interrupt_handlers() {
+  interrupt_handlers[PIC_INTNUM_TIMER01] = &isr_timer01;
+}
+
+void enable_timer01_interrupt() {
+  *(PIC + VIC_INTENABLE) |= PIC_INTMASK_TIMER01;
+}
+
+void start_scheduler_timer() {
   *(TIMER0 + TIMER_LOAD) = 1000000;
   *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
   *(TIMER0 + TIMER_BGLOAD) = 1000000;
+
+  *(TIMER1 + TIMER_LOAD) = 600000;
+  *(TIMER1 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
+  *(TIMER1 + TIMER_BGLOAD) = 600000;
+
 }
 
 void sc_print_thread(struct thread_t *thread) {

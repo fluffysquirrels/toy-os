@@ -13,10 +13,7 @@ int main(void) {
 
   sc_puts("Hello, World from main!\n");
 
-  enable_timer0_interrupt();
-  start_periodic_timer0();
-
-  scheduler_loop();
+  scheduler_run();
 
   /* Not reached */
   return 0;

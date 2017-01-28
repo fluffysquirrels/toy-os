@@ -1,6 +1,12 @@
 #include "synchronous_console.h"
 #include "versatilepb.h"
 
+void assert(bool cond, char *string) {
+  if(!cond) {
+    panic(string);
+  }
+}
+
 void panic(char *string) {
   sc_puts("panic: ");
   sc_puts(string);

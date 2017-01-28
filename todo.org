@@ -2,8 +2,11 @@
 ** User mode thread_t.cpsr ends up 0x60000010 = irq, why?
 
 * Features:
-** some syscall that reads arguments
-** some syscall that returns a value
+** Establish syscall patterns
+*** Read register arguments
+*** Return value in r0 register
+*** Read from user mode buffer
+*** Write to user mode buffer
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
 ** fork
@@ -20,6 +23,10 @@
 ** Disk I/O
 
 * Nice:
+** Logging boilerplate reduction
+*** printf style message formatting
+*** include file location (function name, file name, line number) in message using a macro
+*** include failed assert condition in message using a macro
 ** Extract UNUSED and memset to a util file
 ** Use macro constants to refer to processor modes
 ** Tests

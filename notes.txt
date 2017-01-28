@@ -16,6 +16,8 @@ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489e/Cihedhif.ht
 
 Board documentation:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html
+Interrupt controllers on the board
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Cacgfedh.html
 
 ARM Dual-Timer Module (SP804) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html
@@ -26,3 +28,13 @@ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0211h/Babfeega.ht
 
 Makefiles that build into a subdirectory:
 http://make.mad-scientist.net/papers/multi-architecture-builds/
+
+JavaScript snippet to convert ARM reference register table to #define list:
+
+Array.from(t.rows).slice(1).forEach(r => {
+  let name = r.cells[0].textContent;
+  let offsetBytes = parseInt(r.cells[1].textContent.substring(2), 16);
+  console.log(
+    "#define " + name + " 0x" + (offsetBytes/4).toString(16) +
+    "     // 0x" + offsetBytes.toString(16) + " bytes")
+})
