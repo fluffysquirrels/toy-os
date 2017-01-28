@@ -70,6 +70,10 @@ void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned
 }
 
 void scheduler_loop() {
+#if TRACE_SCHEDULER
+    sc_puts("scheduler_loop() start\n");
+#endif // TRACE_SCHEDULER
+
   unsigned int thread_idx = 0;
 
   while(1) {
@@ -78,7 +82,7 @@ void scheduler_loop() {
        runtime library function */
 
 #if TRACE_SCHEDULER
-    sc_puts("main() thread_idx=");
+    sc_puts("scheduler_loop() thread_idx=");
     sc_print_uint32_hex(thread_idx);
     sc_puts("\n");
     cprint_thread(thread);
@@ -92,7 +96,7 @@ void scheduler_loop() {
     unsigned int stop_reason = activate(thread);
 
 #if TRACE_SCHEDULER
-    sc_puts("activate returned ");
+    sc_puts("scheduler_loop() activate returned ");
     sc_print_uint32_hex(stop_reason);
     if(stop_reason == ACTIVATE_RET_IRQ) {
       sc_puts(" = ACTIVATE_RET_IRQ");
@@ -115,6 +119,10 @@ void scheduler_loop() {
 void handle_interrupt(struct thread_t* thread) {
   UNUSED(thread);
 
+#if TRACE_SCHEDULER
+  sc_puts("handle_interrupt()\n");
+#endif // TRACE_SCHEDULER
+
   if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
     *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
 #if TRACE_SCHEDULER
@@ -128,18 +136,18 @@ void handle_interrupt(struct thread_t* thread) {
 void handle_syscall(struct thread_t* thread) {
   unsigned int syscall_num = thread->registers[12];
 #if TRACE_SCHEDULER
-  sc_puts("In syscall handler syscall_num = ");
+  sc_puts("handle_syscall() syscall_num = ");
   sc_print_uint32_hex(syscall_num);
   sc_puts("\n");
 #endif // TRACE_SCHEDULER
   switch(syscall_num) {
   case SYSCALL_NUM_YIELD:
 #if TRACE_SCHEDULER
-    sc_puts("In yield\n");
+    sc_puts("handle_syscall() handling yield\n");
 #endif // TRACE_SCHEDULER
     break;
   default:
-    warn("syscall with unknown syscall_num = ");
+    warn("handle_syscall() syscall with unknown syscall_num = ");
     sc_puts("  ");
     sc_print_uint32_hex(syscall_num);
     sc_puts("\n");
