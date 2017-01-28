@@ -5,3 +5,9 @@ sys_yield:
     mov ip, #SYSCALL_NUM_YIELD
     svc 0
     bx lr
+
+.global sys_spawn
+sys_spawn:
+    mov ip, #SYSCALL_NUM_SPAWN
+    svc 0
+    bx lr

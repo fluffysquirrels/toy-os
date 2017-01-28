@@ -1,7 +1,9 @@
 * Bugs
 ** User mode thread_t.cpsr ends up 0x60000010 = irq, why?
+** Returning thread functions hang the system.
 
 * Features:
+** main() creates threads using accessor functions in kernel.c
 ** Establish syscall patterns
 *** Read register arguments
 *** Return value in r0 register
@@ -10,10 +12,8 @@
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
 ** fork
-** Jump to interrupt handler from a configured array of them
 
 * Nice features:
-** main() creates threads using accessor functions in kernel.c
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
@@ -23,6 +23,7 @@
 ** Disk I/O
 
 * Nice:
+** Rename interrupt -> exception where appropriate, including interrupt_table -> exception_table
 ** Logging boilerplate reduction
 *** printf style message formatting
 *** include file location (function name, file name, line number) in message using a macro

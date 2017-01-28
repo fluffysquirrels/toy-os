@@ -5,11 +5,13 @@
 void first(void);
 void first_sub(unsigned int);
 void second(void);
+void spawn_thread(void);
 
 int main(void) {
   init_thread(&threads[0], stacks[0], STACK_SIZE, 0x10, &first);
   init_thread(&threads[1], stacks[1], STACK_SIZE, 0x10, &second);
-  num_threads = 2;
+  init_thread(&threads[2], stacks[2], STACK_SIZE, 0x10, &spawn_thread);
+  num_threads = 3;
 
   sc_puts("Hello, World from main!\n");
 
@@ -106,4 +108,11 @@ void second(void) {
   );
   while(1) {
   }
+}
+
+void spawn_thread(void) {
+  sc_puts("spawn_thread()\n");
+  sys_spawn();
+
+  while(1) {}
 }

@@ -12,6 +12,7 @@ void scheduler_init(void);
 void scheduler_loop(void);
 
 void set_interrupt_handlers();
+void set_syscall_handlers();
 void enable_timer01_interrupt(void);
 void start_scheduler_timer(void);
 
@@ -28,6 +29,9 @@ unsigned int num_threads = 0;
 typedef void (*isr_t)(void);
 isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
+typedef void (*syscall_t)(struct thread_t*);
+syscall_t syscall_handlers[SYSCALL_NUM_MAX + 1];
+
 void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
   out_thread->cpsr = cpsr;
   memset(out_thread->registers, '\0', sizeof(out_thread->registers));
@@ -42,6 +46,7 @@ void scheduler_run() {
 
 void scheduler_init() {
   set_interrupt_handlers();
+  set_syscall_handlers();
   enable_timer01_interrupt();
   start_scheduler_timer();
 }
@@ -121,13 +126,12 @@ void handle_interrupt(struct thread_t* thread) {
   sc_puts("\n");
 #endif // TRACE_SCHEDULER
 
-  assert(irq >= 0, "irq >= 0");
-  assert(irq < PIC_INTNUM_COUNT, "irq <= PIC_INTNUM_COUNT");
+  assert(irq >= 0, "assert failed: irq >= 0");
+  assert(irq < PIC_INTNUM_COUNT, "assert failed: irq <= PIC_INTNUM_COUNT");
 
   isr_t isr = interrupt_handlers[irq];
 
   if(!isr) {
-    warn("Interrupt with no isr");
     sc_puts("irq = ");
     sc_print_uint32_hex(irq);
     sc_puts("\n");
@@ -137,13 +141,15 @@ void handle_interrupt(struct thread_t* thread) {
   }
 
 #if TRACE_SCHEDULER
-  sc_puts("handle_interrupt() running isr\n");
+  sc_puts("handle_interrupt() calling isr @");
+  sc_print_uint32_hex((unsigned int) isr);
+  sc_puts("\n");
 #endif // TRACE_SCHEDULER
 
   isr();
 
 #if TRACE_SCHEDULER
-  sc_puts("handle_interrupt() back from isr\n");
+  sc_puts("handle_interrupt() returned from isr\n");
 #endif // TRACE_SCHEDULER
 }
 
@@ -154,18 +160,29 @@ void handle_syscall(struct thread_t* thread) {
   sc_print_uint32_hex(syscall_num);
   sc_puts("\n");
 #endif // TRACE_SCHEDULER
-  switch(syscall_num) {
-  case SYSCALL_NUM_YIELD:
-#if TRACE_SCHEDULER
-    sc_puts("handle_syscall() handling yield\n");
-#endif // TRACE_SCHEDULER
-    break;
-  default:
+
+  assert(syscall_num <= SYSCALL_NUM_MAX, "assert failed: syscall_num <= SYSCALL_NUM_MAX");
+
+  syscall_t handler = syscall_handlers[syscall_num];
+  if (!handler) {
     warn("handle_syscall() syscall with unknown syscall_num = ");
     sc_puts("  ");
     sc_print_uint32_hex(syscall_num);
     sc_puts("\n");
+    return;
   }
+
+#if TRACE_SCHEDULER
+  sc_puts("handle_syscall() calling syscall handler @ ");
+  sc_print_uint32_hex((unsigned int) handler);
+  sc_puts("\n");
+#endif // TRACE_SCHEDULER
+
+  handler(thread);
+
+#if TRACE_SCHEDULER
+  sc_puts("handle_syscall() returned from syscall handler\n");
+#endif // TRACE_SCHEDULER
 }
 
 void isr_timer01() {
@@ -192,6 +209,22 @@ void set_interrupt_handlers() {
   interrupt_handlers[PIC_INTNUM_TIMER01] = &isr_timer01;
 }
 
+void syscall_handler_yield(struct thread_t* thread) {
+  UNUSED(thread);
+  sc_puts("handle_syscall() handling yield\n");
+}
+
+void syscall_handler_spawn(struct thread_t* thread) {
+  UNUSED(thread);
+  warn("spawn not yet implemented");
+}
+
+void set_syscall_handlers() {
+  syscall_handlers[SYSCALL_NUM_YIELD] = &syscall_handler_yield;
+  syscall_handlers[SYSCALL_NUM_SPAWN] = &syscall_handler_spawn;
+}
+
+
 void enable_timer01_interrupt() {
   *(PIC + VIC_INTENABLE) |= PIC_INTMASK_TIMER01;
 }
@@ -204,7 +237,6 @@ void start_scheduler_timer() {
   *(TIMER1 + TIMER_LOAD) = 600000;
   *(TIMER1 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
   *(TIMER1 + TIMER_BGLOAD) = 600000;
-
 }
 
 void sc_print_thread(struct thread_t *thread) {
