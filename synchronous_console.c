@@ -2,50 +2,50 @@
 #include "versatilepb.h"
 
 void panic(char *string) {
-  cputs("panic: ");
-  cputs(string);
-  cputs("\n");
+  sc_puts("panic: ");
+  sc_puts(string);
+  sc_puts("\n");
   while(1) {}
 }
 
 void warn(char *string) {
-  cputs("warn: ");
-  cputs(string);
-  cputs("\n");
+  sc_puts("warn: ");
+  sc_puts(string);
+  sc_puts("\n");
 }
 
-void cputs(char *string) {
+void sc_puts(char *string) {
   while(*string) {
-    cputch(*string);
+    sc_putch(*string);
     string++;
   }
 }
 
-void cputch(char ch) {
+void sc_putch(char ch) {
   while(*(UART0 + UARTFR) & UARTFR_TXFF);
   *UART0 = ch;
 }
 
-void cprint_word(unsigned int w) {
-  cputs("0x");
-  cprint_hex(w >> 28);
-  cprint_hex(w >> 24);
-  cprint_hex(w >> 20);
-  cprint_hex(w >> 16);
-  cprint_hex(w >> 12);
-  cprint_hex(w >> 8);
-  cprint_hex(w >> 4);
-  cprint_hex(w);
+void sc_print_uint32_hex(unsigned int w) {
+  sc_puts("0x");
+  sc_print_uint8_hex(w >> 28);
+  sc_print_uint8_hex(w >> 24);
+  sc_print_uint8_hex(w >> 20);
+  sc_print_uint8_hex(w >> 16);
+  sc_print_uint8_hex(w >> 12);
+  sc_print_uint8_hex(w >> 8);
+  sc_print_uint8_hex(w >> 4);
+  sc_print_uint8_hex(w);
 }
 
-void cprint_hex(char x) {
+void sc_print_uint8_hex(char x) {
   x &= 0xf;
   if(x < 10) {
-    cputch('0' + x);
+    sc_putch('0' + x);
   } else if (x < 16) {
-    cputch('a' + (x - 10));
+    sc_putch('a' + (x - 10));
   } else {
     /* Should assert. */
-    cputch('?');
+    sc_putch('?');
   }
 }

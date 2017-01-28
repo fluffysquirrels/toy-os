@@ -50,7 +50,7 @@ int main(void) {
   init_thread(&threads[1], stacks[1], STACK_SIZE, 0x10, &second);
   num_threads = 2;
 
-  cputs("Hello, World from main!\n");
+  sc_puts("Hello, World from main!\n");
 
   enable_timer0_interrupt();
   start_periodic_timer0();
@@ -78,9 +78,9 @@ void scheduler_loop() {
        runtime library function */
 
 #if TRACE_SCHEDULER
-    cputs("main() thread_idx=");
-    cprint_word(thread_idx);
-    cputs("\n");
+    sc_puts("main() thread_idx=");
+    sc_print_uint32_hex(thread_idx);
+    sc_puts("\n");
     cprint_thread(thread);
 #endif // TRACE_SCHEDULER
 
@@ -92,14 +92,14 @@ void scheduler_loop() {
     unsigned int stop_reason = activate(thread);
 
 #if TRACE_SCHEDULER
-    cputs("activate returned ");
-    cprint_word(stop_reason);
+    sc_puts("activate returned ");
+    sc_print_uint32_hex(stop_reason);
     if(stop_reason == ACTIVATE_RET_IRQ) {
-      cputs(" = ACTIVATE_RET_IRQ");
+      sc_puts(" = ACTIVATE_RET_IRQ");
     } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
-      cputs(" = ACTIVATE_RET_SYSCALL");
+      sc_puts(" = ACTIVATE_RET_SYSCALL");
     }
-    cputs("\n");
+    sc_puts("\n");
 #endif // TRACE_SCHEDULER
 
     if(stop_reason == ACTIVATE_RET_IRQ) {
@@ -118,7 +118,7 @@ void handle_interrupt(struct thread_t* thread) {
   if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
     *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
 #if TRACE_SCHEDULER
-    cputs("TIMER0 tick\n");
+    sc_puts("TIMER0 tick\n");
 #endif // TRACE_SCHEDULER
   } else {
     warn("Unknown interrupt was not acknowledged");
@@ -128,21 +128,21 @@ void handle_interrupt(struct thread_t* thread) {
 void handle_syscall(struct thread_t* thread) {
   unsigned int syscall_num = thread->registers[12];
 #if TRACE_SCHEDULER
-  cputs("In syscall handler syscall_num = ");
-  cprint_word(syscall_num);
-  cputs("\n");
+  sc_puts("In syscall handler syscall_num = ");
+  sc_print_uint32_hex(syscall_num);
+  sc_puts("\n");
 #endif // TRACE_SCHEDULER
   switch(syscall_num) {
   case SYSCALL_NUM_YIELD:
 #if TRACE_SCHEDULER
-    cputs("In yield\n");
+    sc_puts("In yield\n");
 #endif // TRACE_SCHEDULER
     break;
   default:
     warn("syscall with unknown syscall_num = ");
-    cputs("  ");
-    cprint_word(syscall_num);
-    cputs("\n");
+    sc_puts("  ");
+    sc_print_uint32_hex(syscall_num);
+    sc_puts("\n");
   }
 }
 
@@ -158,7 +158,7 @@ void start_periodic_timer0() {
 
 /* First user mode program */
 void first(void) {
-  cputs("Start first()\n");
+  sc_puts("Start first()\n");
   __asm__ volatile(
     "mov    r0,  #10 " "\n\t"
     "mov    r1,  #1  " "\n\t"
@@ -182,7 +182,7 @@ void first(void) {
   sys_yield();
   unsigned int n = 17;
   while(1) {
-    cputs("In first() loop\n");
+    sc_puts("In first() loop\n");
     n++;
     first_sub(n);
 
@@ -212,14 +212,14 @@ void first(void) {
 
 void first_sub(unsigned int arg1) {
   UNUSED(arg1);
-  cputs("In first_sub() 1\n");
+  sc_puts("In first_sub() 1\n");
   sys_yield();
-  cputs("In first_sub() 2\n");
+  sc_puts("In first_sub() 2\n");
  }
 
 /* Second user mode program */
 void second(void) {
-  cputs("Start second()\n");
+  sc_puts("Start second()\n");
     __asm__ volatile(
     "mov    r0,  #10 " "\n\t"
     "mov    r1,  #1  " "\n\t"
@@ -246,52 +246,52 @@ void second(void) {
 }
 
 void cprint_thread(struct thread_t *thread) {
-  cputs("thread {\n");
-  cputs("  .cpsr = ");
-  cprint_word(thread->cpsr);
-  cputs("\n");
+  sc_puts("thread {\n");
+  sc_puts("  .cpsr = ");
+  sc_print_uint32_hex(thread->cpsr);
+  sc_puts("\n");
 
-  cputs("     r0 = ");
-  cprint_word(thread->registers[0]);
-  cputs("     r1 = ");
-  cprint_word(thread->registers[1]);
-  cputs("     r2 = ");
-  cprint_word(thread->registers[2]);
-  cputs("     r3 = ");
-  cprint_word(thread->registers[3]);
-  cputs("\n");
+  sc_puts("     r0 = ");
+  sc_print_uint32_hex(thread->registers[0]);
+  sc_puts("     r1 = ");
+  sc_print_uint32_hex(thread->registers[1]);
+  sc_puts("     r2 = ");
+  sc_print_uint32_hex(thread->registers[2]);
+  sc_puts("     r3 = ");
+  sc_print_uint32_hex(thread->registers[3]);
+  sc_puts("\n");
 
-  cputs("     r4 = ");
-  cprint_word(thread->registers[4]);
-  cputs("     r5 = ");
-  cprint_word(thread->registers[5]);
-  cputs("     r6 = ");
-  cprint_word(thread->registers[6]);
-  cputs("     r7 = ");
-  cprint_word(thread->registers[7]);
-  cputs("\n");
+  sc_puts("     r4 = ");
+  sc_print_uint32_hex(thread->registers[4]);
+  sc_puts("     r5 = ");
+  sc_print_uint32_hex(thread->registers[5]);
+  sc_puts("     r6 = ");
+  sc_print_uint32_hex(thread->registers[6]);
+  sc_puts("     r7 = ");
+  sc_print_uint32_hex(thread->registers[7]);
+  sc_puts("\n");
 
-  cputs("     r8 = ");
-  cprint_word(thread->registers[8]);
-  cputs("     r9 = ");
-  cprint_word(thread->registers[9]);
-  cputs("    r10 = ");
-  cprint_word(thread->registers[10]);
-  cputs(" r11/fp = ");
-  cprint_word(thread->registers[11]);
-  cputs("\n");
+  sc_puts("     r8 = ");
+  sc_print_uint32_hex(thread->registers[8]);
+  sc_puts("     r9 = ");
+  sc_print_uint32_hex(thread->registers[9]);
+  sc_puts("    r10 = ");
+  sc_print_uint32_hex(thread->registers[10]);
+  sc_puts(" r11/fp = ");
+  sc_print_uint32_hex(thread->registers[11]);
+  sc_puts("\n");
 
-  cputs(" r12/ip = ");
-  cprint_word(thread->registers[12]);
-  cputs(" r13/sp = ");
-  cprint_word(thread->registers[13]);
-  cputs(" r14/lr = ");
-  cprint_word(thread->registers[14]);
-  cputs(" r15/pc = ");
-  cprint_word(thread->registers[15]);
-  cputs("\n");
+  sc_puts(" r12/ip = ");
+  sc_print_uint32_hex(thread->registers[12]);
+  sc_puts(" r13/sp = ");
+  sc_print_uint32_hex(thread->registers[13]);
+  sc_puts(" r14/lr = ");
+  sc_print_uint32_hex(thread->registers[14]);
+  sc_puts(" r15/pc = ");
+  sc_print_uint32_hex(thread->registers[15]);
+  sc_puts("\n");
 
-  cputs("}\n");
+  sc_puts("}\n");
 }
 
 void *memset(void *b, int c, int len) {
