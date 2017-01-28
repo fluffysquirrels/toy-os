@@ -14,9 +14,10 @@ LDFLAGS=-N -Ttext=0x10000
 # Disable built-in rule to build .o from .S with the C++ compiler.
 %.o: %.S
 
-kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c
+kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c synchronous_console.h
 context_switch.s: context_switch.S asm_constants.h
-kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o
+kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o synchronous_console.o
+synchronous_console.o: synchronous_console.h versatilepb.h synchronous_console.c
 syscalls.s: syscalls.S asm_constants.h
 
 QEMU_CMD = qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel kernel.elf
