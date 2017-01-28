@@ -14,6 +14,10 @@ struct thread_t{
   unsigned int state;
 };
 
+int main(void);
+void handle_syscall(struct thread_t*);
+void handle_interrupt(struct thread_t*);
+
 void enable_timer0_interrupt(void);
 void start_periodic_timer0(void);
 
@@ -89,37 +93,57 @@ int main(void) {
 #if TRACE_SCHEDULER
     cputs("activate returned ");
     cprint_word(stop_reason);
+    if(stop_reason == ACTIVATE_RET_IRQ) {
+      cputs(" = ACTIVATE_RET_IRQ");
+    } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
+      cputs(" = ACTIVATE_RET_SYSCALL");
+    }
     cputs("\n");
 #endif // TRACE_SCHEDULER
 
     if(stop_reason == ACTIVATE_RET_IRQ) {
-      /* Handle interrupt */
-      if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
-        *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
-#if TRACE_SCHEDULER
-        cputs("TIMER0 tick\n");
-#endif // TRACE_SCHEDULER
-      }
+      handle_interrupt(thread);
     } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
-      /* Handle syscall */
-      unsigned int syscall_num = 1; // TODO: Extract this from thread.
-      switch(syscall_num) {
-      case SYSCALL_NUM_YIELD:
-#if TRACE_SCHEDULER
-        cputs("In yield\n");
-#endif // TRACE_SCHEDULER
-        break;
-      default:
-        warn("syscall with unknown syscall_num = ");
-        cputs("  ");
-        cprint_word(syscall_num);
-        cputs("\n");
-      }
+      handle_syscall(thread);
     }
   }
 
   /* Not reached */
   return 0;
+}
+
+void handle_interrupt(struct thread_t* thread) {
+  UNUSED(thread);
+
+  if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
+    *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
+#if TRACE_SCHEDULER
+    cputs("TIMER0 tick\n");
+#endif // TRACE_SCHEDULER
+  } else {
+    warn("Unknown interrupt went unacknowledged");
+  }
+}
+
+void handle_syscall(struct thread_t* thread) {
+  unsigned int syscall_num = thread->registers[12];
+#if TRACE_SCHEDULER
+  cputs("In syscall handler syscall_num = ");
+  cprint_word(syscall_num);
+  cputs("\n");
+#endif // TRACE_SCHEDULER
+  switch(syscall_num) {
+  case SYSCALL_NUM_YIELD:
+#if TRACE_SCHEDULER
+    cputs("In yield\n");
+#endif // TRACE_SCHEDULER
+    break;
+  default:
+    warn("syscall with unknown syscall_num = ");
+    cputs("  ");
+    cprint_word(syscall_num);
+    cputs("\n");
+  }
 }
 
 void enable_timer0_interrupt() {
