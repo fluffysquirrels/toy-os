@@ -71,10 +71,6 @@ int main(void) {
     struct thread_t *thread = &threads[thread_idx];
     /* Can't use % to calculate new thread_idx because that requires a
        runtime library function */
-    thread_idx++;
-    if(thread_idx >= num_threads) {
-      thread_idx = 0;
-    }
 
 #if TRACE_SCHEDULER
     cputs("main() thread_idx=");
@@ -82,6 +78,11 @@ int main(void) {
     cputs("\n");
     cprint_thread(thread);
 #endif // TRACE_SCHEDULER
+
+    thread_idx++;
+    if(thread_idx >= num_threads) {
+      thread_idx = 0;
+    }
 
     unsigned int stop_reason = activate(thread);
 
@@ -299,7 +300,7 @@ void cprint_thread(struct thread_t *thread) {
   cputs("\n");
 
 
-  
+
   cputs("}\n");
 }
 
