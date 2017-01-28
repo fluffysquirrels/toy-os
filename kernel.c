@@ -4,7 +4,9 @@
 #include "versatilepb.h"
 
 struct thread_t{
-  /* Referenced by offset from assembly in context_switch.S, be careful! */
+  /* Referenced by offset from assembly, be careful!
+     See context_switch.S, asm_constants.h
+   */
   unsigned int cpsr;
   unsigned int registers[16];
   /* End of Referenced by offset from assembly */
@@ -13,8 +15,11 @@ struct thread_t{
 };
 
 int main(void);
+void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
 void handle_interrupt(struct thread_t*);
+
+void init_thread(struct thread_t *, unsigned int *, unsigned int, unsigned int, void (*)(void));
 
 void enable_timer0_interrupt(void);
 void start_periodic_timer0(void);
@@ -43,31 +48,35 @@ void *memset(void*, int, int);
 
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
+unsigned int num_threads = 0;
 
 int main(void) {
 
-  (threads[0]) = (struct thread_t) {
-    .cpsr = 0x10,
-    .registers = { 0 },
-    .state = 0
-  };
-  threads[0].registers[13] = (unsigned int) (stacks[0] + STACK_SIZE - 16);
-  threads[0].registers[15] = (unsigned int) &first;
-  (threads[1]) = (struct thread_t){
-    .cpsr = 0x10,
-    .registers = { 0 },
-    .state = 0
-  };
-  threads[1].registers[13] = (unsigned int) stacks[1] + STACK_SIZE - 16;
-  threads[1].registers[15] = (unsigned int) &second;
+  init_thread(&threads[0], stacks[0], STACK_SIZE, 0x10, &first);
+  init_thread(&threads[1], stacks[1], STACK_SIZE, 0x10, &second);
+  num_threads = 2;
 
   cputs("Hello, World from main!\n");
 
   enable_timer0_interrupt();
   start_periodic_timer0();
 
+  scheduler_loop();
+
+  /* Not reached */
+  return 0;
+}
+
+void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
+  out_thread->cpsr = cpsr;
+  memset(out_thread->registers, '\0', sizeof(out_thread->registers));
+  //  out_thread->registers = { 0 };
+  out_thread->registers[13] = (unsigned int) (stack_base + stack_size - 16 /* why -16? */);
+  out_thread->registers[15] = (unsigned int) pc;
+}
+
+void scheduler_loop() {
   unsigned int thread_idx = 0;
-  unsigned int num_threads = 2;
 
   while(1) {
     struct thread_t *thread = &threads[thread_idx];
@@ -107,7 +116,6 @@ int main(void) {
   }
 
   /* Not reached */
-  return 0;
 }
 
 void handle_interrupt(struct thread_t* thread) {
@@ -119,7 +127,7 @@ void handle_interrupt(struct thread_t* thread) {
     cputs("TIMER0 tick\n");
 #endif // TRACE_SCHEDULER
   } else {
-    warn("Unknown interrupt went unacknowledged");
+    warn("Unknown interrupt was not acknowledged");
   }
 }
 
@@ -337,8 +345,6 @@ void cprint_thread(struct thread_t *thread) {
   cputs(" r15/pc = ");
   cprint_word(thread->registers[15]);
   cputs("\n");
-
-
 
   cputs("}\n");
 }
