@@ -30,8 +30,9 @@ build: kernel.elf
 # Disable built-in rule to build .o from .S with the C++ compiler.
 %.o: %.S
 
-kernel.elf: bootstrap.o kernel.o context_switch.o syscalls.o synchronous_console.o
-kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c synchronous_console.h
+kernel.elf: bootstrap.o main.o kernel.o context_switch.o syscalls.o synchronous_console.o
+main.o: main.c kernel.h synchronous_console.h syscalls.h
+kernel.o: context_switch.h asm_constants.h versatilepb.h kernel.c synchronous_console.h kernel.h
 context_switch.s: context_switch.S asm_constants.h
 synchronous_console.o: synchronous_console.h versatilepb.h synchronous_console.c
 syscalls.s: syscalls.S asm_constants.h

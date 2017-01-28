@@ -10,6 +10,7 @@
 ** Jump to interrupt handler from a configured array of them
 
 * Nice features:
+** main() creates threads using accessor functions in kernel.c
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown

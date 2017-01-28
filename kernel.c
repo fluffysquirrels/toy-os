@@ -1,33 +1,15 @@
 #include "asm_constants.h"
 #include "context_switch.h"
+#include "kernel.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
 #include "versatilepb.h"
 
-struct thread_t{
-  /* Referenced by offset from assembly, be careful!
-     See context_switch.S, asm_constants.h
-   */
-  unsigned int cpsr;
-  unsigned int registers[16];
-  /* End of Referenced by offset from assembly */
-
-  unsigned int state;
-};
-
-int main(void);
-void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
 void handle_interrupt(struct thread_t*);
 
-void init_thread(struct thread_t *, unsigned int *, unsigned int, unsigned int, void (*)(void));
-
 void enable_timer0_interrupt(void);
 void start_periodic_timer0(void);
-
-void first(void);
-void first_sub(unsigned int);
-void second(void);
 
 void sc_print_thread(struct thread_t*);
 
@@ -35,43 +17,22 @@ void *memset(void*, int, int);
 
 #define UNUSED(x) (void)(x)
 
-#define STACK_SIZE 256
-#define THREAD_LIMIT 2
-
 #define TRACE_SCHEDULER 1
 
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
 unsigned int num_threads = 0;
 
-int main(void) {
-
-  init_thread(&threads[0], stacks[0], STACK_SIZE, 0x10, &first);
-  init_thread(&threads[1], stacks[1], STACK_SIZE, 0x10, &second);
-  num_threads = 2;
-
-  sc_puts("Hello, World from main!\n");
-
-  enable_timer0_interrupt();
-  start_periodic_timer0();
-
-  scheduler_loop();
-
-  /* Not reached */
-  return 0;
-}
-
 void init_thread(struct thread_t *out_thread, unsigned int *stack_base, unsigned int stack_size, unsigned int cpsr, void (*pc)(void)) {
   out_thread->cpsr = cpsr;
   memset(out_thread->registers, '\0', sizeof(out_thread->registers));
-  //  out_thread->registers = { 0 };
   out_thread->registers[13] = (unsigned int) (stack_base + stack_size - 16 /* why -16? */);
   out_thread->registers[15] = (unsigned int) pc;
 }
 
 void scheduler_loop() {
 #if TRACE_SCHEDULER
-    sc_puts("scheduler_loop() start\n");
+    sc_puts("\nscheduler_loop() start\n");
 #endif // TRACE_SCHEDULER
 
   unsigned int thread_idx = 0;
@@ -82,7 +43,7 @@ void scheduler_loop() {
        runtime library function */
 
 #if TRACE_SCHEDULER
-    sc_puts("scheduler_loop() thread_idx=");
+    sc_puts("\nscheduler_loop() thread_idx=");
     sc_print_uint32_hex(thread_idx);
     sc_puts("\n");
     sc_print_thread(thread);
@@ -162,95 +123,6 @@ void start_periodic_timer0() {
   *(TIMER0 + TIMER_LOAD) = 1000000;
   *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
   *(TIMER0 + TIMER_BGLOAD) = 1000000;
-}
-
-/* First user mode program */
-void first(void) {
-  sc_puts("Start first()\n");
-  __asm__ volatile(
-    "mov    r0,  #10 " "\n\t"
-    "mov    r1,  #1  " "\n\t"
-    "mov    r2,  #2  " "\n\t"
-    "mov    r3,  #3  " "\n\t"
-    "mov    r4,  #4  " "\n\t"
-    "mov    r5,  #5  " "\n\t"
-    "mov    r6,  #6  " "\n\t"
-    "mov    r7,  #7  " "\n\t"
-    "mov    r8,  #8  " "\n\t"
-    "mov    r9,  #9  " "\n\t"
-    "mov    r10, #10 " "\n\t"
-    "mov    r12, #12 " "\n\t"
-    :
-    :
-    : "cc",
-      "r0", "r1", "r2" , "r3" ,
-      "r4", "r5", "r6" , "r7" ,
-      "r8", "r9", "r10", "r12"
-  );
-  sys_yield();
-  unsigned int n = 17;
-  while(1) {
-    sc_puts("In first() loop\n");
-    n++;
-    first_sub(n);
-
-    __asm__ volatile(
-      "mov    r0,  #10 " "\n\t"
-      "mov    r1,  #1  " "\n\t"
-      "mov    r2,  #2  " "\n\t"
-      "mov    r3,  #3  " "\n\t"
-      "mov    r4,  #4  " "\n\t"
-      "mov    r5,  #5  " "\n\t"
-      "mov    r6,  #6  " "\n\t"
-      "mov    r7,  #7  " "\n\t"
-      "mov    r8,  #8  " "\n\t"
-      "mov    r9,  #9  " "\n\t"
-      "mov    r10, #10 " "\n\t"
-      "mov    r12, #12 " "\n\t"
-      :
-      :
-      : "cc",
-        "r0", "r1", "r2" , "r3" ,
-        "r4", "r5", "r6" , "r7" ,
-        "r8", "r9", "r10", "r12"
-    );
-    sys_yield();
-  }
-}
-
-void first_sub(unsigned int arg1) {
-  UNUSED(arg1);
-  sc_puts("In first_sub() 1\n");
-  sys_yield();
-  sc_puts("In first_sub() 2\n");
- }
-
-/* Second user mode program */
-void second(void) {
-  sc_puts("Start second()\n");
-    __asm__ volatile(
-    "mov    r0,  #10 " "\n\t"
-    "mov    r1,  #1  " "\n\t"
-    "mov    r2,  #2  " "\n\t"
-    "mov    r3,  #3  " "\n\t"
-    "mov    r4,  #4  " "\n\t"
-    "mov    r5,  #5  " "\n\t"
-    "mov    r6,  #6  " "\n\t"
-    "mov    r7,  #7  " "\n\t"
-    "mov    r8,  #8  " "\n\t"
-    "mov    r9,  #9  " "\n\t"
-    "mov    r10, #10 " "\n\t"
-    "mov    r11, #11 " "\n\t"
-    "mov    r12, #12 " "\n\t"
-    :
-    :
-    : "cc",
-      "r0", "r1", "r2" , "r3" ,
-      "r4", "r5", "r6" , "r7" ,
-      "r8", "r9", "r10", "r12"
-  );
-  while(1) {
-  }
 }
 
 void sc_print_thread(struct thread_t *thread) {
