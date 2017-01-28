@@ -6,8 +6,6 @@
 struct thread_t{
   /* Referenced by offset from assembly in context_switch.S, be careful! */
   unsigned int cpsr;
-  void (*pc)(void);
-  void* sp;
   unsigned int registers[16];
   /* End of Referenced by offset from assembly */
 
@@ -50,18 +48,18 @@ int main(void) {
 
   (threads[0]) = (struct thread_t) {
     .cpsr = 0x10,
-    .pc = &first,
-    .sp = stacks[0] + STACK_SIZE - 16,
     .registers = { 0 },
     .state = 0
   };
+  threads[0].registers[13] = (unsigned int) (stacks[0] + STACK_SIZE - 16);
+  threads[0].registers[15] = (unsigned int) &first;
   (threads[1]) = (struct thread_t){
     .cpsr = 0x10,
-    .pc = &second,
-    .sp = stacks[1] + STACK_SIZE - 16,
     .registers = { 0 },
     .state = 0
   };
+  threads[1].registers[13] = (unsigned int) stacks[1] + STACK_SIZE - 16;
+  threads[1].registers[15] = (unsigned int) &second;
 
   cputs("Hello, World from main!\n");
 
@@ -151,9 +149,9 @@ void enable_timer0_interrupt() {
 }
 
 void start_periodic_timer0() {
-  *(TIMER0 + TIMER_LOAD) = 100000;
+  *(TIMER0 + TIMER_LOAD) = 1000000;
   *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
-  *(TIMER0 + TIMER_BGLOAD) = 100000;
+  *(TIMER0 + TIMER_BGLOAD) = 1000000;
 }
 
 /* First user mode program */
@@ -212,12 +210,35 @@ void first(void) {
 
 void first_sub(unsigned int arg1) {
   UNUSED(arg1);
+  cputs("In first_sub() 1\n");
   sys_yield();
-}
+  cputs("In first_sub() 2\n");
+ }
 
 /* Second user mode program */
 void second(void) {
   cputs("Start second()\n");
+    __asm__ volatile(
+    "mov    r0,  #10 " "\n\t"
+    "mov    r1,  #1  " "\n\t"
+    "mov    r2,  #2  " "\n\t"
+    "mov    r3,  #3  " "\n\t"
+    "mov    r4,  #4  " "\n\t"
+    "mov    r5,  #5  " "\n\t"
+    "mov    r6,  #6  " "\n\t"
+    "mov    r7,  #7  " "\n\t"
+    "mov    r8,  #8  " "\n\t"
+    "mov    r9,  #9  " "\n\t"
+    "mov    r10, #10 " "\n\t"
+    "mov    r11, #11 " "\n\t"
+    "mov    r12, #12 " "\n\t"
+    :
+    :
+    : "cc",
+      "r0", "r1", "r2" , "r3" ,
+      "r4", "r5", "r6" , "r7" ,
+      "r8", "r9", "r10", "r12"
+  );
   while(1) {
   }
 }
@@ -275,12 +296,6 @@ void cprint_thread(struct thread_t *thread) {
   cputs("thread {\n");
   cputs("  .cpsr = ");
   cprint_word(thread->cpsr);
-  cputs("\n");
-  cputs("    .pc = ");
-  cprint_word((unsigned int) thread->pc);
-  cputs("\n");
-  cputs("    .sp = ");
-  cprint_word((unsigned int) thread->sp);
   cputs("\n");
 
   cputs("     r0 = ");

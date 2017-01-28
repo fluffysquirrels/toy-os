@@ -2,3 +2,6 @@
 #define ACTIVATE_RET_SYSCALL 0x2
 
 #define SYSCALL_NUM_YIELD 0x1
+
+#define THREAD_OFFSET_cpsr 0x0
+#define THREAD_OFFSET_registers 0x4
