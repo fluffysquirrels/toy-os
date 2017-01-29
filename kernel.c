@@ -4,6 +4,7 @@
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
+#include "util.h"
 #include "versatilepb.h"
 
 void scheduler_init(void);
@@ -15,8 +16,6 @@ void enable_timer01_interrupt(void);
 void start_scheduler_timer(void);
 
 void sc_print_thread(struct thread_t*);
-
-void *memset(void*, int, int);
 
 #define TRACE_SCHEDULER 1
 
@@ -293,15 +292,4 @@ void sc_print_thread(struct thread_t *thread) {
   sc_puts("\n");
 
   sc_puts("}\n");
-}
-
-void *memset(void *b, int c, int len) {
-  unsigned char *p = b;
-  while(len > 0)
-    {
-      *p = c;
-      p++;
-      len--;
-    }
-  return(b);
 }
