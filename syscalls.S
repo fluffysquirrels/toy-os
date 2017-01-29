@@ -11,3 +11,9 @@ sys_spawn:
     mov ip, #SYSCALL_NUM_SPAWN
     svc 0
     bx lr
+
+.global sys_exit
+sys_exit:
+    mov ip, #SYSCALL_NUM_EXIT
+    svc 0
+    bx lr

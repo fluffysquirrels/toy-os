@@ -43,9 +43,11 @@ syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **ou
   unsigned int *stack_base = stacks[thread_idx];
 
   thread->cpsr = cpsr;
-  thread->registers[13] = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
-  thread->registers[15] = (unsigned int) pc;
   thread->thread_id = thread_idx;
+  thread->state = THREAD_STATE_READY;
+  thread->registers[13] /* sp */ = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
+  thread->registers[14] /* lr */ = (unsigned int) &sys_exit;
+  thread->registers[15] /* pc */ = (unsigned int) pc;
 
   if(out_thread != NULL) {
     *out_thread = thread;
@@ -74,20 +76,54 @@ void scheduler_loop() {
   unsigned int thread_idx = 0;
 
   while(1) {
+#if TRACE_SCHEDULER
+      sc_puts("\nscheduler_loop()\n");
+#endif // TRACE_SCHEDULER
+
+    bool no_threads_ready = true;
+    for (unsigned int ix = 0; ix < num_threads; ix++) {
+      if (threads[ix].state == THREAD_STATE_READY) {
+        no_threads_ready = false;
+        break;
+      }
+    }
+
+    if (no_threads_ready) {
+#if TRACE_SCHEDULER
+      sc_puts("scheduler_loop() no threads ready, sleeping\n");
+#endif // TRACE_SCHEDULER
+
+      unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
+      if(pic_irqstatus != 0) {
+        handle_interrupt(NULL);
+      }
+
+      sleep();
+      continue;
+    }
+
     struct thread_t *thread = &threads[thread_idx];
-    /* Can't use % to calculate new thread_idx because that requires a
-       runtime library function */
 
 #if TRACE_SCHEDULER
-    sc_puts("\nscheduler_loop() thread_idx=");
+    sc_puts("scheduler_loop() thread_idx=");
     sc_print_uint32_hex(thread_idx);
     sc_puts("\n");
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
+    /* Can't use % to calculate new thread_idx because that requires a
+       runtime library function */
     thread_idx++;
     if(thread_idx >= num_threads) {
       thread_idx = 0;
+    }
+
+    if (thread->state != THREAD_STATE_READY) {
+#if TRACE_SCHEDULER
+      sc_puts("scheduler_loop() skipping thread that is not ready\n");
+#endif // TRACE_SCHEDULER
+
+      continue;
     }
 
     unsigned int stop_reason = activate(thread);

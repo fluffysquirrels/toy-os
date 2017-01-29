@@ -1,11 +1,10 @@
 * Bugs
-** Returning thread functions hang the system.
 
 * Features:
-** Threads can exit.
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
 ** fork
+** Reclaim stopped threads.
 
 * Nice features:
 ** Memory protection
@@ -15,6 +14,7 @@
 ** IPC
 ** Network I/O
 ** Disk I/O
+** File system
 
 * Nice:
 ** Rename interrupt -> exception where appropriate, including interrupt_table -> exception_table

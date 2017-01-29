@@ -6,11 +6,15 @@ void first(void);
 void first_sub(unsigned int);
 void second(void);
 void spawner(void);
+void return_thread(void);
+void exit_thread(void);
 
 int main(void) {
-  kspawn(0x10, &first, NULL);
-  kspawn(0x10, &second, NULL);
-  kspawn(0x10, &spawner, NULL);
+//  kspawn(0x10, &first, NULL);
+//  kspawn(0x10, &second, NULL);
+//  kspawn(0x10, &spawner, NULL);
+  kspawn(0x10, &return_thread, NULL);
+  kspawn(0x10, &exit_thread, NULL);
 
   sc_puts("Hello, World from main!\n");
 
@@ -142,4 +146,15 @@ void spawn_one(void) {
   } else {
     sc_puts("spawn_thread() sys_spawn error\n");
   }
+}
+
+void return_thread(void) {
+  sc_puts("return_thread() start\n");
+  sys_yield();
+  sc_puts("return_thread() end\n");
+}
+
+void exit_thread(void) {
+  sc_puts("exit_thread() start\n");
+  sys_exit();
 }

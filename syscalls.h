@@ -17,3 +17,5 @@ struct spawn_result_t {
   thread_id_t thread_id;
 };
 syscall_error_t sys_spawn(struct spawn_args_t *args, struct spawn_result_t *result);
+
+void sys_exit(void);

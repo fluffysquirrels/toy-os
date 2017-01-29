@@ -10,6 +10,11 @@ struct thread_t{
   unsigned int thread_id;
 };
 
+#define THREAD_STATE_INVALID 0
+#define THREAD_STATE_READY   1
+#define THREAD_STATE_EXITED  2
+
+
 int main(void);
 void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
