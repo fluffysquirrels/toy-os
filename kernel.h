@@ -14,8 +14,6 @@ struct thread_t{
 #define THREAD_STATE_READY   1
 #define THREAD_STATE_EXITED  2
 
-
-int main(void);
 void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
 void handle_interrupt(struct thread_t*);
@@ -25,6 +23,3 @@ void handle_interrupt(struct thread_t*);
 syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
 
 void scheduler_run(void);
-
-#define UNUSED(x) (void)(x)
-#define NULL 0

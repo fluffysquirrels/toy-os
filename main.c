@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "util.h"
 
 void first(void);
 void first_sub(unsigned int);

@@ -3,6 +3,7 @@
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
+#include "util.h"
 
 // sysh_t is the typedef of a syscall handler, which are named with the
 // prefix 'sysh_'
