@@ -14,6 +14,9 @@ In system mode SPSR is not available, all variables are the same as in user mode
 ARM and Thumb instruction reference:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489e/Cihedhif.html
 
+ARM1176JZF-S Technical Reference Manual:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0301h/index.html
+
 Board documentation:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html
 Interrupt controllers on the board
