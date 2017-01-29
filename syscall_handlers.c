@@ -67,7 +67,7 @@ void syscall_handler_exit(struct thread_t* thread) {
   // TODO: Remove thread from the threads collection, re-use its entry.
 }
 
-void set_syscall_handlers() {
+void init_syscall_handlers() {
   syscall_handlers[SYSCALL_NUM_YIELD] = &syscall_handler_yield;
   syscall_handlers[SYSCALL_NUM_SPAWN] = &syscall_handler_spawn;
   syscall_handlers[SYSCALL_NUM_EXIT]  = &syscall_handler_exit;

@@ -11,7 +11,7 @@ void scheduler_init(void);
 void scheduler_loop(void);
 
 void handle_interrupt(struct thread_t*);
-void set_interrupt_handlers();
+void init_interrupt_handlers();
 void enable_timer01_interrupt(void);
 void start_scheduler_timer(void);
 
@@ -61,8 +61,8 @@ void scheduler_run() {
 }
 
 void scheduler_init() {
-  set_interrupt_handlers();
-  set_syscall_handlers();
+  init_interrupt_handlers();
+  init_syscall_handlers();
   enable_timer01_interrupt();
   start_scheduler_timer();
 }
@@ -89,7 +89,7 @@ void scheduler_loop() {
 
     if (no_threads_ready) {
 #if TRACE_SCHEDULER
-      sc_puts("scheduler_loop() no threads ready, sleeping\n");
+      sc_puts("scheduler_loop() no threads ready, sleeping\n\n");
 #endif // TRACE_SCHEDULER
 
       unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
@@ -223,7 +223,7 @@ void isr_timer01() {
   }
 }
 
-void set_interrupt_handlers() {
+void init_interrupt_handlers() {
   interrupt_handlers[PIC_INTNUM_TIMER01] = &isr_timer01;
 }
 
