@@ -1,5 +1,4 @@
 * Bugs
-** User mode thread_t.cpsr ends up 0x60000010 = irq, why?
 ** Returning thread functions hang the system.
 
 * Features:
