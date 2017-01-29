@@ -1,5 +1,5 @@
 #include "synchronous_console.h"
-#include "versatilepb.h"
+#include "uart.h"
 
 void assert(bool cond, char *string) {
   if(!cond) {
@@ -28,8 +28,7 @@ void sc_puts(char *string) {
 }
 
 void sc_putch(char ch) {
-  while(*(UART0 + UARTFR) & UARTFR_TXFF);
-  *UART0 = ch;
+  uart_sync_putch(uart_0, ch);
 }
 
 void sc_print_uint32_hex(unsigned int w) {
