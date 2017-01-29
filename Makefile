@@ -35,17 +35,19 @@ build: kernel.elf
 # Disable built-in rule to build .o from .S with the C++ compiler.
 %.o: %.S
 
-%.d : %.c
+%.d: %.c Makefile
 	set -e; rm -f $@; \
 	$(CC) -E -MM -MP $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-%.d : %.S
+%.d: %.S Makefile
 	set -e; rm -f $@; \
 	$(CC) -E -MM -MP $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
+
+$(OBJECTS): Makefile
 
 kernel.elf: $(OBJECTS)
 
