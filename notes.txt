@@ -28,6 +28,9 @@ PrimeCell VectoredInterrupt Controller (PL190) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0181e/index.html
 CPU interrupt vector:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0211h/Babfeega.html
+PrimeCell UART (PL011) manual:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0183g/index.html
+PrimeCell DMA controller (PL080) manual: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0196g/index.html
 
 Makefiles that build into a subdirectory:
 http://make.mad-scientist.net/papers/multi-architecture-builds/

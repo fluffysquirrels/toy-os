@@ -3,10 +3,30 @@
 * Features:
 ** User mode can wait for timers.
 ** User mode can read from / write to console in a preemptible way.
+*** User mode syscall
+*** Syscall handler needs to block?
+**** No:
+***** Set return data in thread
+***** Leave thread state as ready
+***** Return to scheduler, or ideally ask to re-schedule the caller
+**** Yes:
+***** Initialise transfer in hardware
+***** Record transfer details including blocked thread_id
+***** Set thread state to blocked including what blocked them
+      (if only for debugging)
+***** Return from syscall with thread blocked value
+***** Later an interrupt is raised, the interrupt handler:
+****** Reads transfer details
+****** Copies data from hardware to user mode buffer
+****** Sets syscall return value
+****** Set thread state to ready
+*** User mode thread is scheduled, returns from syscall with its data.
+** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
 ** fork
 ** Reclaim resources used by stopped threads. thread_t and stack for now.
 
 * Nice features:
+** Ready list for threads
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
