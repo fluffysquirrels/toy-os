@@ -7,6 +7,7 @@ struct thread_t{
   /* End of Referenced by offset from assembly */
 
   unsigned int state;
+  unsigned int thread_id;
 };
 
 int main(void);

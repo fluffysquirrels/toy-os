@@ -6,7 +6,6 @@
 #include "syscalls.h"
 #include "versatilepb.h"
 
-
 void scheduler_init(void);
 void scheduler_loop(void);
 
@@ -31,7 +30,6 @@ unsigned int num_threads = 0;
 typedef void (*isr_t)(void);
 isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
-
 syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
   if (num_threads >= THREAD_LIMIT) {
@@ -47,6 +45,7 @@ syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **ou
   thread->cpsr = cpsr;
   thread->registers[13] = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
   thread->registers[15] = (unsigned int) pc;
+  thread->thread_id = thread_idx;
 
   if(out_thread != NULL) {
     *out_thread = thread;
@@ -211,6 +210,10 @@ void sc_print_thread(struct thread_t *thread) {
   sc_puts("thread {\n");
   sc_puts("  .cpsr = ");
   sc_print_uint32_hex(thread->cpsr);
+  sc_puts(" .state = ");
+  sc_print_uint32_hex(thread->state);
+  sc_puts(" .thread_id = ");
+  sc_print_uint32_hex(thread->thread_id);
   sc_puts("\n");
 
   sc_puts("     r0 = ");

@@ -5,12 +5,12 @@
 void first(void);
 void first_sub(unsigned int);
 void second(void);
-void spawn_thread(void);
+void spawner(void);
 
 int main(void) {
   kspawn(0x10, &first, NULL);
   kspawn(0x10, &second, NULL);
-  kspawn(0x10, &spawn_thread, NULL);
+  kspawn(0x10, &spawner, NULL);
 
   sc_puts("Hello, World from main!\n");
 
@@ -109,10 +109,23 @@ void second(void) {
   }
 }
 
-void spawn_thread(void) {
+void spawn_one(void);
+
+void spawner(void) {
   sc_puts("spawn_thread()\n");
+
+  for (int i = 0; i < 3; i++) {
+    spawn_one();
+  }
+  //  test_fail_case();
+  while(1) {
+    sys_yield();
+  }
+}
+
+void spawn_one(void) {
   struct spawn_args_t args = {
-    .pc = &second,
+    .pc = &first,
   };
   struct spawn_result_t result;
   syscall_error_t ret = sys_spawn(&args, &result);
@@ -128,9 +141,5 @@ void spawn_thread(void) {
     sc_puts("spawn_thread() sys_spawn success\n");
   } else {
     sc_puts("spawn_thread() sys_spawn error\n");
-  }
-
-  while(1) {
-    sys_yield();
   }
 }

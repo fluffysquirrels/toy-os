@@ -44,12 +44,8 @@ void syscall_handler_yield(struct thread_t* thread) {
 }
 
 void syscall_handler_spawn(struct thread_t* thread) {
-  warn("spawn not yet implemented");
-
   struct spawn_args_t *pargs = (struct spawn_args_t *) thread->registers[0];
   struct spawn_result_t *presult = (struct spawn_result_t *) thread->registers[1];
-
-  UNUSED(pargs);
 
   struct thread_t* spawned_thread = NULL;
   syscall_error_t err = SE_INVALID;
@@ -60,7 +56,7 @@ void syscall_handler_spawn(struct thread_t* thread) {
     return;
   }
 
-  presult->thread_id = 91;
+  presult->thread_id = spawned_thread->thread_id;
   err = SE_SUCCESS;
   thread->registers[0] = err;
   return;
