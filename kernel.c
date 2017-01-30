@@ -31,10 +31,10 @@ unsigned int num_threads = 0;
 
 isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
-syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
+err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
   if (num_threads >= THREAD_LIMIT) {
-    return SE_LIMIT;
+    return E_LIMIT;
   }
 
   unsigned int thread_idx = num_threads;
@@ -56,7 +56,7 @@ syscall_error_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **ou
     *out_thread = thread;
   }
 
-  return SE_SUCCESS;
+  return E_SUCCESS;
 }
 
 void scheduler_run() {
@@ -83,6 +83,13 @@ void scheduler_loop() {
       sc_puts("\nscheduler_loop()\n");
 #endif // TRACE_SCHEDULER
 
+    unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
+    bool interrupt_active = pic_irqstatus != 0;
+    if(interrupt_active) {
+      handle_interrupt(NULL);
+      continue;
+    }
+
     bool no_threads_ready = true;
     for (unsigned int ix = 0; ix < num_threads; ix++) {
       if (threads[ix].state == THREAD_STATE_READY) {
@@ -95,11 +102,6 @@ void scheduler_loop() {
 #if TRACE_SCHEDULER
       sc_puts("scheduler_loop() no threads ready, sleeping\n\n");
 #endif // TRACE_SCHEDULER
-
-      unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
-      if(pic_irqstatus != 0) {
-        handle_interrupt(NULL);
-      }
 
       sleep();
       continue;

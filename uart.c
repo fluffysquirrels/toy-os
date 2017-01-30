@@ -1,11 +1,13 @@
 #include "kernel.h"
 #include "synchronous_console.h"
+#include "syscall_handlers.h"
+#include "syscalls.h"
 #include "uart.h"
 #include "uart_consts.h"
 #include "util.h"
 #include "versatilepb.h"
 
-#define TRACE_UART 1
+#define TRACE_UART 0
 
 struct uart_t {
   unsigned int *addr;
@@ -44,7 +46,7 @@ void uart_sync_putch(struct uart_t *uart, char ch) {
   *(uart->addr + UART_DR) = ch;
 }
 
-int uart_getch(struct uart_t *uart) {
+iochar_t uart_getch(struct uart_t *uart) {
   if (uart_rx_fifo_empty(uart)) {
     return -1;
   }
@@ -52,7 +54,7 @@ int uart_getch(struct uart_t *uart) {
   return *(uart->addr + UART_DR);
 }
 
-void uart_log_getch(int ch) {
+void uart_log_getch(iochar_t ch) {
   sc_puts("  getch got ");
   sc_print_uint32_hex(ch);
   sc_puts(" = ");
@@ -93,6 +95,13 @@ void uart_log_status(struct uart_t *u) {
   sc_puts("\n");
 }
 
+extern struct file_t uart_0_file;
+
+err_t uart_begin_read(struct uart_t *u) {
+  *(u->addr + UART_IMSC) |= UART_RXIM;
+  return E_SUCCESS;
+}
+
 void uart_0_isr() {
   struct uart_t * u = uart_0;
 
@@ -101,11 +110,21 @@ void uart_0_isr() {
   uart_log_status(u);
 #endif // TRACE_UART
 
-  int ch = uart_getch(u);
-  UNUSED(ch);
+  // Disable interrupt on uart_0 rx
+  // This is part of cancelling future interrupts and reads
+  // Disable it before sysh_read_callback might run as that callback
+  // may decide to read some more.
+  *(u->addr + UART_IMSC) &= ~UART_RXIM;
+
+  if(uart_0_file.read_callback_registered) {
+    // Disable callback.
+    // Disable it before sysh_read_callback runs as that callback
+    // may decide to read some more.
+    uart_0_file.read_callback_registered = false;
+    sysh_read_callback(&(uart_0_file.read_callback_state));
+  }
 
 #if TRACE_UART
-  uart_log_getch(ch);
   uart_log_status(u);
 #endif // TRACE_UART
 }
@@ -115,7 +134,4 @@ void uart_init() {
 
   // Enable interrupt on controller
   *(PIC + VIC_INTENABLE) |= PIC_INTMASK_UART0;
-
-  // Enable interrupt on uart_0 rx
-  *(uart_0->addr + UART_IMSC) |= UART_RXIM;
 }

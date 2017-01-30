@@ -27,6 +27,15 @@
 
 * Nice features:
 ** Ready list for threads
+** busy_loop and console_reader have a pathological condition where key presses
+   show up slowly. It seems to happen when I type quickly.
+   I speculate there is more than one byte in the UART FIFO, read is returning with
+   the rx interrupt disabled, and busy_loop is then scheduled
+
+   Possible fixes:
+*** console_reader could be re-scheduled after its I/O completes
+*** sys_read could try harder to fetch extra data before returning
+*** Fairer scheduling might help prevent console_reader being starved as much
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
@@ -37,6 +46,7 @@
 ** File system
 
 * Nice:
+** Set user thread return values with a function in syscalls
 ** Rename interrupt -> exception where appropriate, including interrupt_table -> exception_table
 ** Logging boilerplate reduction
 *** printf style message formatting
