@@ -1,7 +1,3 @@
-#define UART0 ((volatile unsigned int*) 0x101f1000)
-#define UARTFR (0x18 / sizeof(unsigned int))
-#define UARTFR_TXFF 0x20
-
 /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html */
 #define TIMER0 ((volatile unsigned int*)0x101E2000)
 #define TIMER1 ((volatile unsigned int*)0x101E2020)
@@ -25,8 +21,15 @@
 #define PIC ((volatile unsigned int*)0x10140000)
 /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html */
 #define PIC_INTNUM_COUNT    32
-#define PIC_INTNUM_TIMER01  4
+#define PIC_INTNUM_TIMER01  4 // Interrupt for timers 0 and 1
 #define PIC_INTMASK_TIMER01 (1 << 4)
+#define PIC_INTNUM_TIMER23  5 // Interrupt for timers 2 and 3
+#define PIC_INTNUM_RTC      10
+#define PIC_INTNUM_UART0    12
+#define PIC_INTMASK_UART0   (1 << 12)
+#define PIC_INTNUM_UART1    13
+#define PIC_INTNUM_UART2    14
+#define PIC_INTNUM_DMA      17
 /* http://infocenter.arm.com/help/topic/com.arm.doc.ddi0181e/I1006461.html */
 #define VIC_IRQSTATUS    0x0   // 0x0 bytes
 #define VIC_FIQSTATUS    0x1   // 0x4 bytes

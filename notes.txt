@@ -24,13 +24,17 @@ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Cacgfedh.ht
 
 ARM Dual-Timer Module (SP804) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html
-PrimeCell VectoredInterrupt Controller (PL190) manual:
+PrimeCell Vectored Interrupt Controller (PL190) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0181e/index.html
 CPU interrupt vector:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0211h/Babfeega.html
 PrimeCell UART (PL011) manual:
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0183g/index.html
 PrimeCell DMA controller (PL080) manual: http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0196g/index.html
+Board primary interrupt controller with interrupts list:
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/I1042232.html
+PrimeCell Real Time Clock (PL031) Technical Reference Manual
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0224b/index.html
 
 Makefiles that build into a subdirectory:
 http://make.mad-scientist.net/papers/multi-architecture-builds/
