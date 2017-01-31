@@ -1,3 +1,6 @@
+# Disable built-in rules
+.SUFFIXES:
+
 .PHONY: build clean qemu qemu-debug gdb-attach
 
 QEMU_CMD = qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel kernel.elf
@@ -15,7 +18,7 @@ clean:
 	rm -f *.o *.elf *.s *.d
 
 CC=arm-linux-gnueabi-gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra -Werror -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
+CFLAGS+=-std=c99 -pedantic -Wall -Wextra -Werror -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
 LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
 
@@ -26,14 +29,17 @@ OBJECTS += $(SOURCES.S:.S=.o)
 
 build: kernel.elf
 
-%.elf: %.o
+kernel.elf: $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
-%.o: %.s
+%.o: %.s Makefile
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-# Disable built-in rule to build .o from .S with the C++ compiler.
-%.o: %.S
+%.o: %.c Makefile
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+%.s: %.S Makefile
+	$(CC) -E -o $@ -c $<
 
 %.d: %.c Makefile
 	set -e; rm -f $@; \
@@ -47,9 +53,6 @@ build: kernel.elf
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
-$(OBJECTS): Makefile
-
-kernel.elf: $(OBJECTS)
-
+ # Include dependency files
 -include $(SOURCES.c:.c=.d)
 -include $(SOURCES.S:.S=.d)
