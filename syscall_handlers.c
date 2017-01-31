@@ -84,11 +84,6 @@ void sysh_read(struct thread_t* thread) {
   struct read_args_t *args = (struct read_args_t *) thread->registers[0];
   struct read_result_t *result = (struct read_result_t *) thread->registers[1];
 
-  if (args->len <= 0) {
-    thread->registers[0] = E_BUFFERSIZE;
-    return;
-  }
-
   struct file_t *file = file_get(args->fd);
   if (file == NULL) {
     thread->registers[0] = E_NOFILE;
@@ -144,13 +139,17 @@ iochar_t file_getch(struct file_t* file) {
 void sysh_read_callback(struct sysh_read_callback_state_t *cbs) {
   cbs->file->read_callback_registered = false;
 
-  // TODO: Read multiple bytes.
-  iochar_t ch = file_getch(cbs->file);
   unsigned int bytes_read = 0;
-  if (ch != EOF) {
-    bytes_read = 1;
-    assert(cbs->args->len >= 1, "failed assert cbs->args->len >= 1");
-    cbs->args->buff[0] = (char) ch;
+
+  while (bytes_read < cbs->args->len) {
+    iochar_t ch = file_getch(cbs->file);
+
+    if (ch == EOF) {
+      break;
+    }
+
+    cbs->args->buff[bytes_read] = (char) ch;
+    bytes_read += 1;
   }
   cbs->result->bytes_read = bytes_read;
 

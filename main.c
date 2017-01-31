@@ -187,13 +187,13 @@ void console_reader_thread(void) {
   struct read_args_t args = {
     .fd = -1, // TODO
     .buff = buff,
-    .len = sizeof(buff),
+    .len = sizeof(buff) - 1, // Leave final byte of buff as null terminator
   };
-  struct read_result_t result = {
-    .bytes_read = -1,
-  };
+  struct read_result_t result;
 
   while(1) {
+    memset(buff, '\0', sizeof(buff));
+    result.bytes_read = -1;
 #if TRACE_CONSOLE_READER
     sc_puts("\nconsole_reader_thread() about to read\n");
     sc_puts("sys_read args:\n");
@@ -224,8 +224,13 @@ void console_reader_thread(void) {
     log_ch(buff[0]);
 #else  // TRACE_CONSOLE_READER
     sc_puts("console_reader() read '");
-    sc_putch(buff[0]);
+    sc_puts(buff);
     sc_puts("'\n");
 #endif // TRACE_CONSOLE_READER
+
+    if (buff[0] == 'c') {
+      // Clear screen.
+      sc_puts("\x1b[2J");
+    }
   }
 }

@@ -34,7 +34,6 @@
 
    Possible fixes:
 *** console_reader could be re-scheduled after its I/O completes
-*** sys_read could try harder to fetch extra data before returning
 *** Fairer scheduling might help prevent console_reader being starved as much
 ** Memory protection
 *** Stack overflow detection

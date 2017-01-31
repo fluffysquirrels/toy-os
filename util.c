@@ -1,12 +1,12 @@
 #include "util.h"
 
-void *memset(void *b, int c, int len) {
-  unsigned char *p = b;
+void *memset(void *bytes, int ch, int len) {
+  unsigned char *p = bytes;
   while(len > 0)
     {
-      *p = c;
+      *p = ch;
       p++;
       len--;
     }
-  return(b);
+  return(bytes);
 }
