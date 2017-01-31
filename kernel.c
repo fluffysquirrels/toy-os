@@ -144,11 +144,8 @@ static void init_timers() {
 }
 
 static void start_scheduler_timer() {
-  *(TIMER0 + TIMER_LOAD) = 500 * 1000;
+  int tickMs = 500;
+  *(TIMER0 + TIMER_LOAD) = tickMs * 1000;
   *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
-  *(TIMER0 + TIMER_BGLOAD) = 500 * 1000;
-
-//  *(TIMER1 + TIMER_LOAD) = 600000;
-//  *(TIMER1 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
-//  *(TIMER1 + TIMER_BGLOAD) = 600000;
+  *(TIMER0 + TIMER_BGLOAD) = tickMs * 1000;
 }
