@@ -1,5 +1,6 @@
 #include "asm_constants.h"
 #include "context_switch.h"
+#include "interrupt.h"
 #include "kernel.h"
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
@@ -11,16 +12,12 @@
 void scheduler_init(void);
 void scheduler_loop(void);
 
-void handle_interrupt(struct thread_t*);
 void init_timers(void);
 void start_scheduler_timer(void);
 
 void sc_print_thread(struct thread_t*);
 
-void pic_log_status();
-
 #define TRACE_SCHEDULER 0
-#define TRACE_INTERRUPTS 0
 
 #define STACK_SIZE 256
 #define THREAD_LIMIT 4
@@ -28,8 +25,6 @@ void pic_log_status();
 unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 struct thread_t threads[THREAD_LIMIT];
 unsigned int num_threads = 0;
-
-isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
@@ -83,7 +78,7 @@ void scheduler_loop() {
       sc_puts("\nscheduler_loop()\n");
 #endif // TRACE_SCHEDULER
 
-    unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
+    unsigned int pic_irqstatus = interrupt_get_status();
     bool interrupt_active = pic_irqstatus != 0;
     if(interrupt_active) {
       handle_interrupt(NULL);
@@ -154,73 +149,6 @@ void scheduler_loop() {
   /* Not reached */
 }
 
-void handle_interrupt(struct thread_t* thread) {
-  UNUSED(thread);
-
-#if TRACE_INTERRUPTS
-  sc_puts("\nhandle_interrupt()\n");
-#endif // TRACE_SCHEDULER
-
-  unsigned int pic_irqstatus = *(PIC + VIC_IRQSTATUS);
-
-#if TRACE_INTERRUPTS
-  pic_log_status();
-#endif // TRACE_INTERRUPTS
-
-  if(pic_irqstatus == 0) {
-    panic("handle_interrupt() no interrupt active?");
-    return;
-  }
-
-  int irq = __builtin_ctz(pic_irqstatus);
-
-#if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() irq = ");
-  sc_print_uint32_hex(irq);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
-
-  assert(irq >= 0, "assert failed: irq >= 0");
-  assert(irq < PIC_INTNUM_COUNT, "assert failed: irq <= PIC_INTNUM_COUNT");
-
-  isr_t isr = interrupt_handlers[irq];
-
-  if(!isr) {
-    sc_puts("irq = ");
-    sc_print_uint32_hex(irq);
-    sc_puts("\n");
-    panic("Interrupt with no handler");
-    // Not reached.
-    return;
-  }
-
-#if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() calling handler @");
-  sc_print_uint32_hex((unsigned int) isr);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
-
-  isr();
-
-#if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() returned from handler\n");
-  pic_log_status();
-#endif // TRACE_INTERRUPTS
-}
-
-void pic_log_status() {
-  sc_puts("pic_log_status()\n");
-  sc_puts("  PIC_IRQSTATUS = ");
-  sc_print_uint32_hex(*(PIC + VIC_IRQSTATUS));
-  sc_puts("\n");
-  sc_puts("  PIC_RAWINTR = ");
-  sc_print_uint32_hex(*(PIC + VIC_RAWINTR));
-  sc_puts("\n");
-  sc_puts("  PIC_INTENABLE = ");
-  sc_print_uint32_hex(*(PIC + VIC_INTENABLE));
-  sc_puts("\n");
-}
-
 void isr_timer01() {
 #if TRACE_SCHEDULER
     sc_puts("isr_timer01()\n");
@@ -241,24 +169,9 @@ void isr_timer01() {
   }
 }
 
-void set_interrupt_handler(unsigned char irq, isr_t isr) {
-#if TRACE_INTERRUPTS
-  sc_puts("set_interrupt_handler() irq = ");
-  sc_print_uint32_hex(irq);
-  sc_puts(" isr @ ");
-  sc_print_uint32_hex((unsigned int) isr);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
-
-  assert(interrupt_handlers[irq] == NULL, "failed assert interrupt_handlers[irq] == NULL");
-  interrupt_handlers[irq] = isr;
-}
-
 void init_timers() {
   set_interrupt_handler(PIC_INTNUM_TIMER01, isr_timer01);
-
-  // Enable interrupt
-  *(PIC + VIC_INTENABLE) |= PIC_INTMASK_TIMER01;
+  enable_interrupt(PIC_INTNUM_TIMER01);
 }
 
 void start_scheduler_timer() {

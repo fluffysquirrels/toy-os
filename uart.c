@@ -1,3 +1,4 @@
+#include "interrupt.h"
 #include "kernel.h"
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
@@ -131,7 +132,5 @@ void uart_0_isr() {
 
 void uart_init() {
   set_interrupt_handler(PIC_INTNUM_UART0, uart_0_isr);
-
-  // Enable interrupt on controller
-  *(PIC + VIC_INTENABLE) |= PIC_INTMASK_UART0;
+  enable_interrupt(PIC_INTNUM_UART0);
 }

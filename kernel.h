@@ -20,11 +20,7 @@ struct thread_t{
 
 void scheduler_loop(void);
 void handle_syscall(struct thread_t*);
-void handle_interrupt(struct thread_t*);
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
 
 void scheduler_run(void);
-
-typedef void (*isr_t)(void);
-void set_interrupt_handler(unsigned char irq, isr_t isr);
