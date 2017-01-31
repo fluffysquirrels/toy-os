@@ -18,7 +18,11 @@ static void scheduler_loop(void);
 static void init_timers(void);
 static void start_scheduler_timer(void);
 
+static void inc_thread_idx(unsigned int *thread_idx);
+
+#ifndef TRACE_SCHEDULER
 #define TRACE_SCHEDULER 0
+#endif
 
 extern struct thread_t threads[THREAD_LIMIT];
 extern unsigned int num_threads;
@@ -72,18 +76,12 @@ static void scheduler_loop() {
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
-    /* Can't use % to calculate new thread_idx because that requires a
-       runtime library function */
-    thread_idx++;
-    if(thread_idx >= num_threads) {
-      thread_idx = 0;
-    }
-
     if (thread->state != THREAD_STATE_READY) {
 #if TRACE_SCHEDULER
       sc_puts("scheduler_loop() skipping thread that is not ready\n");
 #endif // TRACE_SCHEDULER
 
+      inc_thread_idx(&thread_idx);
       continue;
     }
 
@@ -102,12 +100,22 @@ static void scheduler_loop() {
 
     if(stop_reason == ACTIVATE_RET_IRQ) {
       handle_interrupt(thread);
+      inc_thread_idx(&thread_idx);
     } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
       handle_syscall(thread);
     }
-  }
+  } // scheduler while loop
 
   /* Not reached */
+}
+
+static void inc_thread_idx(unsigned int *thread_idx) {
+   /* Can't use % to calculate new thread_idx because that requires a
+      runtime library function */
+  (*thread_idx)++;
+  if(*thread_idx >= num_threads) {
+    *thread_idx = 0;
+  }
 }
 
 static void isr_timer01() {

@@ -13,7 +13,7 @@
    the rx interrupt disabled, and busy_loop is then scheduled
 
    Possible fixes:
-*** console_reader could be re-scheduled after its I/O completes
+*** console_reader could be re-scheduled after its I/O completes (DONE)
 *** Fairer scheduling might help prevent console_reader being starved as much
 ** Ready list for threads. Hide threads, num_threads variables at the same time.
 ** Memory protection
