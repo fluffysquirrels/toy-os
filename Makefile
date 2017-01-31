@@ -15,7 +15,8 @@ gdb-attach:
 	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file kernel.elf' -tui
 
 clean:
-	rm -f *.o *.elf *.s *.d
+	rm -f *.o *.elf *.s *.d TAGS
+
 
 CC=arm-linux-gnueabi-gcc
 CFLAGS+=-std=c99 -pedantic -Wall -Wextra -Werror -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
@@ -23,11 +24,15 @@ LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
 
 SOURCES.c := $(wildcard *.c)
+SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 OBJECTS := $(SOURCES.c:.c=.o)
 OBJECTS += $(SOURCES.S:.S=.o)
 
-build: kernel.elf
+build: kernel.elf TAGS
+
+TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
+	etags --declarations -o TAGS *.c *.h *.S
 
 kernel.elf: $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^
