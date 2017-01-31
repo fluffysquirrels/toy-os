@@ -1,4 +1,5 @@
 #include "interrupt.h"
+
 #include "interrupt_pl190.h"
 #include "synchronous_console.h"
 #include "util.h"

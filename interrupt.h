@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "thread.h"
 
 void handle_interrupt(struct thread_t*);
 typedef void (*isr_t)(void);

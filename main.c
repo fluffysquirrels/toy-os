@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "thread.h"
 #include "util.h"
 
 void yield_thread(void);
@@ -21,7 +22,7 @@ int main(void) {
 
   sc_puts("Hello, World from main!\n");
 
-  scheduler_run();
+  kernel_run();
 
   /* Not reached */
   return 0;
