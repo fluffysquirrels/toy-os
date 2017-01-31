@@ -41,6 +41,23 @@
 ** Generate .h file with #define THREAD_OFFSET_* calculated with offsetof
 ** Assert register contents in the busy loop of second()
 
+* Won't do
+** Modify Makefile to enable precise rebuild on changing TRACE_* variables
+*** Implementation idea
+**** Store TRACE_* variables in _env_TRACE_* files, modifying the files when
+     the environment variables change
+**** Add dependencies from C files to _env_TRACE_* for the TRACE_* variables
+     they depend on
+**** For all TRACE_* parameters != 0, add -DTRACE_*=value parameters to the CFLAGS
+*** Snippets
+**** Output dependencies from C files to an _env_TRACE_PARAM file, e.g.
+     "interrupt.c:env_TRACE_INTERRUPTS"
+
+     egrep '^#if TRACE_' *.c | sort -u | sed -r \
+     -e 's/([^:]+):.*(TRACE_\w+)/\1:_env_\2/'
+**** Output unique TRACE_ macros
+     egrep '^#if TRACE_' *.c | egrep ' TRACE_[a-zA-Z0-9_]+' -o | cut -b2- | sort -u
+
 
 * Notes:
 ** User mode read from / write to console in a preemptible way.
