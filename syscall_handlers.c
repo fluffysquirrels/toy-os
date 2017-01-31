@@ -136,6 +136,10 @@ iochar_t file_getch(struct file_t* file) {
   return uart_getch(uart_0);
 }
 
+
+// Called by a driver isr to signal that data is available.
+// Current sys_read_callback implementation copies to the user mode buffer during
+// an isr. This might be too much work to do in an isr.
 void sysh_read_callback(struct sysh_read_callback_state_t *cbs) {
   cbs->file->read_callback_registered = false;
 
