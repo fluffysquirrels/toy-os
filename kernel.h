@@ -1,3 +1,4 @@
+#pragma once
 #include "syscalls.h"
 
 struct thread_t{

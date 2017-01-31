@@ -1,3 +1,5 @@
+#pragma once
+
 #define UART_BASE_0          ((volatile unsigned int*) 0x101f1000)
 #define UART_BASE_1          ((volatile unsigned int*) 0x101f2000)
 #define UART_BASE_2          ((volatile unsigned int*) 0x101f3000)

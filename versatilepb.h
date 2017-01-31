@@ -1,3 +1,5 @@
+#pragma once
+
 /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html */
 #define TIMER0 ((volatile unsigned int*)0x101E2000)
 #define TIMER1 ((volatile unsigned int*)0x101E2020)

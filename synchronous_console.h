@@ -1,3 +1,4 @@
+#pragma once
 #include "stdbool.h"
 
 void assert(bool cond, char *string);
