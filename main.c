@@ -17,7 +17,7 @@ int main(void) {
     kspawn(0x10, &busy_loop_thread, NULL);
 //  kspawn(0x10, &spawner_thread, NULL);
 //  kspawn(0x10, &return_thread, NULL);
-    kspawn(0x10, &exit_thread, NULL);
+//  kspawn(0x10, &exit_thread, NULL);
     kspawn(0x10, &console_reader_thread, NULL);
 
   sc_puts("Hello, World from main!\n");
@@ -179,7 +179,9 @@ void log_ch(int ch) {
   sc_puts("\n");
 }
 
+#ifndef TRACE_CONSOLE_READER
 #define TRACE_CONSOLE_READER 0
+#endif
 
 void console_reader_thread(void) {
   sc_puts("console_reader_thread()\n");
