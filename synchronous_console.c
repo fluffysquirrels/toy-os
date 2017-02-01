@@ -1,5 +1,7 @@
+#include "stdarg.h"
 #include "synchronous_console.h"
 #include "uart.h"
+#include "util.h"
 
 void assert(bool cond, char *string) {
   if(!cond) {
@@ -20,11 +22,15 @@ void warn(char *string) {
   sc_puts("\n");
 }
 
-void sc_puts(char *string) {
+int sc_puts(char *string) {
+  int bytes_written = 0;
   while(*string) {
     sc_putch(*string);
     string++;
+    bytes_written++;
   }
+
+  return bytes_written;
 }
 
 void sc_putch(char ch) {
@@ -53,4 +59,54 @@ void sc_print_uint8_hex(char x) {
     /* Should assert. */
     sc_putch('?');
   }
+}
+
+int sc_printf(char *format, ...) {
+  int chars_written = 0;
+
+  va_list args;
+  va_start(args, format);
+
+  char *curr = format;
+  while (*curr != '\0') {
+    if (*curr != '%') {
+      sc_putch(*curr);
+      curr++;
+      chars_written++;
+      continue;
+    } else {
+      // *curr == '%'
+      curr++;
+      if (*curr == '\0') {
+        // Invalid '%' at the end of string.
+        return -1;
+      }
+
+      switch (*curr) {
+      case 'c':;
+        char c = (char) va_arg(args, int);
+        chars_written++;
+        sc_putch(c);
+        break;
+      case 's':;
+        char *s = va_arg(args, char *);
+        chars_written += sc_puts(s);
+        break;
+      case 'x':;
+        unsigned int d = va_arg(args, unsigned int);
+        sc_print_uint32_hex(d);
+        chars_written += 10;
+        break;
+      default:
+        // Invalid parameter specifier.
+        return -1;
+      }
+
+      curr++;
+    }
+  }
+
+  va_end(args);
+
+  return chars_written;
 }

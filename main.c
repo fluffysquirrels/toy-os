@@ -27,6 +27,7 @@ int main(void) {
   thread_update_priority(crt, 20);
   kspawn(0x10, &busy_loop_thread, NULL);
 
+  sc_printf("Hello, %s! I have %x arguments.\n", "world", 2);
   sc_puts("main() spawned threads\n");
 
   kernel_run();
@@ -222,20 +223,16 @@ void console_reader_thread(void) {
     UNUSED(err);
 
 #if TRACE_CONSOLE_READER
-    sc_puts("console_reader_thread() back from read\n");
-    sc_puts("sys_read err = ");
-    sc_print_uint32_hex(err);
-    sc_puts("\n");
-    sc_puts("sys_read result:\n");
-    sc_puts("  .bytes_read = ");
-    sc_print_uint32_hex(result.bytes_read);
-    sc_puts("\n");
-
-    log_ch(buff[0]);
+    sc_printf("console_reader_thread() back from read\n"
+              "sys_read err = %x\n"
+              "sys_read result:\n"
+              "  .bytes_read = %x\n"
+              "buff = \"%s\"\n"
+              , err
+              , result.bytes_read,
+              buff);
 #else  // TRACE_CONSOLE_READER
-    sc_puts("console_reader() read '");
-    sc_puts(buff);
-    sc_puts("'\n");
+    sc_printf("console_reader() read '%s'\n", buff);
 #endif // TRACE_CONSOLE_READER
 
     if (buff[0] == 'c') {
