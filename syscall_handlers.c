@@ -20,7 +20,7 @@ void handle_syscall(struct thread_t* thread) {
   sc_puts("\n");
 #endif // TRACE_SCHEDULER
 
-  assert(syscall_num <= SYSCALL_NUM_MAX, "assert failed: syscall_num <= SYSCALL_NUM_MAX");
+  ASSERT(syscall_num <= SYSCALL_NUM_MAX);
 
   sysh_t handler = syscall_handlers[syscall_num];
   if (!handler) {
@@ -47,7 +47,6 @@ void handle_syscall(struct thread_t* thread) {
 
 void sysh_yield(struct thread_t* thread) {
   UNUSED(thread);
-  sc_puts("handle_syscall() handling yield\n");
 }
 
 void sysh_spawn(struct thread_t* thread) {

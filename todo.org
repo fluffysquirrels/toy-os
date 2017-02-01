@@ -33,8 +33,6 @@
 ** Logging boilerplate reduction
 *** printf style message formatting
 *** include file location (function name, file name, line number) in message using a macro
-*** include failed assert condition in message using a macro
-** Extract UNUSED and memset to a util file
 ** Use macro constants to refer to processor modes
 ** Tests
 ** Generate .h file with #define THREAD_OFFSET_* calculated with offsetof

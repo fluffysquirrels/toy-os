@@ -102,7 +102,7 @@ static void scheduler_loop() {
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
-    assert(thread->state == THREAD_STATE_READY, "failed assert thread->state == THREAD_STATE_READY");
+    ASSERT(thread->state == THREAD_STATE_READY);
 
     unsigned int stop_reason = activate(thread);
 
@@ -175,7 +175,7 @@ static void trl_append(unsigned int prio, unsigned int thread_id) {
     }
   }
 
-  assert(false, "Didn't find a free slot in trl");
+  PANIC("Didn't find a free slot in trl");
 }
 
 static unsigned int trl_peek_first(unsigned int prio) {
@@ -211,13 +211,13 @@ static void isr_timer01() {
 #if TRACE_SCHEDULER
     sc_puts("isr_timer01() TIMER0 tick\n");
 #endif // TRACE_SCHEDULER
-  }  else if(*(TIMER1 + TIMER_MIS)) { /* Timer1 went off */
+  } else if(*(TIMER1 + TIMER_MIS)) { /* Timer1 went off */
     *(TIMER1 + TIMER_INTCLR) = 1; /* Clear interrupt */
 #if TRACE_SCHEDULER
     sc_puts("isr_timer01() TIMER1 tick\n");
 #endif // TRACE_SCHEDULER
   } else {
-    panic("isr_timer01() *(TIMER0/1 + TIMER_MIS) was clear");
+    PANIC("*(TIMER0/1 + TIMER_MIS) was clear");
   }
 }
 

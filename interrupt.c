@@ -29,10 +29,7 @@ void handle_interrupt() {
   pic_log_status();
 #endif // TRACE_INTERRUPTS
 
-  if(pic_irqstatus == 0) {
-    panic("handle_interrupt() no interrupt active?");
-    return;
-  }
+  ASSERT(pic_irqstatus != 0);
 
   int irq = __builtin_ctz(pic_irqstatus);
 
@@ -42,16 +39,13 @@ void handle_interrupt() {
   sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 
-  assert(irq >= 0, "assert failed: irq >= 0");
-  assert(irq < PIC_INTNUM_COUNT, "assert failed: irq <= PIC_INTNUM_COUNT");
+  ASSERT(irq >= 0);
+  ASSERT(irq < PIC_INTNUM_COUNT);
 
   isr_t isr = interrupt_handlers[irq];
 
   if(!isr) {
-    sc_puts("irq = ");
-    sc_print_uint32_hex(irq);
-    sc_puts("\n");
-    panic("Interrupt with no handler");
+    panicf("Interrupt with no handler irq = %x\n", irq);
     // Not reached.
     return;
   }
@@ -92,7 +86,7 @@ void set_interrupt_handler(unsigned char irq, isr_t isr) {
   sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 
-  assert(interrupt_handlers[irq] == NULL, "failed assert interrupt_handlers[irq] == NULL");
+  ASSERT(interrupt_handlers[irq] == NULL);
   interrupt_handlers[irq] = isr;
 }
 

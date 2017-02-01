@@ -8,7 +8,9 @@
 #include "util.h"
 #include "versatilepb.h"
 
+#ifndef TRACE_UART
 #define TRACE_UART 0
+#endif
 
 struct uart_t {
   unsigned int *addr;
@@ -62,7 +64,7 @@ void uart_log_getch(iochar_t ch) {
   if (ch == -1) {
     sc_puts("EOF");
   } else {
-    assert(ch >= 0 && ch < 256, "ch >= 0 && ch < 256");
+    ASSERT(ch >= 0 && ch < 256);
     sc_puts("'");
     sc_putch((char) ch);
     sc_puts("'");
@@ -71,29 +73,14 @@ void uart_log_getch(iochar_t ch) {
 }
 
 void uart_log_status(struct uart_t *u) {
-  sc_puts("  rx_empty = ");
-  sc_puts(uart_rx_fifo_empty(u) ? "true" : "false");
-  sc_puts("\n");
+  sc_printf("  rx_empty = %s\n",
+            uart_rx_fifo_empty(u) ? "true" : "false");
 
-  sc_puts("  FR = ");
-  sc_print_uint32_hex(*(u->addr + UART_FR));
-  sc_puts("\n");
-
-  sc_puts("  CR = ");
-  sc_print_uint32_hex(*(u->addr + UART_CR));
-  sc_puts("\n");
-
-  sc_puts("  RIS = ");
-  sc_print_uint32_hex(*(u->addr + UART_RIS));
-  sc_puts("\n");
-
-  sc_puts("  MIS = ");
-  sc_print_uint32_hex(*(u->addr + UART_MIS));
-  sc_puts("\n");
-
-  sc_puts("  IMSC = ");
-  sc_print_uint32_hex(*(u->addr + UART_IMSC));
-  sc_puts("\n");
+  sc_printf("  FR   = %x\n", *(u->addr + UART_FR));
+  sc_printf("  CR   = %x\n", *(u->addr + UART_CR));
+  sc_printf("  RIS  = %x\n", *(u->addr + UART_RIS));
+  sc_printf("  MIS  = %x\n", *(u->addr + UART_MIS));
+  sc_printf("  IMSC = %x\n", *(u->addr + UART_IMSC));
 }
 
 extern struct file_t uart_0_file;

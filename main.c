@@ -179,7 +179,7 @@ void log_ch(int ch) {
   if (ch == -1) {
     sc_puts("EOF");
   } else {
-    assert(ch >= 0 && ch < 256, "ch >= 0 && ch < 256");
+    ASSERT(ch >= 0 && ch < 256);
     sc_puts("'");
     sc_putch((char) ch);
     sc_puts("'");

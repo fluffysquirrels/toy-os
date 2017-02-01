@@ -3,8 +3,6 @@
 #include "uart.h"
 #include "util.h"
 
-static void halt();
-
 void assert(bool cond, char *string) {
   assertf(cond, "%s", string);
 }
@@ -34,7 +32,7 @@ void panicf(char *format, ...) {
   halt();
 }
 
-static void halt() {
+void halt() {
   while (1) {}
 }
 
@@ -77,10 +75,7 @@ void sc_print_uint8_hex(char x) {
     sc_putch('0' + x);
   } else if (x < 16) {
     sc_putch('a' + (x - 10));
-  } else {
-    /* Should assert. */
-    sc_putch('?');
-  }
+  } // No other cases
 }
 
 int sc_printf(char *format, ...) {

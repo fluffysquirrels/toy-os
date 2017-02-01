@@ -43,7 +43,7 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
 }
 
 void thread_update_priority (struct thread_t *t, unsigned int priority) {
-  assert(priority <= THREAD_PRIORITY_MAX, "failed assert priority <= THREAD_PRIORITY_MAX");
+  ASSERT(priority <= THREAD_PRIORITY_MAX);
 
   unsigned int old_priority = t->priority;
   t->priority = priority;
@@ -61,7 +61,7 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
 }
 
 struct thread_t *thread_get(unsigned int thread_id) {
-  assert(thread_id < THREAD_LIMIT, "failed assert thread_id < THREAD_LIMIT");
+  ASSERT(thread_id < THREAD_LIMIT);
   return &threads[thread_id];
 }
 
