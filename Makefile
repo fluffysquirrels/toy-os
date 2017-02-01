@@ -14,20 +14,25 @@ qemu-debug: build
 gdb-attach:
 	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file kernel.elf' -tui
 
-clean:
-	rm -f *.o *.elf *.s *.d TAGS
-
-
 CC=arm-linux-gnueabi-gcc
-CFLAGS+=-std=c99 -pedantic -Wall -Wextra -Werror -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -g
+CFLAGS_ARCH=-std=c99 -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb
+CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
+CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS)
+GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
 
 SOURCES.c := $(wildcard *.c)
 SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
+OUT_DIR=target
 OBJECTS := $(SOURCES.c:.c=.o)
 OBJECTS += $(SOURCES.S:.S=.o)
+OBJECTS += $(OUT_DIR)/liballoc.o
+
+clean:
+	rm -f *.o *.elf *.s *.d TAGS
+	rm -rf target
 
 build: kernel.elf TAGS
 
@@ -35,7 +40,7 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
 
 kernel.elf: $(OBJECTS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
 %.o: %.s Makefile
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -57,6 +62,15 @@ kernel.elf: $(OBJECTS)
 	$(CC) -E -MM -MP $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)
+
+$(OUT_DIR)/liballoc.o: third_party/liballoc/liballoc.c
+	$(CC) $(CFLAGS_ARCH) -I third_party/liballoc -o $@ -c $<
+$(OUT_DIR)/liballoc.o: $(OUT_DIR)
+
+third_party/liballoc/liballoc.c: third_party/liballoc/liballoc.h
 
  # Include dependency files
 -include $(SOURCES.c:.c=.d)

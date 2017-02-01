@@ -1,9 +1,11 @@
 #include "kernel.h"
+#include "stdlib.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
 #include "thread.h"
 #include "util.h"
 
+void exercise_malloc(void);
 void yield_thread(void);
 void yield_sub(unsigned int);
 void busy_loop_thread(void);
@@ -15,25 +17,40 @@ void console_reader_thread(void);
 int main(void) {
   sc_puts("main()\n");
 
+  exercise_malloc();
+
   kernel_init();
 
   //  kspawn(0x10, &yield_thread, NULL);
-  kspawn(0x10, &busy_loop_thread, NULL);
-//  kspawn(0x10, &spawner_thread, NULL);
-//  kspawn(0x10, &return_thread, NULL);
-//  kspawn(0x10, &exit_thread, NULL);
+  /* kspawn(0x10, &busy_loop_thread, NULL); */
+  /* //  kspawn(0x10, &spawner_thread, NULL); */
+  /* kspawn(0x10, &return_thread, NULL); */
+  /* kspawn(0x10, &exit_thread, NULL); */
   struct thread_t *crt;
   kspawn(0x10, &console_reader_thread, &crt);
   thread_update_priority(crt, 20);
   kspawn(0x10, &busy_loop_thread, NULL);
 
-  sc_printf("Hello, %s! I have %x arguments.\n", "world", 2);
   sc_puts("main() spawned threads\n");
 
   kernel_run();
 
   /* Not reached */
   return 0;
+}
+
+void exercise_malloc(void) {
+  char *p = NULL;
+
+
+  for (int i = 0; i < 20; i++) {
+    p = (char *) malloc(500);
+    sc_printf("Malloced 500 big ones at %x\n", p);
+    //    free(p);
+    p = 0;
+    p = (char *) malloc(500);
+    sc_printf("Malloced 500 big ones at %x\n", p);
+  }
 }
 
 void yield_thread(void) {
