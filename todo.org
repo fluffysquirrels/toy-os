@@ -1,6 +1,8 @@
 * Bugs
 
 * Features:
+** malloc
+** Some collections (linked / array list, heap, sorted map, hash)
 ** User mode can wait for timers.
 ** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
 ** fork
