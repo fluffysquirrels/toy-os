@@ -13,14 +13,21 @@ void exit_thread(void);
 void console_reader_thread(void);
 
 int main(void) {
-//  kspawn(0x10, &yield_thread, NULL);
-    kspawn(0x10, &busy_loop_thread, NULL);
+  sc_puts("main()\n");
+
+  kernel_init();
+
+  //  kspawn(0x10, &yield_thread, NULL);
+  kspawn(0x10, &busy_loop_thread, NULL);
 //  kspawn(0x10, &spawner_thread, NULL);
 //  kspawn(0x10, &return_thread, NULL);
 //  kspawn(0x10, &exit_thread, NULL);
-    kspawn(0x10, &console_reader_thread, NULL);
+  struct thread_t *crt;
+  kspawn(0x10, &console_reader_thread, &crt);
+  thread_update_priority(crt, 20);
+  kspawn(0x10, &busy_loop_thread, NULL);
 
-  sc_puts("Hello, World from main!\n");
+  sc_puts("main() spawned threads\n");
 
   kernel_run();
 
@@ -186,7 +193,7 @@ void log_ch(int ch) {
 void console_reader_thread(void) {
   sc_puts("console_reader_thread()\n");
 
-  char buff[5];
+  char buff[16];
   struct read_args_t args = {
     .fd = -1, // TODO
     .buff = buff,

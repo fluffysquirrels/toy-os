@@ -14,9 +14,8 @@
 
    Possible fixes:
 *** console_reader could be re-scheduled after its I/O completes (DONE)
+*** Prioritise the console reader thread (DONE)
 *** Fairer scheduling might help prevent console_reader being starved as much
-** Ready list for threads. Hide threads, num_threads variables at the same time.
-** Thread priority
 ** Thread stats: number of system calls, cpu time used
 ** Interrupt stats: number of interrupts, cpu time used
 ** Memory protection

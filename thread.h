@@ -1,4 +1,5 @@
 #pragma once
+#include "limits.h"
 #include "stdbool.h"
 #include "syscalls.h"
 
@@ -10,8 +11,14 @@ struct thread_t{
   unsigned int registers[16];
   /* End of Referenced by offset from assembly */
 
+  // Modify with thread_update_state
   unsigned int state;
+
+  // Do not modify
   unsigned int thread_id;
+
+  // Modify with thread_update_priority
+  unsigned int priority;
 };
 
 #define THREAD_STATE_INVALID 0
@@ -19,9 +26,18 @@ struct thread_t{
 #define THREAD_STATE_EXITED  2
 #define THREAD_STATE_BLOCKED 3
 
+// Thread priority
+// Higher numbers mean higher priority
+#define THREAD_PRIORITY_DEFAULT 10
+#define THREAD_PRIORITY_MAX 20
+
+#define THREAD_ID_INVALID UINT_MAX
+
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
-bool no_threads_ready();
+void thread_update_state(struct thread_t *t, unsigned int state);
+void thread_update_priority (struct thread_t *t, unsigned int priority);
+struct thread_t *thread_get(unsigned int thread_id);
 void sc_print_thread(struct thread_t*);
 
 // TODO: Hide these behind an abstraction
-#define THREAD_LIMIT 4
+#define THREAD_LIMIT 8

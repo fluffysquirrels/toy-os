@@ -70,8 +70,7 @@ void sysh_spawn(struct thread_t* thread) {
 }
 
 void sysh_exit(struct thread_t* thread) {
-  thread->state = THREAD_STATE_EXITED;
-  // TODO: Remove thread from the threads collection, re-use its entry.
+  thread_update_state(thread, THREAD_STATE_EXITED);
 }
 
 struct file_t *file_get(fd_t fd);
@@ -109,7 +108,8 @@ void sysh_read(struct thread_t* thread) {
   file->read_callback_registered = true;
   file->read_callback_state = cbs;
 
-  thread->state = THREAD_STATE_BLOCKED;
+  thread_update_state(thread, THREAD_STATE_BLOCKED);
+
   return;
 }
 
@@ -158,7 +158,7 @@ void sysh_read_callback(struct sysh_read_callback_state_t *cbs) {
   cbs->result->bytes_read = bytes_read;
 
   cbs->thread->registers[0] = E_SUCCESS;
-  cbs->thread->state = THREAD_STATE_READY;
+  thread_update_state(cbs->thread, THREAD_STATE_READY);
   cbs->file->read_callback_registered = false;
   return;
 }

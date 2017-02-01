@@ -17,8 +17,7 @@ unsigned int interrupt_get_status() {
   return *(PIC + VIC_IRQSTATUS);
 }
 
-void handle_interrupt(struct thread_t* thread) {
-  UNUSED(thread);
+void handle_interrupt() {
 
 #if TRACE_INTERRUPTS
   sc_puts("\nhandle_interrupt()\n");

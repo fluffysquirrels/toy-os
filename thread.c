@@ -1,5 +1,6 @@
 #include "thread.h"
 
+#include "kernel.h"
 #include "stdbool.h"
 #include "synchronous_console.h"
 #include "util.h"
@@ -8,9 +9,8 @@
 
 static unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
 
-// TODO: Hide these behind an abstraction
-struct thread_t threads[THREAD_LIMIT];
-unsigned int num_threads = 0;
+static struct thread_t threads[THREAD_LIMIT];
+static unsigned int num_threads = 0;
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
@@ -26,12 +26,14 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
 
   thread->cpsr = cpsr;
   thread->thread_id = thread_idx;
-  thread->state = THREAD_STATE_READY;
   thread->registers[13] /* sp */ = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
   // Set lr to &sys_exit, so when the user mode function returns
   // it will call sys_exit and terminate gracefully.
   thread->registers[14] /* lr */ = (unsigned int) &sys_exit;
   thread->registers[15] /* pc */ = (unsigned int) pc;
+
+  thread_update_priority(thread, THREAD_PRIORITY_DEFAULT);
+  thread_update_state(thread, THREAD_STATE_READY);
 
   if(out_thread != NULL) {
     *out_thread = thread;
@@ -40,16 +42,27 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
   return E_SUCCESS;
 }
 
-bool no_threads_ready() {
-    bool no_threads_ready = true;
-    for (unsigned int ix = 0; ix < num_threads; ix++) {
-      if (threads[ix].state == THREAD_STATE_READY) {
-        no_threads_ready = false;
-        break;
-      }
-    }
+void thread_update_priority (struct thread_t *t, unsigned int priority) {
+  assert(priority <= THREAD_PRIORITY_MAX, "failed assert priority <= THREAD_PRIORITY_MAX");
 
-    return no_threads_ready;
+  unsigned int old_priority = t->priority;
+  t->priority = priority;
+
+  scheduler_update_thread_priority(t, old_priority);
+}
+
+void thread_update_state (struct thread_t *t, unsigned int state) {
+  unsigned int old_state = t->state;
+  t->state = state;
+
+  // TODO: Remove exited threads from the threads collection, re-use their entries.
+
+  scheduler_update_thread_state(t, old_state);
+}
+
+struct thread_t *thread_get(unsigned int thread_id) {
+  assert(thread_id < THREAD_LIMIT, "failed assert thread_id < THREAD_LIMIT");
+  return &threads[thread_id];
 }
 
 void sc_print_thread(struct thread_t *thread) {
