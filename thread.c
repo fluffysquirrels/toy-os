@@ -74,6 +74,7 @@ void sc_print_thread(struct thread_t *thread) {
   sc_puts(" .thread_id = ");
   sc_print_uint32_hex(thread->thread_id);
   sc_puts("\n");
+  sc_printf(" .priority = %x\n", thread->priority);
 
   sc_puts("     r0 = ");
   sc_print_uint32_hex(thread->registers[0]);

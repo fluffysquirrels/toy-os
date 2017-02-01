@@ -18,10 +18,7 @@ unsigned int interrupt_get_status() {
 }
 
 void handle_interrupt() {
-
-#if TRACE_INTERRUPTS
-  sc_puts("\nhandle_interrupt()\n");
-#endif // TRACE_SCHEDULER
+  sc_LOG_IF(TRACE_INTERRUPTS, "start");
 
   unsigned int pic_irqstatus = interrupt_get_status();
 
@@ -33,58 +30,39 @@ void handle_interrupt() {
 
   int irq = __builtin_ctz(pic_irqstatus);
 
-#if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() irq = ");
-  sc_print_uint32_hex(irq);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
+  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);
 
   ASSERT(irq >= 0);
   ASSERT(irq < PIC_INTNUM_COUNT);
 
   isr_t isr = interrupt_handlers[irq];
-
   if(!isr) {
-    panicf("Interrupt with no handler irq = %x\n", irq);
+    PANICF("Interrupt with no handler irq = %x", irq);
     // Not reached.
     return;
   }
 
-#if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() calling handler @");
-  sc_print_uint32_hex((unsigned int) isr);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
+  sc_LOGF_IF(TRACE_INTERRUPTS, "calling handler @%x", (unsigned int) isr);
 
   isr();
 
 #if TRACE_INTERRUPTS
   sc_puts("handle_interrupt() returned from handler\n");
   pic_log_status();
+  sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 }
 
 void pic_log_status() {
   sc_puts("pic_log_status()\n");
-  sc_puts("  PIC_IRQSTATUS = ");
-  sc_print_uint32_hex(*(PIC + VIC_IRQSTATUS));
-  sc_puts("\n");
-  sc_puts("  PIC_RAWINTR = ");
-  sc_print_uint32_hex(*(PIC + VIC_RAWINTR));
-  sc_puts("\n");
-  sc_puts("  PIC_INTENABLE = ");
-  sc_print_uint32_hex(*(PIC + VIC_INTENABLE));
-  sc_puts("\n");
+  sc_printf("  PIC_IRQSTATUS = %x\n", *(PIC + VIC_IRQSTATUS));
+  sc_printf("  PIC_RAWINTR   = %x\n", *(PIC + VIC_RAWINTR));
+  sc_printf("  PIC_INTENABLE = %x\n", *(PIC + VIC_INTENABLE));
 }
 
 void set_interrupt_handler(unsigned char irq, isr_t isr) {
-#if TRACE_INTERRUPTS
-  sc_puts("set_interrupt_handler() irq = ");
-  sc_print_uint32_hex(irq);
-  sc_puts(" isr @ ");
-  sc_print_uint32_hex((unsigned int) isr);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
+  sc_LOGF_IF(TRACE_INTERRUPTS,
+    "irq = %x   isr = %x", irq, (unsigned int) isr);
 
   ASSERT(interrupt_handlers[irq] == NULL);
   interrupt_handlers[irq] = isr;
@@ -93,11 +71,7 @@ void set_interrupt_handler(unsigned char irq, isr_t isr) {
 void enable_interrupt(unsigned char irq) {
   // Enable interrupt on controller
 
-#if TRACE_INTERRUPTS
-  sc_puts("enable_interrupt() irq = ");
-  sc_print_uint32_hex(irq);
-  sc_puts("\n");
-#endif // TRACE_INTERRUPTS
+  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);
 
   *(PIC + VIC_INTENABLE) |= (1 << irq);
 }

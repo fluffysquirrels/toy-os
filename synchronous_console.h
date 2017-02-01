@@ -22,6 +22,23 @@
   sc_puts("\n");\
   halt();
 
+#define sc_LOG_IF(cond, msg)\
+  sc_LOGF_IF(cond, "%s", msg)
+
+
+#define sc_LOGF_IF(cond, format, ...)\
+  if (cond) {\
+    sc_LOGF(format, __VA_ARGS__);\
+  }
+
+#define sc_LOG(msg)\
+  SC_LOGF("%s", msg)
+
+#define sc_LOGF(format, ...)\
+  sc_printf("%s:%s: %s(): ", __FILE__, STR(__LINE__), __func__);    \
+  sc_printf(format, __VA_ARGS__);                                   \
+  sc_puts("\n");
+
 #define STR_INNER(x) #x
 #define STR(x) STR_INNER(x)
 

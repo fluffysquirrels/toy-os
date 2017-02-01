@@ -6,6 +6,10 @@
 #include "uart.h"
 #include "util.h"
 
+#ifndef TRACE_SYSCALL
+#define TRACE_SYSCALL 0
+#endif
+
 // sysh_t is the typedef of a syscall handler, which are named with the
 // prefix 'sysh_'
 typedef void (*sysh_t)(struct thread_t*);
@@ -14,11 +18,7 @@ sysh_t syscall_handlers[SYSCALL_NUM_MAX + 1];
 
 void handle_syscall(struct thread_t* thread) {
   unsigned int syscall_num = thread->registers[12];
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() syscall_num = ");
-  sc_print_uint32_hex(syscall_num);
-  sc_puts("\n");
-#endif // TRACE_SCHEDULER
+  sc_LOGF_IF(TRACE_SYSCALL, "syscall_num = %x", syscall_num);
 
   ASSERT(syscall_num <= SYSCALL_NUM_MAX);
 
@@ -32,17 +32,12 @@ void handle_syscall(struct thread_t* thread) {
     return;
   }
 
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() calling syscall handler @ ");
-  sc_print_uint32_hex((unsigned int) handler);
-  sc_puts("\n");
-#endif // TRACE_SCHEDULER
+
+  sc_LOGF_IF(TRACE_SYSCALL, "calling syscall handler @ %x", (unsigned int) handler);
 
   handler(thread);
 
-#if TRACE_SCHEDULER
-  sc_puts("handle_syscall() returned from syscall handler\n");
-#endif // TRACE_SCHEDULER
+  sc_LOG_IF(TRACE_SYSCALL, "return from syscall handler");
 }
 
 void sysh_yield(struct thread_t* thread) {

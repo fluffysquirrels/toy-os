@@ -50,14 +50,10 @@ void kernel_run() {
 }
 
 static void scheduler_loop() {
-#if TRACE_SCHEDULER
-  sc_puts("\nscheduler_loop() start\n");
-#endif // TRACE_SCHEDULER
+  sc_LOG_IF(TRACE_SCHEDULER, "start");
 
   while(1) {
-#if TRACE_SCHEDULER
-    sc_puts("\nscheduler_loop()\n");
-#endif // TRACE_SCHEDULER
+    sc_LOG_IF(TRACE_SCHEDULER, "top of loop");
 
     bool interrupt_active = interrupt_get_status() != 0;
     if(interrupt_active) {
@@ -85,9 +81,7 @@ static void scheduler_loop() {
     }
 
     if (thread_id == THREAD_ID_INVALID) {
-#if TRACE_SCHEDULER
-      sc_puts("scheduler_loop() no threads ready, sleeping\n\n");
-#endif // TRACE_SCHEDULER
+      sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping\n\n");
 
       sleep();
       continue;
@@ -96,9 +90,7 @@ static void scheduler_loop() {
     struct thread_t *thread = thread_get(thread_id);
 
 #if TRACE_SCHEDULER
-    sc_puts("scheduler_loop() thread_id=");
-    sc_print_uint32_hex(thread_id);
-    sc_puts("\n");
+    sc_LOGF("thread_id=%x", thread_id);
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
@@ -106,16 +98,11 @@ static void scheduler_loop() {
 
     unsigned int stop_reason = activate(thread);
 
-#if TRACE_SCHEDULER
-    sc_puts("scheduler_loop() activate returned ");
-    sc_print_uint32_hex(stop_reason);
-    if(stop_reason == ACTIVATE_RET_IRQ) {
-      sc_puts(" = ACTIVATE_RET_IRQ");
-    } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
-      sc_puts(" = ACTIVATE_RET_SYSCALL");
-    }
-    sc_puts("\n");
-#endif // TRACE_SCHEDULER
+    sc_LOGF_IF(TRACE_SCHEDULER,
+      "activate returned %x%s\n",
+      stop_reason,
+      stop_reason == ACTIVATE_RET_IRQ     ? "=ACTIVATE_RET_IRQ"
+    : stop_reason == ACTIVATE_RET_SYSCALL ? "=ACTIVATE_RET_SYSCALL": "");
 
     if(stop_reason == ACTIVATE_RET_IRQ) {
       handle_interrupt(thread);
@@ -202,20 +189,14 @@ void scheduler_update_thread_state(struct thread_t* thread, unsigned int old_sta
 }
 
 static void isr_timer01() {
-#if TRACE_SCHEDULER
-    sc_puts("isr_timer01()\n");
-#endif // TRACE_SCHEDULER
+  sc_LOG_IF(TRACE_SCHEDULER, "start");
 
   if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
     *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
-#if TRACE_SCHEDULER
-    sc_puts("isr_timer01() TIMER0 tick\n");
-#endif // TRACE_SCHEDULER
+    sc_LOG_IF(TRACE_SCHEDULER, "TIMER0 tick");
   } else if(*(TIMER1 + TIMER_MIS)) { /* Timer1 went off */
     *(TIMER1 + TIMER_INTCLR) = 1; /* Clear interrupt */
-#if TRACE_SCHEDULER
-    sc_puts("isr_timer01() TIMER1 tick\n");
-#endif // TRACE_SCHEDULER
+    sc_LOG_IF(TRACE_SCHEDULER, "TIMER1 tick");
   } else {
     PANIC("*(TIMER0/1 + TIMER_MIS) was clear");
   }
