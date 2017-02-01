@@ -3,17 +3,39 @@
 #include "uart.h"
 #include "util.h"
 
+static void halt();
+
 void assert(bool cond, char *string) {
-  if(!cond) {
-    panic(string);
+  assertf(cond, "%s", string);
+}
+
+void assertf(bool cond, char *format, ...) {
+  if (!cond) {
+    va_list args;
+    va_start(args, format);
+    sc_puts("assert failed: ");
+    sc_vprintf(format, args);
+    sc_puts("\npanic\n");
+    va_end(args);
+    halt();
   }
 }
 
 void panic(char *string) {
+  panicf("%s", string);
+}
+
+void panicf(char *format, ...) {
+  va_list args;
+  va_start(args, format);
   sc_puts("panic: ");
-  sc_puts(string);
+  sc_vprintf(format, args);
   sc_puts("\n");
-  while(1) {}
+  halt();
+}
+
+static void halt() {
+  while (1) {}
 }
 
 void warn(char *string) {
@@ -62,10 +84,14 @@ void sc_print_uint8_hex(char x) {
 }
 
 int sc_printf(char *format, ...) {
-  int chars_written = 0;
-
   va_list args;
   va_start(args, format);
+  int ret = sc_vprintf(format, args);
+  va_end(args);
+  return ret;
+}
+int sc_vprintf(char *format, va_list args) {
+  int chars_written = 0;
 
   char *curr = format;
   while (*curr != '\0') {
@@ -105,8 +131,6 @@ int sc_printf(char *format, ...) {
       curr++;
     }
   }
-
-  va_end(args);
 
   return chars_written;
 }
