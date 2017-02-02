@@ -48,6 +48,63 @@
    })
 
 
+* C data structures libraries
+
+  Decision: I'm going to start using OpenBSD's tree.h
+  Really simple integration: one .h file and one trivial dependency
+  Well documented with an example
+  Sensible interface
+  Production quality
+
+** Gnulib
+   https://www.gnu.org/software/gnulib/
+   External containers:
+   https://www.gnu.org/software/gnulib/MODULES.html#ansic_ext_container
+   Includes:
+   - Array lists
+   - Circular array lists
+   - Linked lists
+   - AVL tree
+   - Red-black tree
+   - Hash tables based on linked lists, avl trees, red-black trees
+
+** OpenBSD queue.h and tree.h
+   http://openbsd.su/src/sys/sys/queue.h
+   http://www.openbsd.org/cgi-bin/man.cgi?query=queue
+   http://openbsd.su/src/sys/sys/tree.h
+   http://www.openbsd.org/cgi-bin/man.cgi?query=tree
+** sglib
+   http://sglib.sourceforge.net/
+** gdsl
+   http://home.gna.org/gdsl/
+** "C Algorithms" library
+   http://fragglet.github.io/c-algorithms/
+   https://github.com/fragglet/c-algorithms
+** Judy
+   http://judy.sourceforge.net/
+** Libgee
+   https://wiki.gnome.org/Projects/Libgee
+   https://valadoc.org/gee-0.8/index.htm
+** uthash
+   http://troydhanson.github.io/uthash/
+** POSIX search.h
+   https://linux.die.net/man/3/hsearch
+   http://pubs.opengroup.org/onlinepubs/000095399/basedefs/search.h.html
+** Forum posts on this
+   http://stackoverflow.com/questions/668501/are-there-any-open-source-c-libraries-with-common-data-structures
+   https://www.reddit.com/r/programming/comments/9ridg/surely_there_is_a_decent_container_data_structure/
+
+
+** klib
+   https://github.com/attractivechaos/klib
+   No real documentation.
+   Includes:
+   - Vector
+   - Hash
+   - Btree
+   - Linked list
+
+
 * Make
 ** Makefiles that build into a subdirectory:
    http://make.mad-scientist.net/papers/multi-architecture-builds/
