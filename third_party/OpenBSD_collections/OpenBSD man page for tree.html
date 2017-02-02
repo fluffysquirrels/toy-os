@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://man.openbsd.org/OpenBSD-current/man3/tree.3 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <link rel="stylesheet" href="./OpenBSD man page for tree_files/mandoc.css" type="text/css" media="all">
+  <title>OpenBSD manual pages</title>
+</head>
+<body>
+<p><a href="https://www.openbsd.org/"><img height="30" width="141" src="./OpenBSD man page for tree_files/openbsd.gif" alt="[OpenBSD]"></a></p>
+<form action="http://man.openbsd.org/" method="get">
+  <fieldset>
+    <legend>Manual Page Search Parameters</legend>
+    <input type="text" name="query" value="tree" size="40">
+    <button type="submit" name="apropos" value="0">man</button>
+    <button type="submit" name="apropos" value="1">apropos</button>
+    <br>
+    <select name="sec">
+      <option value="0">All Sections</option>
+      <option value="1">1 - General Commands</option>
+      <option value="2">2 - System Calls</option>
+      <option value="3" selected="selected">3 - Library Functions</option>
+      <option value="3p">3p - Perl Library</option>
+      <option value="4">4 - Device Drivers</option>
+      <option value="5">5 - File Formats</option>
+      <option value="6">6 - Games</option>
+      <option value="7">7 - Miscellaneous Information</option>
+      <option value="8">8 - System Manager's Manual</option>
+      <option value="9">9 - Kernel Developer's Manual</option>
+    </select>
+    <select name="arch">
+      <option value="default" selected="selected">All Architectures</option>
+      <option value="amd64">amd64</option>
+      <option value="alpha">alpha</option>
+      <option value="armv7">armv7</option>
+      <option value="arm64">arm64</option>
+      <option value="hppa">hppa</option>
+      <option value="i386">i386</option>
+      <option value="landisk">landisk</option>
+      <option value="loongson">loongson</option>
+      <option value="luna88k">luna88k</option>
+      <option value="macppc">macppc</option>
+      <option value="mips64">mips64</option>
+      <option value="octeon">octeon</option>
+      <option value="sgi">sgi</option>
+      <option value="socppc">socppc</option>
+      <option value="sparc64">sparc64</option>
+      <option value="amiga">amiga</option>
+      <option value="arc">arc</option>
+      <option value="armish">armish</option>
+      <option value="arm32">arm32</option>
+      <option value="atari">atari</option>
+      <option value="aviion">aviion</option>
+      <option value="beagle">beagle</option>
+      <option value="cats">cats</option>
+      <option value="hppa64">hppa64</option>
+      <option value="hp300">hp300</option>
+      <option value="ia64">ia64</option>
+      <option value="mac68k">mac68k</option>
+      <option value="mvme68k">mvme68k</option>
+      <option value="mvme88k">mvme88k</option>
+      <option value="mvmeppc">mvmeppc</option>
+      <option value="palm">palm</option>
+      <option value="pc532">pc532</option>
+      <option value="pegasos">pegasos</option>
+      <option value="pmax">pmax</option>
+      <option value="powerpc">powerpc</option>
+      <option value="solbourne">solbourne</option>
+      <option value="sparc">sparc</option>
+      <option value="sun3">sun3</option>
+      <option value="vax">vax</option>
+      <option value="wgrisc">wgrisc</option>
+      <option value="x68k">x68k</option>
+      <option value="zaurus">zaurus</option>
+    </select>
+    <select name="manpath">
+      <option selected="selected" value="OpenBSD-current">OpenBSD-current</option>
+      <option value="OpenBSD-6.0">OpenBSD-6.0</option>
+      <option value="OpenBSD-5.9">OpenBSD-5.9</option>
+      <option value="POSIX-2013">POSIX-2013</option>
+      <option value="4.4BSD-Lite2">4.4BSD-Lite2</option>
+      <option value="UNIX-7">UNIX-7</option>
+      <option value="FreeBSD-10.3">FreeBSD-10.3</option>
+      <option value="DragonFly-4.6.0">DragonFly-4.6.0</option>
+      <option value="NetBSD-7.0.1">NetBSD-7.0.1</option>
+      <option value="Linux-4.05">Linux-4.05</option>
+      <option value="OpenBSD-5.8">OpenBSD-5.8</option>
+      <option value="OpenBSD-5.7">OpenBSD-5.7</option>
+      <option value="OpenBSD-5.6">OpenBSD-5.6</option>
+      <option value="OpenBSD-5.5">OpenBSD-5.5</option>
+      <option value="OpenBSD-5.4">OpenBSD-5.4</option>
+      <option value="OpenBSD-5.3">OpenBSD-5.3</option>
+      <option value="OpenBSD-5.2">OpenBSD-5.2</option>
+      <option value="OpenBSD-5.1">OpenBSD-5.1</option>
+      <option value="OpenBSD-5.0">OpenBSD-5.0</option>
+      <option value="OpenBSD-4.9">OpenBSD-4.9</option>
+      <option value="OpenBSD-4.8">OpenBSD-4.8</option>
+      <option value="OpenBSD-4.7">OpenBSD-4.7</option>
+      <option value="OpenBSD-4.6">OpenBSD-4.6</option>
+      <option value="OpenBSD-4.5">OpenBSD-4.5</option>
+      <option value="OpenBSD-4.4">OpenBSD-4.4</option>
+      <option value="OpenBSD-4.3">OpenBSD-4.3</option>
+      <option value="OpenBSD-4.2">OpenBSD-4.2</option>
+      <option value="OpenBSD-4.1">OpenBSD-4.1</option>
+      <option value="OpenBSD-4.0">OpenBSD-4.0</option>
+      <option value="OpenBSD-3.9">OpenBSD-3.9</option>
+      <option value="OpenBSD-3.8">OpenBSD-3.8</option>
+      <option value="OpenBSD-3.7">OpenBSD-3.7</option>
+      <option value="OpenBSD-3.6">OpenBSD-3.6</option>
+      <option value="OpenBSD-3.5">OpenBSD-3.5</option>
+      <option value="OpenBSD-3.4">OpenBSD-3.4</option>
+      <option value="OpenBSD-3.3">OpenBSD-3.3</option>
+      <option value="OpenBSD-3.2">OpenBSD-3.2</option>
+      <option value="OpenBSD-3.1">OpenBSD-3.1</option>
+      <option value="OpenBSD-3.0">OpenBSD-3.0</option>
+      <option value="OpenBSD-2.9">OpenBSD-2.9</option>
+      <option value="OpenBSD-2.8">OpenBSD-2.8</option>
+      <option value="OpenBSD-2.7">OpenBSD-2.7</option>
+      <option value="OpenBSD-2.6">OpenBSD-2.6</option>
+      <option value="OpenBSD-2.5">OpenBSD-2.5</option>
+      <option value="OpenBSD-2.4">OpenBSD-2.4</option>
+      <option value="OpenBSD-2.3">OpenBSD-2.3</option>
+      <option value="OpenBSD-2.2">OpenBSD-2.2</option>
+      <option value="FreeBSD-10.2">FreeBSD-10.2</option>
+      <option value="FreeBSD-10.0">FreeBSD-10.0</option>
+      <option value="DragonFly-4.4.2">DragonFly-4.4.2</option>
+      <option value="DragonFly-3.8.2">DragonFly-3.8.2</option>
+      <option value="NetBSD-7.0">NetBSD-7.0</option>
+      <option value="NetBSD-6.1.5">NetBSD-6.1.5</option>
+    </select>
+  </fieldset>
+</form>
+<table class="head">
+  <tbody>
+    <tr>
+      <td class="head-ltitle">SPLAY_INIT(3)</td>
+      <td class="head-vol">Library Functions Manual</td>
+      <td class="head-rtitle">SPLAY_INIT(3)</td>
+    </tr>
+  </tbody>
+</table>
+<div class="manual-text">
+<h1 class="Sh" id="NAME">NAME</h1>
+<b class="Nm">SPLAY_PROTOTYPE</b>, <b class="Nm">SPLAY_GENERATE</b>,
+  <b class="Nm">SPLAY_ENTRY</b>, <b class="Nm">SPLAY_HEAD</b>,
+  <b class="Nm">SPLAY_INITIALIZER</b>, <b class="Nm">SPLAY_ROOT</b>,
+  <b class="Nm">SPLAY_EMPTY</b>, <b class="Nm">SPLAY_NEXT</b>,
+  <b class="Nm">SPLAY_MIN</b>, <b class="Nm">SPLAY_MAX</b>,
+  <b class="Nm">SPLAY_FIND</b>, <b class="Nm">SPLAY_LEFT</b>,
+  <b class="Nm">SPLAY_RIGHT</b>, <b class="Nm">SPLAY_FOREACH</b>,
+  <b class="Nm">SPLAY_INIT</b>, <b class="Nm">SPLAY_INSERT</b>,
+  <b class="Nm">SPLAY_REMOVE</b>, <b class="Nm">RB_PROTOTYPE</b>,
+  <b class="Nm">RB_PROTOTYPE_STATIC</b>, <b class="Nm">RB_GENERATE</b>,
+  <b class="Nm">RB_GENERATE_STATIC</b>, <b class="Nm">RB_ENTRY</b>,
+  <b class="Nm">RB_HEAD</b>, <b class="Nm">RB_INITIALIZER</b>,
+  <b class="Nm">RB_ROOT</b>, <b class="Nm">RB_EMPTY</b>,
+  <b class="Nm">RB_NEXT</b>, <b class="Nm">RB_PREV</b>,
+  <b class="Nm">RB_MIN</b>, <b class="Nm">RB_MAX</b>, <b class="Nm">RB_FIND</b>,
+  <b class="Nm">RB_NFIND</b>, <b class="Nm">RB_LEFT</b>,
+  <b class="Nm">RB_RIGHT</b>, <b class="Nm">RB_PARENT</b>,
+  <b class="Nm">RB_FOREACH</b>, <b class="Nm">RB_FOREACH_SAFE</b>,
+  <b class="Nm">RB_FOREACH_REVERSE</b>,
+  <b class="Nm">RB_FOREACH_REVERSE_SAFE</b>, <b class="Nm">RB_INIT</b>,
+  <b class="Nm">RB_INSERT</b>, <b class="Nm">RB_REMOVE</b> —
+  <span class="Nd">implementations of splay and red-black trees</span>
+<h1 class="Sh" id="SYNOPSIS">SYNOPSIS</h1>
+<b class="In">#include &lt;<a class="In">sys/tree.h</a>&gt;</b>
+<div class="Pp"></div>
+<br>
+<b class="Fn">SPLAY_PROTOTYPE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">SPLAY_GENERATE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">SPLAY_ENTRY</b>(<i class="Fa" style="white-space: nowrap;">TYPE</i>);
+<div class="Pp"></div>
+<b class="Fn">SPLAY_HEAD</b>(<i class="Fa" style="white-space: nowrap;">HEADNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_INITIALIZER</b>(<i class="Fa" style="white-space: nowrap;">SPLAY_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<b class="Fn">SPLAY_ROOT</b>(<i class="Fa" style="white-space: nowrap;">SPLAY_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">int</i>
+<br>
+<b class="Fn">SPLAY_EMPTY</b>(<i class="Fa" style="white-space: nowrap;">SPLAY_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_NEXT</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_MIN</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_MAX</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_FIND</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_LEFT</b>(<i class="Fa" style="white-space: nowrap;">struct
+  TYPE *elm</i>, <i class="Fa" style="white-space: nowrap;">SPLAY_ENTRY
+  NAME</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_RIGHT</b>(<i class="Fa" style="white-space: nowrap;">struct
+  TYPE *elm</i>, <i class="Fa" style="white-space: nowrap;">SPLAY_ENTRY
+  NAME</i>);
+<div class="Pp"></div>
+<b class="Fn">SPLAY_FOREACH</b>(<i class="Fa" style="white-space: nowrap;">VARNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>);
+<div class="Pp"></div>
+<i class="Ft">void</i>
+<br>
+<b class="Fn">SPLAY_INIT</b>(<i class="Fa" style="white-space: nowrap;">SPLAY_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_INSERT</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">SPLAY_REMOVE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">SPLAY_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<br>
+<b class="Fn">RB_PROTOTYPE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_PROTOTYPE_STATIC</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_GENERATE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_GENERATE_STATIC</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>,
+  <i class="Fa" style="white-space: nowrap;">FIELD</i>,
+  <i class="Fa" style="white-space: nowrap;">CMP</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_ENTRY</b>(<i class="Fa" style="white-space: nowrap;">TYPE</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_HEAD</b>(<i class="Fa" style="white-space: nowrap;">HEADNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">TYPE</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_INITIALIZER</b>(<i class="Fa" style="white-space: nowrap;">RB_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_ROOT</b>(<i class="Fa" style="white-space: nowrap;">RB_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">int</i>
+<br>
+<b class="Fn">RB_EMPTY</b>(<i class="Fa" style="white-space: nowrap;">RB_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_NEXT</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_PREV</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_MIN</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_MAX</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_FIND</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_NFIND</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_LEFT</b>(<i class="Fa" style="white-space: nowrap;">struct TYPE
+  *elm</i>, <i class="Fa" style="white-space: nowrap;">RB_ENTRY NAME</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_RIGHT</b>(<i class="Fa" style="white-space: nowrap;">struct
+  TYPE *elm</i>, <i class="Fa" style="white-space: nowrap;">RB_ENTRY NAME</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_PARENT</b>(<i class="Fa" style="white-space: nowrap;">struct
+  TYPE *elm</i>, <i class="Fa" style="white-space: nowrap;">RB_ENTRY NAME</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_FOREACH</b>(<i class="Fa" style="white-space: nowrap;">VARNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_FOREACH_SAFE</b>(<i class="Fa" style="white-space: nowrap;">VARNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">TEMP_VARNAME</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_FOREACH_REVERSE</b>(<i class="Fa" style="white-space: nowrap;">VARNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>);
+<div class="Pp"></div>
+<b class="Fn">RB_FOREACH_REVERSE_SAFE</b>(<i class="Fa" style="white-space: nowrap;">VARNAME</i>,
+  <i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">TEMP_VARNAME</i>);
+<div class="Pp"></div>
+<i class="Ft">void</i>
+<br>
+<b class="Fn">RB_INIT</b>(<i class="Fa" style="white-space: nowrap;">RB_HEAD
+  *head</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_INSERT</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<div class="Pp"></div>
+<i class="Ft">struct TYPE *</i>
+<br>
+<b class="Fn">RB_REMOVE</b>(<i class="Fa" style="white-space: nowrap;">NAME</i>,
+  <i class="Fa" style="white-space: nowrap;">RB_HEAD *head</i>,
+  <i class="Fa" style="white-space: nowrap;">struct TYPE *elm</i>);
+<h1 class="Sh" id="DESCRIPTION">DESCRIPTION</h1>
+These macros define data structures for different types of trees: splay trees
+  and red-black trees.
+<div class="Pp"></div>
+In the macro definitions, <i class="Fa">TYPE</i> is the name tag of a user
+  defined structure that must contain a field named <i class="Fa">FIELD</i>, of
+  type <code class="Li">SPLAY_ENTRY</code> or <code class="Li">RB_ENTRY</code>.
+  The argument <i class="Fa">HEADNAME</i> is the name tag of a user defined
+  structure that must be declared using the macros
+  <b class="Fn">SPLAY_HEAD</b>() or <b class="Fn">RB_HEAD</b>(). The argument
+  <i class="Fa">NAME</i> has to be a unique name prefix for every tree that is
+  defined.
+<div class="Pp"></div>
+The function prototypes are declared with
+  <code class="Li">SPLAY_PROTOTYPE</code>, <code class="Li">RB_PROTOTYPE</code>,
+  or <code class="Li">RB_PROTOTYPE_STATIC</code>. The function bodies are
+  generated with <code class="Li">SPLAY_GENERATE</code>,
+  <code class="Li">RB_GENERATE</code>, or
+  <code class="Li">RB_GENERATE_STATIC</code>. See the examples below for further
+  explanation of how these macros are used.
+<h1 class="Sh" id="SPLAY_TREES">SPLAY TREES</h1>
+A splay tree is a self-organizing data structure. Every operation on the tree
+  causes a splay to happen. The splay moves the requested node to the root of
+  the tree and partly rebalances it.
+<div class="Pp"></div>
+This has the benefit that request locality causes faster lookups as the
+  requested nodes move to the top of the tree. On the other hand, every lookup
+  causes memory writes.
+<div class="Pp"></div>
+The Balance Theorem bounds the total access time for m operations and n inserts
+  on an initially empty tree as O((m + n)lg n). The amortized cost for a
+  sequence of m accesses to a splay tree is O(lg n).
+<div class="Pp"></div>
+A splay tree is headed by a structure defined by the
+  <b class="Fn">SPLAY_HEAD</b>() macro. A <i class="Fa">SPLAY_HEAD</i> structure
+  is declared as follows:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">SPLAY_HEAD(HEADNAME, TYPE) head;
+</pre>
+</div>
+<div class="Pp"></div>
+where <i class="Fa">HEADNAME</i> is the name of the structure to be defined, and
+  struct <i class="Fa">TYPE</i> is the type of the elements to be inserted into
+  the tree.
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_ENTRY</b>() macro declares a structure that allows
+  elements to be connected in the tree.
+<div class="Pp"></div>
+In order to use the functions that manipulate the tree structure, their
+  prototypes need to be declared with the <b class="Fn">SPLAY_PROTOTYPE</b>()
+  macro, where <i class="Fa">NAME</i> is a unique identifier for this particular
+  tree. The <i class="Fa">TYPE</i> argument is the type of the structure that is
+  being managed by the tree. The <i class="Fa">FIELD</i> argument is the name of
+  the element defined by <b class="Fn">SPLAY_ENTRY</b>().
+<div class="Pp"></div>
+The function bodies are generated with the <b class="Fn">SPLAY_GENERATE</b>()
+  macro. It takes the same arguments as the <b class="Fn">SPLAY_PROTOTYPE</b>()
+  macro, but should be used only once.
+<div class="Pp"></div>
+Finally, the <i class="Fa">CMP</i> argument is the name of a function used to
+  compare trees' nodes with each other. The function takes two arguments of type
+  <i class="Fa">struct TYPE *</i>. If the first argument is smaller than the
+  second, the function returns a value smaller than zero. If they are equal, the
+  function returns zero. Otherwise, it should return a value greater than zero.
+  The compare function defines the order of the tree elements.
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_INIT</b>() macro initializes the tree referenced by
+  <i class="Fa">head</i>.
+<div class="Pp"></div>
+The splay tree can also be initialized statically by using the
+  <b class="Fn">SPLAY_INITIALIZER</b>() macro like this:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">SPLAY_HEAD(HEADNAME, TYPE) head = SPLAY_INITIALIZER(&amp;head);
+</pre>
+</div>
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_INSERT</b>() macro inserts the new element
+  <i class="Fa">elm</i> into the tree. Upon success, <i class="Va">NULL</i> is
+  returned. If a matching element already exists in the tree, the insertion is
+  aborted, and a pointer to the existing element is returned.
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_REMOVE</b>() macro removes the element
+  <i class="Fa">elm</i> from the tree pointed by <i class="Fa">head</i>. Upon
+  success, a pointer to the removed element is returned. <i class="Va">NULL</i>
+  is returned if <i class="Fa">elm</i> is not present in the tree.
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_FIND</b>() macro can be used to find a particular
+  element in the tree.
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">struct TYPE find, *res; 
+find.key = 30; 
+res = SPLAY_FIND(NAME, &amp;head, &amp;find);
+</pre>
+</div>
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_ROOT</b>(), <b class="Fn">SPLAY_MIN</b>(),
+  <b class="Fn">SPLAY_MAX</b>(), and <b class="Fn">SPLAY_NEXT</b>() macros can
+  be used to traverse the tree:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">for (np = SPLAY_MIN(NAME, &amp;head); np != NULL; np = SPLAY_NEXT(NAME, &amp;head, np))
+</pre>
+</div>
+<div class="Pp"></div>
+Or, for simplicity, one can use the <b class="Fn">SPLAY_FOREACH</b>() macro:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">SPLAY_FOREACH(np, NAME, &amp;head)
+</pre>
+</div>
+<div class="Pp"></div>
+The <b class="Fn">SPLAY_EMPTY</b>() macro should be used to check whether a
+  splay tree is empty.
+<h1 class="Sh" id="RED-BLACK_TREES">RED-BLACK TREES</h1>
+A red-black tree is a binary search tree with the node color as an extra
+  attribute. It fulfills a set of conditions:
+<div class="Pp"></div>
+<ol class="Bl-enum" style="margin-left: 6.00ex;">
+  <li class="It-enum" style="margin-top: 0.00em;">every search path from the
+      root to a leaf consists of the same number of black nodes,</li>
+  <li class="It-enum" style="margin-top: 0.00em;">each red node (except for the
+      root) has a black parent,</li>
+  <li class="It-enum" style="margin-top: 0.00em;">each leaf node is black.</li>
+</ol>
+<div class="Pp"></div>
+Every operation on a red-black tree is bounded as O(lg n). The maximum height of
+  a red-black tree is 2lg (n+1).
+<div class="Pp"></div>
+A red-black tree is headed by a structure defined by the
+  <b class="Fn">RB_HEAD</b>() macro. A <i class="Fa">RB_HEAD</i> structure is
+  declared as follows:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">RB_HEAD(HEADNAME, TYPE) head;
+</pre>
+</div>
+<div class="Pp"></div>
+where <i class="Fa">HEADNAME</i> is the name of the structure to be defined, and
+  struct <i class="Fa">TYPE</i> is the type of the elements to be inserted into
+  the tree.
+<div class="Pp"></div>
+The <b class="Fn">RB_ENTRY</b>() macro declares a structure that allows elements
+  to be connected in the tree.
+<div class="Pp"></div>
+In order to use the functions that manipulate the tree structure, their
+  prototypes need to be declared with the <b class="Fn">RB_PROTOTYPE</b>() or
+  <b class="Fn">RB_PROTOTYPE_STATIC</b>() macros, where <i class="Fa">NAME</i>
+  is a unique identifier for this particular tree. The <i class="Fa">TYPE</i>
+  argument is the type of the structure that is being managed by the tree. The
+  <i class="Fa">FIELD</i> argument is the name of the element defined by
+  <b class="Fn">RB_ENTRY</b>().
+<div class="Pp"></div>
+The function bodies are generated with the <b class="Fn">RB_GENERATE</b>() or
+  <b class="Fn">RB_GENERATE_STATIC</b>() macros. These macros take the same
+  arguments as the <b class="Fn">RB_PROTOTYPE</b>() and
+  <b class="Fn">RB_PROTOTYPE_STATIC</b>() macros, but should be used only once.
+<div class="Pp"></div>
+Finally, the <i class="Fa">CMP</i> argument is the name of a function used to
+  compare trees' nodes with each other. The function takes two arguments of type
+  <i class="Fa">struct TYPE *</i>. If the first argument is smaller than the
+  second, the function returns a value smaller than zero. If they are equal, the
+  function returns zero. Otherwise, it should return a value greater than zero.
+  The compare function defines the order of the tree elements.
+<div class="Pp"></div>
+The <b class="Fn">RB_INIT</b>() macro initializes the tree referenced by
+  <i class="Fa">head</i>.
+<div class="Pp"></div>
+The red-black tree can also be initialized statically by using the
+  <b class="Fn">RB_INITIALIZER</b>() macro like this:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">RB_HEAD(HEADNAME, TYPE) head = RB_INITIALIZER(&amp;head);
+</pre>
+</div>
+<div class="Pp"></div>
+The <b class="Fn">RB_INSERT</b>() macro inserts the new element
+  <i class="Fa">elm</i> into the tree. Upon success, <i class="Va">NULL</i> is
+  returned. If a matching element already exists in the tree, the insertion is
+  aborted, and a pointer to the existing element is returned.
+<div class="Pp"></div>
+The <b class="Fn">RB_REMOVE</b>() macro removes the element
+  <i class="Fa">elm</i> from the tree pointed by <i class="Fa">head</i>.
+  <b class="Fn">RB_REMOVE</b>() returns <i class="Fa">elm</i>.
+<div class="Pp"></div>
+The <b class="Fn">RB_FIND</b>() and <b class="Fn">RB_NFIND</b>() macros can be
+  used to find a particular element in the tree. <b class="Fn">RB_FIND</b>()
+  finds the node with the same key as <i class="Fa">elm</i>.
+  <b class="Fn">RB_NFIND</b>() finds the first node greater than or equal to the
+  search key.
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">struct TYPE find, *res; 
+find.key = 30; 
+res = RB_FIND(NAME, &amp;head, &amp;find);
+</pre>
+</div>
+<div class="Pp"></div>
+The <b class="Fn">RB_ROOT</b>(), <b class="Fn">RB_MIN</b>(),
+  <b class="Fn">RB_MAX</b>(), <b class="Fn">RB_NEXT</b>(), and
+  <b class="Fn">RB_PREV</b>() macros can be used to traverse the tree:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">for (np = RB_MIN(NAME, &amp;head); np != NULL; np = RB_NEXT(NAME, &amp;head, np))
+</pre>
+</div>
+<div class="Pp"></div>
+Or, for simplicity, one can use the <b class="Fn">RB_FOREACH</b>() or
+  <b class="Fn">RB_FOREACH_REVERSE</b>() macros:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">RB_FOREACH(np, NAME, &amp;head)
+</pre>
+</div>
+<div class="Pp"></div>
+The macros <b class="Fn">RB_FOREACH_SAFE</b>() and
+  <b class="Fn">RB_FOREACH_REVERSE_SAFE</b>() traverse the tree referenced by
+  head in a forward or reverse direction respectively, assigning each element in
+  turn to np. However, unlike their unsafe counterparts, they permit both the
+  removal of np as well as freeing it from within the loop safely without
+  interfering with the traversal.
+<div class="Pp"></div>
+The <b class="Fn">RB_EMPTY</b>() macro should be used to check whether a
+  red-black tree is empty.
+<h1 class="Sh" id="EXAMPLES">EXAMPLES</h1>
+The following example demonstrates how to declare a red-black tree holding
+  integers. Values are inserted into it and the contents of the tree are printed
+  in order. Lastly, the internal structure of the tree is printed.
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 3.00ex;">
+<pre class="Li">#include &lt;sys/tree.h&gt; 
+#include &lt;err.h&gt; 
+#include &lt;stdio.h&gt; 
+#include &lt;stdlib.h&gt; 
+ 
+struct node { 
+	RB_ENTRY(node) entry; 
+	int i; 
+}; 
+ 
+int 
+intcmp(struct node *e1, struct node *e2) 
+{ 
+	return (e1-&gt;i &lt; e2-&gt;i ? -1 : e1-&gt;i &gt; e2-&gt;i); 
+} 
+ 
+RB_HEAD(inttree, node) head = RB_INITIALIZER(&amp;head); 
+RB_GENERATE(inttree, node, entry, intcmp) 
+ 
+int testdata[] = { 
+	20, 16, 17, 13, 3, 6, 1, 8, 2, 4, 10, 19, 5, 9, 12, 15, 18, 
+	7, 11, 14 
+}; 
+ 
+void 
+print_tree(struct node *n) 
+{ 
+	struct node *left, *right; 
+ 
+	if (n == NULL) { 
+		printf("nil"); 
+		return; 
+	} 
+	left = RB_LEFT(n, entry); 
+	right = RB_RIGHT(n, entry); 
+	if (left == NULL &amp;&amp; right == NULL) 
+		printf("%d", n-&gt;i); 
+	else { 
+		printf("%d(", n-&gt;i); 
+		print_tree(left); 
+		printf(","); 
+		print_tree(right); 
+		printf(")"); 
+	} 
+} 
+ 
+int 
+main() 
+{ 
+	int i; 
+	struct node *n; 
+ 
+	for (i = 0; i &lt; sizeof(testdata) / sizeof(testdata[0]); i++) { 
+		if ((n = malloc(sizeof(struct node))) == NULL) 
+			err(1, NULL); 
+		n-&gt;i = testdata[i]; 
+		RB_INSERT(inttree, &amp;head, n); 
+	} 
+ 
+	RB_FOREACH(n, inttree, &amp;head) { 
+		printf("%d\n", n-&gt;i); 
+	} 
+	print_tree(RB_ROOT(&amp;head)); 
+	printf("\n"); 
+	return (0); 
+}
+</pre>
+</div>
+<h1 class="Sh" id="SEE_ALSO">SEE ALSO</h1>
+<a class="Xr" href="http://man.openbsd.org/queue.3">queue(3)</a>
+<h1 class="Sh" id="NOTES">NOTES</h1>
+Trying to free a tree in the following way is a common error:
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">SPLAY_FOREACH(var, NAME, &amp;head) { 
+	SPLAY_REMOVE(NAME, &amp;head, var); 
+	free(var); 
+} 
+free(head);
+</pre>
+</div>
+<div class="Pp"></div>
+Since <i class="Va">var</i> is free'd, the <b class="Fn">FOREACH</b>() macro
+  refers to a pointer that may have been reallocated already. Proper code needs
+  a second variable.
+<div class="Pp"></div>
+<div class="Bd" style="margin-left: 5.00ex;">
+<pre class="Li">for (var = SPLAY_MIN(NAME, &amp;head); var != NULL; var = nxt) { 
+	nxt = SPLAY_NEXT(NAME, &amp;head, var); 
+	SPLAY_REMOVE(NAME, &amp;head, var); 
+	free(var); 
+}
+</pre>
+</div>
+<h1 class="Sh" id="AUTHORS">AUTHORS</h1>
+The author of the tree macros is <span class="An">Niels Provos</span>.</div>
+<table class="foot">
+  <tbody>
+    <tr>
+      <td class="foot-date">March 14, 2016</td>
+      <td class="foot-os">OpenBSD-current</td>
+    </tr>
+  </tbody>
+</table>
+
+
+</body></html>

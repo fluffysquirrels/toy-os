@@ -1,11 +1,14 @@
 #include "kernel.h"
+#include "stdint.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"
 #include "util.h"
 
-static void exercise_malloc(void);
+void exercise_trees(void);
+void exercise_malloc(void);
 void yield_thread(void);
 void yield_sub(unsigned int);
 void busy_loop_thread(void);
@@ -18,6 +21,7 @@ int main(void) {
   sc_puts("main()\n");
 
   exercise_malloc();
+  exercise_trees();
 
   kernel_init();
 
@@ -39,11 +43,73 @@ int main(void) {
   return 0;
 }
 
-static void exercise_malloc(void) {
+struct int_map_node {
+  RB_ENTRY(int_map_node) rb;
+  int k;
+  int v;
+};
+
+#define DEF_KEY_CMP(func_name, elt_t, key_t, key_member)\
+int func_name(elt_t *e1, elt_t *e2) {\
+  key_t k1 = e1->key_member;\
+  key_t k2 = e2->key_member;\
+  return k1 < k2 ? -1\
+       : k1 > k2 ? +1\
+       : 0;\
+}
+
+DEF_KEY_CMP(int_map_cmp2, struct int_map_node, int, k)
+
+RB_HEAD(int_map, int_map_node);
+RB_GENERATE(int_map, int_map_node, rb, int_map_cmp2)
+
+void exercise_trees(void) {
+  sc_LOG("");
+  struct int_map head;
+  RB_INIT(&head);
+
+  for(int i = 0; i < 1000; i++) {
+    struct int_map_node *n = malloc(sizeof(struct int_map_node));
+    ASSERT(n != NULL);
+    n->k = i;
+    n->v = 1000 - i;
+    RB_INSERT(int_map, &head, n);
+  }
+  struct int_map_node *it = NULL;
+  RB_FOREACH(it, int_map, &head) {
+#if 0
+    sc_printf("%x:%x\n", it->k, it->v);
+#endif
+  }
+
+  struct int_map_node query = { .k = 750 };
+  struct int_map_node *result = RB_FIND(int_map, &head, &query);
+  ASSERT(result != NULL);
+  ASSERT(result->k == 750);
+  ASSERT(result->v == 250);
+  sc_LOGF("UINT32_MAX=%u", UINT32_MAX);
+  sc_LOGF("result @ %x { k=%u v=%u }", result, result->k, result->v);
+  // Free tree.
+  void *tmp;
+  RB_FOREACH_SAFE(it, int_map, &head, tmp) {
+    RB_REMOVE(int_map, &head, it);
+    free(it);
+  }
+
+  // Malloc to check all that stuff was freed.
+  // x should be the same as the first node allocated.
+  int *x = malloc(sizeof(int));
+  ASSERT(x != NULL);
+  free(x);
+  x = NULL;
+
+  sc_LOG("end");
+}
+
+void exercise_malloc(void) {
 #define NUM_ALLOCS 20
   size_t size = 500;
   char *allocs[NUM_ALLOCS] = { 0 };
-
 
   for (int i = 0; i < NUM_ALLOCS; i++) {
     allocs[i] = (char *) malloc(size);
