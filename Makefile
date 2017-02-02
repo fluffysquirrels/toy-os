@@ -31,7 +31,7 @@ OBJECTS += $(SOURCES.S:.S=.o)
 OBJECTS += $(OUT_DIR)/FreeRTOS_heap_4.o
 
 clean:
-	rm -f *.o *.elf *.s *.d TAGS
+	rm -f *.o *.elf *.s *.d *.d.tmp TAGS
 	rm -rf $(OUT_DIR)
 
 build: $(OUT_DIR) kernel.elf TAGS
@@ -42,26 +42,29 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 kernel.elf: $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
-%.o: %.s Makefile
+%.o: %.s Makefile %.d
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-%.o: %.c Makefile
+%.o: %.c Makefile %.d
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 %.s: %.S Makefile
 	$(CC) -E -o $@ -c $<
 
+define MAKE-DEPS =
+	set -e; rm -f $@
+	$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
+	@echo using TEMP_DEP = $(TEMP_DEP)
+	$(CC) -E -MM -MP $< > $(TEMP_DEP) || (rm -f $(TEMP_DEP) && false)
+	sed -e 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $(TEMP_DEP) > $@ || (rm -f $(TEMP_DEP) $@ && false)
+	rm -f $(TEMP_DEP)
+endef
+
 %.d: %.c Makefile
-	set -e; rm -f $@; \
-	$(CC) -E -MM -MP $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
+	$(MAKE-DEPS)
 
 %.d: %.S Makefile
-	set -e; rm -f $@; \
-	$(CC) -E -MM -MP $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
+	$(MAKE-DEPS)
 
 $(OUT_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c Makefile
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
