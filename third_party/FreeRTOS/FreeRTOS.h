@@ -1,8 +1,8 @@
 // The minimal definitions required to get the FreeRTOS heaps working.
 
 #include "stdint.h"
-#include "../../util.h"
-#include "../../synchronous_console.h"
+#include "util.h"
+#include "synchronous_console.h"
 
 #define configTOTAL_HEAP_SIZE 10 * 1024 * 1024
 
@@ -18,7 +18,6 @@ void traceMALLOC(void *x, size_t s) {
   UNUSED(x);
   UNUSED(s);
 }
-
 
 void mtCOVERAGE_TEST_MARKER() {}
 

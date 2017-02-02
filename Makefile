@@ -64,7 +64,7 @@ kernel.elf: $(OBJECTS)
 	rm -f $@.$$$$
 
 $(OUT_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c Makefile
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -I. -o $@ -c $<
 
 $(OUT_DIR):
 	mkdir -p $(OUT_DIR)
