@@ -28,11 +28,10 @@ SOURCES.S := $(wildcard *.S)
 OUT_DIR=target
 OBJECTS := $(SOURCES.c:.c=.o)
 OBJECTS += $(SOURCES.S:.S=.o)
-OBJECTS += $(OUT_DIR)/liballoc.o
 
 clean:
 	rm -f *.o *.elf *.s *.d TAGS
-	rm -rf target
+	rm -rf $(OUT_DIR)
 
 build: kernel.elf TAGS
 
@@ -65,12 +64,6 @@ kernel.elf: $(OBJECTS)
 
 $(OUT_DIR):
 	mkdir -p $(OUT_DIR)
-
-$(OUT_DIR)/liballoc.o: third_party/liballoc/liballoc.c
-	$(CC) $(CFLAGS_ARCH) -I third_party/liballoc -o $@ -c $<
-$(OUT_DIR)/liballoc.o: $(OUT_DIR)
-
-third_party/liballoc/liballoc.c: third_party/liballoc/liballoc.h
 
  # Include dependency files
 -include $(SOURCES.c:.c=.d)

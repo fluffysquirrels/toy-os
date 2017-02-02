@@ -5,7 +5,7 @@
 #include "thread.h"
 #include "util.h"
 
-void exercise_malloc(void);
+static void exercise_malloc(void);
 void yield_thread(void);
 void yield_sub(unsigned int);
 void busy_loop_thread(void);
@@ -39,9 +39,10 @@ int main(void) {
   return 0;
 }
 
-void exercise_malloc(void) {
-  char *p = NULL;
+static void exercise_malloc(void) {
 
+  /*
+  char *p = NULL;
 
   for (int i = 0; i < 20; i++) {
     p = (char *) malloc(500);
@@ -51,6 +52,7 @@ void exercise_malloc(void) {
     p = (char *) malloc(500);
     sc_printf("Malloced 500 big ones at %x\n", p);
   }
+  */
 }
 
 void yield_thread(void) {
