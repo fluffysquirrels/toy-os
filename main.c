@@ -40,19 +40,30 @@ int main(void) {
 }
 
 static void exercise_malloc(void) {
+#define NUM_ALLOCS 20
+  size_t size = 500;
+  char *allocs[NUM_ALLOCS] = { 0 };
 
-  /*
-  char *p = NULL;
 
-  for (int i = 0; i < 20; i++) {
-    p = (char *) malloc(500);
-    sc_printf("Malloced 500 big ones at %x\n", p);
-    //    free(p);
-    p = 0;
-    p = (char *) malloc(500);
-    sc_printf("Malloced 500 big ones at %x\n", p);
+  for (int i = 0; i < NUM_ALLOCS; i++) {
+    allocs[i] = (char *) malloc(size);
   }
-  */
+
+  for (int i = 0; i < NUM_ALLOCS; i++) {
+    free(allocs[i]);
+    allocs[i] = NULL;
+  }
+
+  for (int i = 0; i < NUM_ALLOCS; i++) {
+    allocs[i] = (char *) malloc(size);
+  }
+
+  for (int i = 0; i < NUM_ALLOCS; i++) {
+    free(allocs[i]);
+    allocs[i] = NULL;
+  }
+
+#undef NUM_ALLOCS
 }
 
 void yield_thread(void) {

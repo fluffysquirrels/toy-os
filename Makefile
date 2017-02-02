@@ -28,12 +28,13 @@ SOURCES.S := $(wildcard *.S)
 OUT_DIR=target
 OBJECTS := $(SOURCES.c:.c=.o)
 OBJECTS += $(SOURCES.S:.S=.o)
+OBJECTS += $(OUT_DIR)/FreeRTOS_heap_4.o
 
 clean:
 	rm -f *.o *.elf *.s *.d TAGS
 	rm -rf $(OUT_DIR)
 
-build: kernel.elf TAGS
+build: $(OUT_DIR) kernel.elf TAGS
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
@@ -61,6 +62,9 @@ kernel.elf: $(OBJECTS)
 	$(CC) -E -MM -MP $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
+
+$(OUT_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c Makefile
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OUT_DIR):
 	mkdir -p $(OUT_DIR)
