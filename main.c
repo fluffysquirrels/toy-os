@@ -49,19 +49,10 @@ struct int_map_node {
   int v;
 };
 
-#define DEF_KEY_CMP(func_name, elt_t, key_t, key_member)\
-int func_name(elt_t *e1, elt_t *e2) {\
-  key_t k1 = e1->key_member;\
-  key_t k2 = e2->key_member;\
-  return k1 < k2 ? -1\
-       : k1 > k2 ? +1\
-       : 0;\
-}
-
-DEF_KEY_CMP(int_map_cmp2, struct int_map_node, int, k)
+DEFINE_KEY_COMPARER(int_map_cmp, struct int_map_node, int, k)
 
 RB_HEAD(int_map, int_map_node);
-RB_GENERATE(int_map, int_map_node, rb, int_map_cmp2)
+RB_GENERATE(int_map, int_map_node, rb, int_map_cmp)
 
 void exercise_trees(void) {
   sc_LOG("");
