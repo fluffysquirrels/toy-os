@@ -1,0 +1,57 @@
+* ARM Registers
+  r0-r1 (arguments, scratch, return values)
+  r2-r3 (arguments, scratch)
+  r4-r10
+  r11 aka fp (frame pointer, prev stack frame?)
+  r12 aka ip (intra-procedure-call scratch register)
+  r13 aka sp (stack pointer)
+  r14 aka lr (link register, call return address)
+  r15 aka pc (program counter)
+
+  In supervisor mode all registers are as user mode except for r13 (sp), r14 (lr). SPSR is available, reflects CPSR before switching to supervisor mode.
+  In system mode SPSR is not available, all variables are the same as in user mode, CPSR is writable.
+
+
+* ARM documentation links
+** CPU
+*** ARM and Thumb instruction reference:
+    http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0489e/Cihedhif.html
+*** ARM1176JZF-S Technical Reference Manual:
+    http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0301h/index.html
+*** CPU interrupt vector:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0211h/Babfeega.html
+** Board documentation:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html
+*** Board primary interrupt controller with interrupts list:
+    http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/I1042232.html
+*** Interrupt controllers on the board
+    http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Cacgfedh.html
+** Peripherals
+*** ARM Dual-Timer Module (SP804) manual:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html
+*** PrimeCell Vectored Interrupt Controller (PL190) manual:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0181e/index.html
+*** PrimeCell UART (PL011) manual:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0183g/index.html
+*** PrimeCell DMA controller (PL080) manual:
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0196g/index.html
+*** PrimeCell Real Time Clock (PL031) Technical Reference Manual
+   http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0224b/index.html
+
+** JavaScript snippet to convert ARM reference register table to #define list:
+   Array.from(t.rows).slice(1).forEach(r => {
+     let name = r.cells[0].textContent;
+     let offsetBytes = parseInt(r.cells[1].textContent.substring(2), 16);
+     console.log(
+       "#define " + name + " 0x" + (offsetBytes/4).toString(16) +
+       "     // 0x" + offsetBytes.toString(16) + " bytes")
+   })
+
+
+* Make
+** Makefiles that build into a subdirectory:
+   http://make.mad-scientist.net/papers/multi-architecture-builds/
+** Makefile Auto-Dependency Generation (advanced reference):
+   http://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
+** GNU make: Generating Prerequisites Automatically (currently do more-or-less this with tweaks):
+   https://www.gnu.org/software/make/manual/html_node/Automatic-Prerequisites.html
