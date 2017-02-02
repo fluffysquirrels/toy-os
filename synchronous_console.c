@@ -78,6 +78,32 @@ void sc_print_uint8_hex(char x) {
   } // No other cases
 }
 
+int sc_print_uint32_dec(unsigned int u) {
+  if (u == 0) {
+    sc_putch('0');
+    return 1;
+  }
+
+  // UINT32_MAX is ~4 billion, which needs 10 decimal digits to print,
+  // +1 for a terminating null means we need an 11 byte buffer.
+  char buff[11] = { 0 };
+
+  char *buffCurr = buff + sizeof(buff) - 2;
+  while(1) {
+    char digit = '0' + (u % 10);
+    *buffCurr = digit;
+    u /= 10;
+    if (u == 0) {
+      break;
+    }
+    buffCurr--;
+    ASSERT(buffCurr >= buff);
+  }
+
+  return sc_puts(buffCurr);
+}
+
+
 int sc_printf(char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -113,12 +139,17 @@ int sc_vprintf(char *format, va_list args) {
         char *s = va_arg(args, char *);
         chars_written += sc_puts(s);
         break;
+      case 'u':;
+        int u = va_arg(args, unsigned int);
+        chars_written += sc_print_uint32_dec(u);
+        break;
       case 'x':;
         unsigned int d = va_arg(args, unsigned int);
         sc_print_uint32_hex(d);
         chars_written += 10;
         break;
-      default:
+      default:;
+        PANICF("Invalid parameter specifier in vprintf: %c", *curr);
         // Invalid parameter specifier.
         return -1;
       }

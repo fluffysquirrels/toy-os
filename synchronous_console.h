@@ -32,7 +32,7 @@
   }
 
 #define sc_LOG(msg)\
-  SC_LOGF("%s", msg)
+  sc_LOGF("%s", msg)
 
 #define sc_LOGF(format, ...)\
   sc_printf("%s:%s: %s(): ", __FILE__, STR(__LINE__), __func__);    \
@@ -52,5 +52,6 @@ int sc_puts(char *string);
 void sc_putch(char ch);
 void sc_print_uint32_hex(unsigned int w);
 void sc_print_uint8_hex(char x);
+int sc_print_int32_dec(int d);
 int sc_printf(char *format, ...);
 int sc_vprintf(char *format, va_list args);
