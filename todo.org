@@ -1,12 +1,12 @@
 * Bugs
 ** printf("%llu", x) prints garbage. sc_print_uint64_dec() seems ok.
-** Pause in sleep_thread(). systemnow seems to travel back in time when SP804 TIMER1
-   is reset to 1000000 on the RTC interrupt. A quick hack in timer.c to return the
-   latest time seen doesn't work.
+   printf, logf work fine in user mode code. Both don't work in supervisor mode
+   code, like handle_syscall.
+   Hypothesis: supervisor mode stacks are corrupted by the assembly in context_switch.S
+   Supervisor mode stack doesn't sense in printf and vprintf. sp is not even aligned.
 * Features:
 ** Some collections (linked / array list, heap, sorted map, hash)
 ** Timers
-*** sys_sleep (WIP)
 *** err_t sys_sleep_until (time_t time_due)
 *** err_t sys_get_time (time_t &now)
 ** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
@@ -14,28 +14,31 @@
 ** Reclaim resources used by stopped threads. thread_t and stack for now.
 
 * Nice features:
-** busy_loop and console_reader have a pathological condition where key presses
-   show up slowly. It seems to happen when I type quickly.
-   I speculate there is more than one byte in the UART FIFO, read is returning with
-   the rx interrupt disabled, and busy_loop is then scheduled
-
-   Possible fixes:
-*** console_reader could be re-scheduled after its I/O completes (DONE)
-*** Prioritise the console reader thread (DONE)
-*** Fairer scheduling might help prevent console_reader being starved as much
+** Track how much time a thread has consumed since it was scheduled and only
+   schedule what's left of its assigned quantum.
+** Fancier scheduling algorithm. Fixed priority round robin is what's currently
+   in there, and that can totally starve low priority threads.
 ** Thread stats: number of system calls, cpu time used
 ** Interrupt stats: number of interrupts, cpu time used
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
-** Dynamic allocation
+** Replace static allocation in little tables all over the place with real data
+   structures.
+
+   Including:
+*** Threads
+*** Stacks
+*** Thread ready lists
+
+** file interface with v_table for different drivers.
 ** IPC
 ** Network I/O
 ** Disk I/O
 ** File system
 
 * Nice:
-** Support registering callbacks when each timer_sp804 fires.
+** Support registering callbacks when each timer fires. Enables looser coupling.
 ** Set user thread return values with a function in syscalls, fetch all arguments with functions too.
 ** Rename activate() -> activate_thread().
 ** Rename interrupt -> exception where appropriate, including interrupt_table -> exception_table
