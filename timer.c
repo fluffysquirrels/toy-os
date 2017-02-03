@@ -29,6 +29,8 @@ RB_HEAD(timer_map, timer_node) timers = RB_INITIALIZER(&timers);
 RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
 
 static timer_id_t next_timer_id = 0;
+
+// Store the highest systemnow value we've calculated so far.
 static time_t highest_systemnow = 0;
 
 void timer_init() {
@@ -40,7 +42,6 @@ void timer_rtc_tick() {
   timer_sp804_set_timeout(TIMER_SP804_1S_COUNTDOWN_TIMER, 1000 * TIMER_SP804_TICKS_PER_MS);
 }
 
-
 time_t timer_systemnow() {
   time_t rtc_since_startup = DURATION_S * ((uint64_t) rtc_pl031_get_current());
 
@@ -49,6 +50,9 @@ time_t timer_systemnow() {
   time_t hi_res_time_since_rtc_tick = DURATION_S - DURATION_US * ((uint64_t) timer_sp804_get_current(TIMER_SP804_1S_COUNTDOWN_TIMER));
   time_t now = rtc_since_startup + hi_res_time_since_rtc_tick;
   highest_systemnow = MAX(now, highest_systemnow);
+
+  // Return the highest systemnow value we've calculated so far, so that time
+  // doesn't go backwards. This breaks timers, for example.
   return highest_systemnow;
 }
 

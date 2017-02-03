@@ -3,6 +3,7 @@
 #include "rtc_pl031_reg.h"
 #include "synchronous_console.h"
 #include "timer.h"
+#include "util.h"
 
 #ifndef TRACE_PL031
 #define TRACE_PL031 0
@@ -12,14 +13,26 @@ static void rtc_interrupt();
 static void rtc_set_match_in_future();
 
 #if TRACE_PL031
-static void rtc_log_registers();
+static void rtc_log_state();
 #endif
 
-uint32_t rtc_pl031_get_current() {
+// Store the highest time value we've observed.
+static uint32_t highest_value = 0;
+
+static uint32_t rtc_pl031_get_raw() {
   return *(RTC_BASE + RTC_DR);
 }
 
+uint32_t rtc_pl031_get_current() {
+  uint32_t raw = rtc_pl031_get_raw();
+  highest_value = MAX(raw, highest_value);
+
+  // Return the highest time value we've observed. Time should not go backwards.
+  return highest_value;
+}
+
 void rtc_pl031_init() {
+  highest_value = 0;
   set_interrupt_handler(PIC_INTNUM_RTC, &rtc_interrupt);
   enable_interrupt(PIC_INTNUM_RTC);
 
@@ -35,7 +48,7 @@ void rtc_pl031_init() {
   rtc_set_match_in_future();
 
 #if TRACE_PL031
-  rtc_log_registers();
+  rtc_log_state();
 #endif
 
 }
@@ -43,35 +56,55 @@ void rtc_pl031_init() {
 static void rtc_interrupt() {
   sc_LOG_IF(TRACE_PL031, "");
 #if TRACE_PL031
-  rtc_log_registers();
+  rtc_log_state();
 #endif
-
   // Clear interrupt
   *(RTC_BASE + RTC_ICR) = RTC_ICR_CLEAR;
 
   rtc_set_match_in_future();
-#if TRACE_PL031
-  rtc_log_registers();
-#endif
+
+  // In qemu, this interrupt fires and then some time later (sometimes 500ms)
+  // the data register DR gets incremented. However the 1s high resolution timer
+  // is reset on this interupt via timer_rtc_tick(), causing systemnow() =
+  // rtc seconds + the 1s high resolution timer to jump back 1s.
+  // The current hacky fix is to set the high resolution timer back 1s and then
+  // immediately increment highest_value by 1, which the raw register should do anyway.
+  // This ensures we only go back in time for an instant and code running after
+  // this interrupt shouldn't see the blip.
+  // Further timer_systemnow() never goes backwards because it saves the latest value
+  // it has emitted; this hopefully covers the glitch entirely.
 
   timer_rtc_tick();
+
+  uint32_t raw =  rtc_pl031_get_raw();
+  ASSERT(highest_value == raw); // Assert highest_value isn't running away
+                                // from raw with all these increments.
+  highest_value++;
+
+#if TRACE_PL031
+  rtc_log_state();
+#endif
+
 }
 
 static void rtc_set_match_in_future() {
   sc_LOG_IF(TRACE_PL031, "");
   // Set match value to match on next second
-  *(RTC_BASE + RTC_MR) = rtc_pl031_get_current() + 1;
+  *(RTC_BASE + RTC_MR) = rtc_pl031_get_raw() + 1;
 }
 
 #if TRACE_PL031
-static void rtc_log_registers() {
+static void rtc_log_state() {
   sc_LOG("");
-  sc_printf("  DR   = %x\n", *(RTC_BASE + RTC_DR));
-  sc_printf("  MR   = %x\n", *(RTC_BASE + RTC_MR));
-  sc_printf("  LR   = %x\n", *(RTC_BASE + RTC_LR));
-  sc_printf("  CR   = %x\n", *(RTC_BASE + RTC_CR));
-  sc_printf("  IMSC = %x\n", *(RTC_BASE + RTC_IMSC));
-  sc_printf("  RIS  = %x\n", *(RTC_BASE + RTC_RIS));
-  sc_printf("  MIS  = %x\n", *(RTC_BASE + RTC_MIS));
+  sc_printf("  DR      = %x\n", *(RTC_BASE + RTC_DR));
+  sc_printf("  MR      = %x\n", *(RTC_BASE + RTC_MR));
+  sc_printf("  LR      = %x\n", *(RTC_BASE + RTC_LR));
+  sc_printf("  CR      = %x\n", *(RTC_BASE + RTC_CR));
+  sc_printf("  IMSC    = %x\n", *(RTC_BASE + RTC_IMSC));
+  sc_printf("  RIS     = %x\n", *(RTC_BASE + RTC_RIS));
+  sc_printf("  MIS     = %x\n", *(RTC_BASE + RTC_MIS));
+  sc_puts("\n");
+  sc_printf("  highest_value  = %u\n", highest_value);
+  sc_printf("  raw            = %u\n", *(RTC_BASE + RTC_DR));
 }
 #endif

@@ -76,6 +76,8 @@ void timer_sp804_set_periodic(struct timer_sp804_t *timer, uint32_t value) {
 
 static void isr_timer01() {
   sc_LOG_IF(TRACE_SP804, "start");
+  sc_LOGF_IF(TRACE_SP804, "TIMER0 current = %u", timer_sp804_get_current(timer_sp804_timer0));
+  sc_LOGF_IF(TRACE_SP804, "TIMER1 current = %u", timer_sp804_get_current(timer_sp804_timer1));
 
   if(*(TIMER_BASE_0 + TIMER_MIS)) { /* Timer0 went off */
     *(TIMER_BASE_0 + TIMER_INTCLR) = 1; /* Clear interrupt */
