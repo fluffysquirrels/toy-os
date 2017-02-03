@@ -18,7 +18,7 @@ keep_copying_interrupt_table:
     msr CPSR_c, #0xD3 /* Supervisor mode, interrupts disabled */
 
     /* Set supervisor stack */
-    ldr sp, =0x07ffffff
+    ldr sp, =0x07fffff0
 
     bl main
 

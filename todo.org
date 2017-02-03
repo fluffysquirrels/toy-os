@@ -1,9 +1,6 @@
 * Bugs
-** printf("%llu", x) prints garbage. sc_print_uint64_dec() seems ok.
-   printf, logf work fine in user mode code. Both don't work in supervisor mode
-   code, like handle_syscall.
-   Hypothesis: supervisor mode stacks are corrupted by the assembly in context_switch.S
-   Supervisor mode stack doesn't sense in printf and vprintf. sp is not even aligned.
+
+
 * Features:
 ** Some collections (linked / array list, heap, sorted map, hash)
 ** Timers
