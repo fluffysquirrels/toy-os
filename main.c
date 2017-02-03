@@ -7,17 +7,19 @@
 #include "thread.h"
 #include "util.h"
 
-void exercise_trees(void);
-void exercise_malloc(void);
-void yield_thread(void);
+void exercise_trees();
+void exercise_malloc();
+void yield_thread();
 void yield_sub(unsigned int);
-void busy_loop_thread(void);
-void spawner_thread(void);
-void return_thread(void);
-void exit_thread(void);
-void console_reader_thread(void);
+void busy_loop_thread();
+void spawner_thread();
+void return_thread();
+void exit_thread();
+void console_reader_thread();
+void tests_thread();
+void sleep_thread();
 
-int main(void) {
+int main() {
   sc_puts("main()\n");
 
   exercise_malloc();
@@ -25,15 +27,18 @@ int main(void) {
 
   kernel_init();
 
-  //  kspawn(0x10, &yield_thread, NULL);
-  /* kspawn(0x10, &busy_loop_thread, NULL); */
-  /* //  kspawn(0x10, &spawner_thread, NULL); */
-  /* kspawn(0x10, &return_thread, NULL); */
-  /* kspawn(0x10, &exit_thread, NULL); */
-  struct thread_t *crt;
-  kspawn(0x10, &console_reader_thread, &crt);
-  thread_update_priority(crt, 20);
-  kspawn(0x10, &busy_loop_thread, NULL);
+  struct thread_t *t;
+
+  // ASSERT(kspawn(0x10, &yield_thread, &t) == E_SUCCESS);
+  // ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
+  // ASSERT(kspawn(0x10, &spawner_thread, &t) == E_SUCCESS);
+  // ASSERT(kspawn(0x10, &return_thread, &t) == E_SUCCESS);
+  // ASSERT(kspawn(0x10, &exit_thread, &t) == E_SUCCESS);
+  ASSERT(kspawn(0x10, &console_reader_thread, &t) == E_SUCCESS);
+  thread_update_priority(t, 20);
+  //  ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
+  ASSERT(kspawn(0x10, &sleep_thread, &t) == E_SUCCESS);
+  ASSERT(kspawn(0x10, &tests_thread, &t) == E_SUCCESS);
 
   sc_puts("main() spawned threads\n");
 
@@ -41,6 +46,16 @@ int main(void) {
 
   /* Not reached */
   return 0;
+}
+
+void tests_thread() {
+  ASSERT(sys_invalid() == E_NOSUCHSYSCALL);
+
+  sc_printf(
+    "UINT64_MAX = %llu\n"
+    "          // 18446744073709551615\n", UINT64_MAX);
+
+  sc_LOG("end");
 }
 
 struct int_map_node {
@@ -54,7 +69,7 @@ DEFINE_KEY_COMPARER(int_map_cmp, struct int_map_node, int, k)
 RB_HEAD(int_map, int_map_node);
 RB_GENERATE(int_map, int_map_node, rb, int_map_cmp)
 
-void exercise_trees(void) {
+void exercise_trees() {
   sc_LOG("");
   struct int_map head;
   RB_INIT(&head);
@@ -97,7 +112,7 @@ void exercise_trees(void) {
   sc_LOG("end");
 }
 
-void exercise_malloc(void) {
+void exercise_malloc() {
 #define NUM_ALLOCS 20
   size_t size = 500;
   char *allocs[NUM_ALLOCS] = { 0 };
@@ -123,7 +138,7 @@ void exercise_malloc(void) {
 #undef NUM_ALLOCS
 }
 
-void yield_thread(void) {
+void yield_thread() {
   sc_puts("Start yield()\n");
   __asm__ volatile(
     "mov    r0,  #10 " "\n\t"
@@ -183,7 +198,7 @@ void yield_sub(unsigned int arg1) {
   sc_puts("In yield_sub() 2\n");
  }
 
-void busy_loop_thread(void) {
+void busy_loop_thread() {
   sc_puts("Start busy_loop_thread()\n");
     __asm__ volatile(
     "mov    r0,  #10 " "\n\t"
@@ -213,9 +228,9 @@ void busy_loop_thread(void) {
   }
 }
 
-void spawn_one(void);
+void spawn_one();
 
-void spawner_thread(void) {
+void spawner_thread() {
   sc_puts("spawn_thread()\n");
 
   for (int i = 0; i < 3; i++) {
@@ -227,7 +242,7 @@ void spawner_thread(void) {
   }
 }
 
-void spawn_one(void) {
+void spawn_one() {
   struct spawn_args_t args = {
     .pc = &yield_thread,
   };
@@ -248,13 +263,13 @@ void spawn_one(void) {
   }
 }
 
-void return_thread(void) {
+void return_thread() {
   sc_puts("return_thread() start\n");
   sys_yield();
   sc_puts("return_thread() end\n");
 }
 
-void exit_thread(void) {
+void exit_thread() {
   sc_puts("exit_thread() start\n");
   sys_exit();
 }
@@ -278,7 +293,7 @@ void log_ch(int ch) {
 #define TRACE_CONSOLE_READER 0
 #endif
 
-void console_reader_thread(void) {
+void console_reader_thread() {
   sc_puts("console_reader_thread()\n");
 
   char buff[16];
@@ -326,5 +341,13 @@ void console_reader_thread(void) {
       // Clear screen.
       sc_puts("\x1b[2J");
     }
+  }
+}
+
+void sleep_thread() {
+  sc_LOG("start");
+  while(1) {
+    sc_LOG("loop");
+    sys_sleep(DURATION_MS * 100);
   }
 }

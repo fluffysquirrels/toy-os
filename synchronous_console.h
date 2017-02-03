@@ -1,6 +1,8 @@
 #pragma once
+
 #include "stdarg.h"
 #include "stdbool.h"
+#include "stdint.h"
 
 
 #define STR_INNER(x) #x
@@ -34,10 +36,15 @@
 #define sc_LOG(msg)\
   sc_LOGF("%s", msg)
 
+/* // #define sc_LOGF(format, ...)\ */
+/* //   sc_printf("%s:%s: %s(): ", __FILE__, STR(__LINE__), __func__);    \ */
+/* //   sc_printf(format, __VA_ARGS__);                                   \ */
+/* //   sc_puts("\n"); */
+
 #define sc_LOGF(format, ...)\
-  sc_printf("%s:%s: %s(): ", __FILE__, STR(__LINE__), __func__);    \
-  sc_printf(format, __VA_ARGS__);                                   \
-  sc_puts("\n");
+  sc_logf(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
+
+void sc_logf(const char *file, uint32_t line, const char *func, char *format, ...);
 
 #define STR_INNER(x) #x
 #define STR(x) STR_INNER(x)
@@ -50,8 +57,9 @@ void halt();
 void warn(char *string);
 int sc_puts(char *string);
 void sc_putch(char ch);
-void sc_print_uint32_hex(unsigned int w);
+void sc_print_uint32_hex(uint32_t w);
 void sc_print_uint8_hex(char x);
-int sc_print_int32_dec(int d);
+int sc_print_uint32_dec(uint32_t d);
+int sc_print_uint64_dec(uint64_t u);
 int sc_printf(char *format, ...);
 int sc_vprintf(char *format, va_list args);

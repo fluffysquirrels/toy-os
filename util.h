@@ -17,3 +17,10 @@ void *memset(void *bytes, int ch, int len);
     (k1) < (k2) ? -1            \
   : (k1) > (k2) ? +1            \
   : 0;
+
+
+#define MAX(a,b) \
+  ((a) < (b) ? (b) : (a))
+
+#define MIN(a,b) \
+  ((a) < (b) ? (a) : (b))

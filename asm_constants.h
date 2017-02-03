@@ -6,7 +6,8 @@
 #define SYSCALL_NUM_SPAWN 0x2
 #define SYSCALL_NUM_EXIT  0x3
 #define SYSCALL_NUM_READ  0x4
-#define SYSCALL_NUM_MAX   0x4 // Should be equal to the highest syscall number
+#define SYSCALL_NUM_SLEEP 0x5
+#define SYSCALL_NUM_MAX   0x5 // Should be equal to the highest syscall number
                               // Used to allocate syscall handler table
 
 #define THREAD_OFFSET_cpsr 0x0

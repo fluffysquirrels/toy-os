@@ -3,11 +3,14 @@
 #include "asm_constants.h"
 #include "context_switch.h"
 #include "interrupt.h"
+#include "rtc_pl031.h"
 #include "stdbool.h"
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
 #include "thread.h"
+#include "timer.h"
+#include "timer_sp804.h"
 #include "uart.h"
 #include "util.h"
 #include "versatilepb.h"
@@ -18,10 +21,7 @@
 
 static void scheduler_loop(void);
 
-static void init_timers(void);
-static void start_scheduler_timer(void);
-
-static void init_scheduler();
+static void scheduler_init();
 
 static void trl_init();
 static bool trl_remove(unsigned int prio, unsigned int thread_id);
@@ -32,14 +32,15 @@ static bool init_complete = false;
 
 void kernel_init() {
   init_syscall_handlers();
-  init_scheduler();
+  scheduler_init();
 
   // Init devices
   uart_init();
-  init_timers();
+  rtc_pl031_init();
+  timer_sp804_init();
   // After devices
 
-  start_scheduler_timer();
+  timer_init();
 
   init_complete = true;
 }
@@ -48,6 +49,8 @@ void kernel_run() {
   assert(init_complete, "didn't call kernel_init() before kernel_run()");
   scheduler_loop();
 }
+
+#define THREAD_QUANTUM_DURATION (DURATION_MS * 500)
 
 static void scheduler_loop() {
   sc_LOG_IF(TRACE_SCHEDULER, "start");
@@ -81,9 +84,18 @@ static void scheduler_loop() {
     }
 
     if (thread_id == THREAD_ID_INVALID) {
-      sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping\n\n");
+      sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping");
+
+      // TODO: Reduce duplication between this and activate.
+      duration_t max_thread_time = THREAD_QUANTUM_DURATION;
+      duration_t max_timer_time = timer_get_earliest_deadline() - timer_systemnow();
+      duration_t max_time = MIN(max_thread_time, max_timer_time);
+      uint64_t max_time_ticks = max_time / (DURATION_MS / TIMER_SP804_TICKS_PER_MS);
+      timer_sp804_set_timeout(TIMER_SP804_SCHEDULER_TIMER, (uint32_t) max_time_ticks);
 
       sleep();
+      sc_LOG_IF(TRACE_SCHEDULER, "woke up after sleep\n");
+
       continue;
     }
 
@@ -95,6 +107,16 @@ static void scheduler_loop() {
 #endif // TRACE_SCHEDULER
 
     ASSERT(thread->state == THREAD_STATE_READY);
+
+    // TODO: Store how much time a thread has consumed since it was
+    //       last scheduled and subtract that from its quantum for time to run it.
+
+    // TODO: Reduce duplication between this and no threads to run.
+    duration_t max_thread_time = THREAD_QUANTUM_DURATION;
+    duration_t max_timer_time = timer_get_earliest_deadline() - timer_systemnow();
+    duration_t max_time = MIN(max_thread_time, max_timer_time);
+    uint64_t max_time_ticks = max_time / (DURATION_MS / TIMER_SP804_TICKS_PER_MS);
+    timer_sp804_set_timeout(TIMER_SP804_SCHEDULER_TIMER, (uint32_t) max_time_ticks);
 
     unsigned int stop_reason = activate(thread);
 
@@ -118,7 +140,7 @@ static void scheduler_loop() {
   /* Not reached */
 }
 
-static void init_scheduler() {
+static void scheduler_init() {
   trl_init();
 }
 
@@ -186,30 +208,4 @@ void scheduler_update_thread_state(struct thread_t* thread, unsigned int old_sta
   if (thread->state == THREAD_STATE_READY) {
     trl_append(thread->priority, tid);
   }
-}
-
-static void isr_timer01() {
-  sc_LOG_IF(TRACE_SCHEDULER, "start");
-
-  if(*(TIMER0 + TIMER_MIS)) { /* Timer0 went off */
-    *(TIMER0 + TIMER_INTCLR) = 1; /* Clear interrupt */
-    sc_LOG_IF(TRACE_SCHEDULER, "TIMER0 tick");
-  } else if(*(TIMER1 + TIMER_MIS)) { /* Timer1 went off */
-    *(TIMER1 + TIMER_INTCLR) = 1; /* Clear interrupt */
-    sc_LOG_IF(TRACE_SCHEDULER, "TIMER1 tick");
-  } else {
-    PANIC("*(TIMER0/1 + TIMER_MIS) was clear");
-  }
-}
-
-static void init_timers() {
-  set_interrupt_handler(PIC_INTNUM_TIMER01, isr_timer01);
-  enable_interrupt(PIC_INTNUM_TIMER01);
-}
-
-static void start_scheduler_timer() {
-  int tickMs = 500;
-  *(TIMER0 + TIMER_LOAD) = tickMs * 1000;
-  *(TIMER0 + TIMER_CONTROL) = TIMER_EN | TIMER_PERIODIC | TIMER_32BIT | TIMER_INTEN;
-  *(TIMER0 + TIMER_BGLOAD) = tickMs * 1000;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "limits.h"
 #include "stdbool.h"
+#include "stdint.h"
 #include "syscalls.h"
 
 struct thread_t{
@@ -37,7 +38,10 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
 void thread_update_state(struct thread_t *t, unsigned int state);
 void thread_update_priority (struct thread_t *t, unsigned int priority);
 struct thread_t *thread_get(unsigned int thread_id);
+uint64_t thread_get_uint64_arg(struct thread_t* t, unsigned int argument_index);
+void thread_set_uint32_return(struct thread_t* t, uint32_t rv);
 void sc_print_thread(struct thread_t*);
+
 
 // TODO: Hide these behind an abstraction
 #define THREAD_LIMIT 8

@@ -1,5 +1,6 @@
 #include "stdarg.h"
 #include "synchronous_console.h"
+#include "timer.h"
 #include "uart.h"
 #include "util.h"
 
@@ -39,6 +40,15 @@ void halt() {
 void warn(char *string) {
   sc_puts("warn: ");
   sc_puts(string);
+  sc_puts("\n");
+}
+
+void sc_logf(const char *file, uint32_t line, const char *func, char *format, ...) {
+  sc_printf("%u %s:%u: %s(): ", (uint32_t) (timer_systemnow() / 1000000), file, line, func);
+  va_list args;
+  va_start(args, format);
+  sc_vprintf(format, args);
+  va_end(args);
   sc_puts("\n");
 }
 
@@ -103,6 +113,30 @@ int sc_print_uint32_dec(unsigned int u) {
   return sc_puts(buffCurr);
 }
 
+int sc_print_uint64_dec(uint64_t u) {
+  if (u == 0) {
+    sc_putch('0');
+    return 1;
+  }
+
+  // UINT64_MAX is 10^19, which needs 20 decimal digits to print,
+  // +1 for a terminating null means we need a 21 byte buffer.
+  char buff[21] = { 0 };
+
+  char *buffCurr = buff + sizeof(buff) - 2;
+  while(1) {
+    char digit = '0' + (u % 10);
+    *buffCurr = digit;
+    u /= 10;
+    if (u == 0) {
+      break;
+    }
+    buffCurr--;
+    ASSERT(buffCurr >= buff);
+  }
+
+  return sc_puts(buffCurr);
+}
 
 int sc_printf(char *format, ...) {
   va_list args;
@@ -111,6 +145,9 @@ int sc_printf(char *format, ...) {
   va_end(args);
   return ret;
 }
+
+static bool peekeq(char *buff, char *test);
+
 int sc_vprintf(char *format, va_list args) {
   int chars_written = 0;
 
@@ -129,34 +166,60 @@ int sc_vprintf(char *format, va_list args) {
         return -1;
       }
 
-      switch (*curr) {
-      case 'c':;
-        char c = (char) va_arg(args, int);
-        chars_written++;
-        sc_putch(c);
-        break;
-      case 's':;
-        char *s = va_arg(args, char *);
-        chars_written += sc_puts(s);
-        break;
-      case 'u':;
-        int u = va_arg(args, unsigned int);
-        chars_written += sc_print_uint32_dec(u);
-        break;
-      case 'x':;
-        unsigned int d = va_arg(args, unsigned int);
-        sc_print_uint32_hex(d);
-        chars_written += 10;
-        break;
-      default:;
-        PANICF("Invalid parameter specifier in vprintf: %c", *curr);
-        // Invalid parameter specifier.
-        return -1;
-      }
+      if (peekeq(curr, "llu")) {
+        uint64_t n = va_arg(args, uint64_t);
+        chars_written += sc_print_uint64_dec(n);
+        curr += 3;
+      } else {
+        switch (*curr) {
+        case 'c':;
+          char c = (char) va_arg(args, int);
+          chars_written++;
+          sc_putch(c);
+          break;
+        case 's':;
+          char *s = va_arg(args, char *);
+          chars_written += sc_puts(s);
+          break;
+        case 'u':;
+          int u = va_arg(args, unsigned int);
+          chars_written += sc_print_uint32_dec(u);
+          break;
+        case 'x':;
+          unsigned int d = va_arg(args, unsigned int);
+          sc_print_uint32_hex(d);
+          chars_written += 10;
+          break;
+        default:;
+          PANICF("Invalid parameter specifier in vprintf: %c", *curr);
+          // Invalid parameter specifier.
+          return -1;
+        }
 
-      curr++;
+        curr++;
+      }
     }
-  }
+  } // while (*curr != '\0')
+
 
   return chars_written;
+}
+
+// param buff is a null terminated string
+// param test is a null terminated string
+// The beginning of buff should match all of test.
+static bool peekeq(char *buff, char *test) {
+  while(1) {
+    if (*test == NULL) {
+      return true;
+    }
+    // *test != NULL
+    if (*buff != *test) {
+      return false;
+    }
+    // *buff == *test
+
+    buff++;
+    test++;
+  }
 }

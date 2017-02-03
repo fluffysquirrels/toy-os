@@ -65,6 +65,16 @@ struct thread_t *thread_get(unsigned int thread_id) {
   return &threads[thread_id];
 }
 
+uint64_t thread_get_uint64_arg(struct thread_t* t, unsigned int argument_index) {
+  uint64_t low  = (uint64_t) t->registers[argument_index + 0];
+  uint64_t high = (uint64_t) t->registers[argument_index + 1];
+  return (high << 32) | low;
+}
+
+void thread_set_uint32_return(struct thread_t* t, uint32_t rv) {
+  t->registers[0] = rv;
+}
+
 void sc_print_thread(struct thread_t *thread) {
   sc_puts("thread {\n");
   sc_puts("  .cpsr = ");
