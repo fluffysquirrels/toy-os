@@ -76,10 +76,11 @@ static void rtc_interrupt() {
 
   timer_rtc_tick();
 
-  uint32_t raw =  rtc_pl031_get_raw();
-  ASSERT(highest_value == raw); // Assert highest_value isn't running away
-                                // from raw with all these increments.
-  highest_value++;
+  uint32_t raw = rtc_pl031_get_raw();
+  // Assert highest_value is equal to the current raw value (hasn't already been
+  // incremented) or is lower, e.g. if the debugger has been running.
+  ASSERT(highest_value <= raw);
+  highest_value = raw + 1;
 
 #if TRACE_PL031
   rtc_log_state();
