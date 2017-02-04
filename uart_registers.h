@@ -1,9 +1,6 @@
 #pragma once
 
-#define UART_BASE_0          ((volatile unsigned int*) 0x101f1000)
-#define UART_BASE_1          ((volatile unsigned int*) 0x101f2000)
-#define UART_BASE_2          ((volatile unsigned int*) 0x101f3000)
-#define UART_BASE_3          ((volatile unsigned int*) 0x10009000)
+#include "arch_registers.h"
 
 #define UART_DR              (0x00 / sizeof(unsigned int))   /* Data read or written from the interface. */
 #define UART_RSR             (0x04 / sizeof(unsigned int))   /* Receive status register (Read). */

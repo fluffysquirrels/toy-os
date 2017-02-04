@@ -13,28 +13,34 @@
 #endif
 
 struct uart_t {
-  unsigned int *addr;
+  volatile unsigned int *addr;
 };
 
 struct uart_t uart_0_ = {
-  .addr = (unsigned int *) UART_BASE_0
+  .addr = (volatile unsigned int *) UART_BASE_0
 };
 struct uart_t *uart_0 = &uart_0_;
 
+#ifdef UART_BASE_1
 struct uart_t uart_1_ = {
-  .addr = (unsigned int *) UART_BASE_1
+  .addr = (volatile unsigned int *) UART_BASE_1
 };
 struct uart_t *uart_1 = &uart_1_;
+#endif // UART_BASE_1
 
+#ifdef UART_BASE_2
 struct uart_t uart_2_ = {
-  .addr = (unsigned int *) UART_BASE_2
+  .addr = (volatile unsigned int *) UART_BASE_2
 };
 struct uart_t *uart_2 = &uart_2_;
+#endif // UART_BASE_2
 
+#ifdef UART_BASE_3
 struct uart_t uart_3_ = {
-  .addr = (unsigned int *) UART_BASE_3
+  .addr = (volatile unsigned int *) UART_BASE_3
 };
 struct uart_t *uart_3 = &uart_3_;
+#endif // UART_BASE_3
 
 bool uart_tx_fifo_full(struct uart_t *uart) {
   return (*(uart->addr + UART_FR) & UART_FR_TXFF);

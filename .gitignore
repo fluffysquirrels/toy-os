@@ -4,3 +4,4 @@
 *.d
 TAGS
 target/
+config/current.mk

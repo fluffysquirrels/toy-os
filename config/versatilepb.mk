@@ -1,0 +1,2 @@
+CONFIG_QEMU_MACHINE=versatilepb
+CONFIG_ARCH=versatilepb

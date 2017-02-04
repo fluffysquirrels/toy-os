@@ -1,12 +1,22 @@
 # Disable built-in rules
 .SUFFIXES:
 
+# TODO: set default if no config
+CURRENT_CONFIG_FILE=config/current.mk
+ifeq ("$(wildcard $(CURRENT_CONFIG_FILE))","")
+$(error Missing config file "$(CURRENT_CONFIG_FILE)". Create it, e.g. just containing "include config/versatilepb.mk")
+endif
+include $(CURRENT_CONFIG_FILE)
+
+MAKEFILES = Makefile $(wildcard config/*.mk)
+
 OUT_DIR :=target
 OBJ_DIR :=$(OUT_DIR)/obj
 DEP_DIR :=$(OUT_DIR)/deps
 
 $(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR))
 
+ARCH_DIR=arch/$(CONFIG_ARCH)
 SOURCES.c := $(wildcard *.c)
 SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
@@ -17,14 +27,16 @@ OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
 OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
 
 CC=arm-linux-gnueabi-gcc
-CFLAGS_ARCH=-std=c99 -march=armv6k -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb
+CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
-CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS)
+CFLAGS_INCLUDES=-I$(ARCH_DIR)
+CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
 
-QEMU_CMD = qemu-system-arm -M versatilepb -cpu arm1176 -nographic -kernel $(OUT_IMG)
+QEMU_SYSTEM_ARM = ../qemu/build/arm-softmmu/qemu-system-arm
+QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_IMG)
 
 .PHONY += qemu
 qemu: build
@@ -59,32 +71,32 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 $(OUT_IMG): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
-$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.d Makefile
+$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.d $(MAKEFILES)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)/%.o: %.c $(DEP_DIR)/%.d Makefile
+$(OBJ_DIR)/%.o: %.c $(DEP_DIR)/%.d $(MAKEFILES)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 .PRECIOUS: $(OBJ_DIR)/%.s
-$(OBJ_DIR)/%.s: %.S Makefile
+$(OBJ_DIR)/%.s: %.S $(MAKEFILES)
 	$(CC) -E -o $@ -c $<
 
 define MAKE-DEPS =
 	set -e; rm -f $@
 	$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
 	@echo using TEMP_DEP = $(TEMP_DEP)
-	$(CC) -E -MM -MP $< > $(TEMP_DEP) || (rm -f $(TEMP_DEP) && false)
+	$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP) || (rm -f $(TEMP_DEP) && false)
 	sed -e 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $(TEMP_DEP) > $@ || (rm -f $(TEMP_DEP) $@ && false)
 	rm -f $(TEMP_DEP)
 endef
 
-$(DEP_DIR)/%.d: %.c Makefile
+$(DEP_DIR)/%.d: %.c $(MAKEFILES)
 	$(MAKE-DEPS)
 
-$(DEP_DIR)/%.d: %.S Makefile
+$(DEP_DIR)/%.d: %.S $(MAKEFILES)
 	$(MAKE-DEPS)
 
-$(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c Makefile
+$(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
 
  # Include dependency files
