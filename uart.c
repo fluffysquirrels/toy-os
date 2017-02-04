@@ -4,7 +4,7 @@
 #include "syscall_handlers.h"
 #include "syscalls.h"
 #include "uart.h"
-#include "uart_consts.h"
+#include "uart_registers.h"
 #include "util.h"
 #include "versatilepb.h"
 
