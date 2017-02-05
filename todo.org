@@ -1,14 +1,22 @@
 * Bugs
 
+* Tasks:
+** u-boot rpi
+*** Boot something on the rpi with u-boot
+*** Set a u-boot env to a string with spaces. Should just need to wrap in single quotes. http://www.denx.de/wiki/DULG/CommandLineParsing
+*** Copy something to u-boot over serial
+    kermit
+    minicom
+*** Script copying something to u-boot over serial
 
 * Features:
+
 ** Some collections (linked / array list, heap, sorted map, hash)
 ** Timers
-*** err_t sys_sleep_until (time_t time_due)
-*** err_t sys_get_time (time_t &now)
+*** err_t sys_sleep_until (time time_due)
+*** err_t sys_get_time (time &now)
 ** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
 ** fork
-** Reclaim resources used by stopped threads. thread_t and stack for now.
 
 * Nice features:
 ** Track how much time a thread has consumed since it was scheduled and only
@@ -20,13 +28,6 @@
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
-** Replace static allocation in little tables all over the place with real data
-   structures.
-
-   Including:
-*** Threads
-*** Stacks
-*** Thread ready lists
 
 ** file interface with v_table for different drivers.
 ** IPC
@@ -35,6 +36,7 @@
 ** File system
 
 * Nice:
+** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
 ** Set user thread return values with a function in syscalls, fetch all arguments with functions too.
 ** Rename activate() -> activate_thread().

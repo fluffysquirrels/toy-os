@@ -48,6 +48,20 @@
    })
 
 
+* Raspberry Pi bare metal
+** https://github.com/rsta2/circle
+   "A C++ bare metal environment for Raspberry Pi with USB"
+
+** https://github.com/rsta2/uspi/
+   Mechanical C port of rsta2/circle
+** https://github.com/Chadderz121/csud
+   Easy to read. Only supports control messages to HID devices.
+** USB in a nutshell
+   http://www.beyondlogic.org/usbnutshell/us\b1.shtml
+** https://www.raspberrypi.org/forums/viewforum.php?f=72 -- bare metal rpi forum
+** https://github.com/steve-bate/ChibiOS-RPi
+
+
 * C data structures libraries
 
   Decision: I'm going to start using OpenBSD's tree.h
