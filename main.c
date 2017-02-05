@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "heap.h"
 #include "stdint.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
@@ -18,6 +19,7 @@ void exit_thread();
 void console_reader_thread();
 void tests_thread();
 void sleep_thread();
+void heap_stat_thread();
 
 int main() {
   sc_puts("main()\n");
@@ -37,6 +39,7 @@ int main() {
   ASSERT(kspawn(0x10, &console_reader_thread, &t) == E_SUCCESS);
   thread_update_priority(t, 20);
   //  ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
+  ASSERT(kspawn(0x10, &heap_stat_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &sleep_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &tests_thread, &t) == E_SUCCESS);
 
@@ -349,5 +352,13 @@ void sleep_thread() {
   while(1) {
     sc_LOG("loop");
     sys_sleep(DURATION_MS * 100);
+  }
+}
+
+void heap_stat_thread() {
+  sc_LOG("start");
+  while(1) {
+    sc_print_heap_stats();
+    sys_sleep(DURATION_MS * 1000);
   }
 }
