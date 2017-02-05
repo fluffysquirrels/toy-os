@@ -3,6 +3,7 @@
 #include "asm_constants.h"
 #include "context_switch.h"
 #include "interrupt.h"
+#include "third_party/OpenBSD_collections/src/queue.h"
 #include "rtc_pl031.h"
 #include "stdbool.h"
 #include "synchronous_console.h"
@@ -23,9 +24,9 @@ static void scheduler_loop(void);
 static void scheduler_init();
 
 static void trl_init();
-static bool trl_remove(unsigned int prio, unsigned int thread_id);
-static void trl_append(unsigned int prio, unsigned int thread_id);
-static unsigned int trl_peek_first(unsigned int prio);
+static bool trl_remove(unsigned int prio, struct thread_t* thread);
+static void trl_append(unsigned int prio, struct thread_t* thread);
+static struct thread_t* trl_peek_first(unsigned int prio);
 
 static bool init_complete = false;
 
@@ -63,16 +64,15 @@ static void scheduler_loop() {
       continue;
     }
 
-    unsigned int thread_id = THREAD_ID_INVALID;
     unsigned int prio = THREAD_PRIORITY_MAX;
+    struct thread_t *thread = NULL;
 
     // Loop over priorities from MAX to MIN.
     // Couldn't figure out a way to do this with a for loop given
     // thread priority is unsigned.
     while (1) {
-      unsigned int peek = trl_peek_first(prio);
-      if (peek != THREAD_ID_INVALID) {
-        thread_id = peek;
+      thread = trl_peek_first(prio);
+      if (thread != NULL) {
         break;
       }
 
@@ -82,7 +82,7 @@ static void scheduler_loop() {
       prio--;
     }
 
-    if (thread_id == THREAD_ID_INVALID) {
+    if (thread == NULL) {
       sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping");
 
       // TODO: Reduce duplication between this and activate.
@@ -98,10 +98,8 @@ static void scheduler_loop() {
       continue;
     }
 
-    struct thread_t *thread = thread_get(thread_id);
-
 #if TRACE_SCHEDULER
-    sc_LOGF("thread_id=%x", thread_id);
+    sc_LOGF("thread_id=%x", thread->thread_id);
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 
@@ -129,8 +127,8 @@ static void scheduler_loop() {
       handle_interrupt(thread);
 
       // Cycle the thread to the back of the run list
-      trl_remove(thread->priority, thread->thread_id);
-      trl_append(thread->priority, thread->thread_id);
+      trl_remove(thread->priority, thread);
+      trl_append(thread->priority, thread);
     } else if (stop_reason == ACTIVATE_RET_SYSCALL) {
       handle_syscall(thread);
     }
@@ -145,28 +143,30 @@ static void scheduler_init() {
 
 // trl = thread run lists
 // TODO: Better data structure.
-unsigned int thread_run_lists[THREAD_PRIORITY_MAX + 1][THREAD_LIMIT];
+struct thread_t* thread_run_lists[THREAD_PRIORITY_MAX + 1][THREAD_LIMIT];
+
+
 
 static void trl_init() {
   for (unsigned int prio = 0; prio <= THREAD_PRIORITY_MAX; prio++) {
     for (unsigned int tid = 0; tid < THREAD_LIMIT; tid++) {
-      thread_run_lists[prio][tid] = THREAD_ID_INVALID;
+      thread_run_lists[prio][tid] = NULL;
     }
   }
 }
 
-// Return true if we found thread_id and removed it
-static bool trl_remove(unsigned int prio, unsigned int thread_id) {
+// Return true if we found thread and removed it
+static bool trl_remove(unsigned int prio, struct thread_t *thread) {
   for (unsigned int idx = 0; idx < THREAD_LIMIT; idx++) {
-    if (thread_run_lists[prio][idx] == thread_id) {
+    if (thread_run_lists[prio][idx] == thread) {
 
       // Shuffle up the remaining items.
       // TODO: Early exit.
-      thread_run_lists[prio][idx] = THREAD_ID_INVALID;
+      thread_run_lists[prio][idx] = NULL;
       for (unsigned int j = idx; j < THREAD_LIMIT - 1; j++) {
         thread_run_lists[prio][j] = thread_run_lists[prio][j + 1];
       }
-      thread_run_lists[prio][THREAD_LIMIT - 1] = THREAD_ID_INVALID;
+      thread_run_lists[prio][THREAD_LIMIT - 1] = NULL;
 
       return true;
     }
@@ -175,10 +175,10 @@ static bool trl_remove(unsigned int prio, unsigned int thread_id) {
   return false;
 }
 
-static void trl_append(unsigned int prio, unsigned int thread_id) {
+static void trl_append(unsigned int prio, struct thread_t *thread) {
   for (unsigned int i = 0; i < THREAD_LIMIT; i++) {
-    if (thread_run_lists[prio][i] == THREAD_ID_INVALID) {
-      thread_run_lists[prio][i] = thread_id;
+    if (thread_run_lists[prio][i] == NULL) {
+      thread_run_lists[prio][i] = thread;
       return;
     }
   }
@@ -186,25 +186,23 @@ static void trl_append(unsigned int prio, unsigned int thread_id) {
   PANIC("Didn't find a free slot in trl");
 }
 
-static unsigned int trl_peek_first(unsigned int prio) {
+static struct thread_t *trl_peek_first(unsigned int prio) {
   return thread_run_lists[prio][0];
 }
 
 void scheduler_update_thread_priority(struct thread_t* thread, unsigned int old_priority) {
   if (thread->state == THREAD_STATE_READY) {
-    unsigned int tid = thread->thread_id;
-    trl_remove(old_priority, tid);
-    trl_append(thread->priority, tid);
+    trl_remove(old_priority, thread);
+    trl_append(thread->priority, thread);
   }
 }
 
 void scheduler_update_thread_state(struct thread_t* thread, unsigned int old_state) {
-  unsigned int tid = thread->thread_id;
   if (old_state == THREAD_STATE_READY) {
-    trl_remove(thread->priority, tid);
+    trl_remove(thread->priority, thread);
   }
 
   if (thread->state == THREAD_STATE_READY) {
-    trl_append(thread->priority, tid);
+    trl_append(thread->priority, thread);
   }
 }
