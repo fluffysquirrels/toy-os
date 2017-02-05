@@ -10,9 +10,9 @@ include $(CURRENT_CONFIG_FILE)
 
 MAKEFILES = Makefile $(wildcard config/*.mk)
 
-OUT_DIR :=target
-OBJ_DIR :=$(OUT_DIR)/obj
-DEP_DIR :=$(OUT_DIR)/deps
+OUT_DIR:= target
+OBJ_DIR:= $(OUT_DIR)/obj
+DEP_DIR:= $(OUT_DIR)/deps
 
 $(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR))
 
@@ -38,31 +38,31 @@ LDFLAGS=-N -Ttext=0x10000
 QEMU_SYSTEM_ARM = ../qemu/build/arm-softmmu/qemu-system-arm
 QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_IMG)
 
-.PHONY += qemu
+.PHONY: qemu
 qemu: build
 	$(QEMU_CMD)
 
-.PHONY += qemu-debug-listen
+.PHONY: qemu-debug-listen
 qemu-debug-listen: build
 	$(QEMU_CMD) -s -S
 
-.PHONY += gdb-attach
+.PHONY: gdb-attach
 gdb-attach: build
 	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file $(OUT_IMG)' -tui
 
-.PHONY += gdb-attach-new-term
+.PHONY: gdb-attach-new-term
 gdb-attach-new-term: build
 	gnome-terminal -e 'make gdb-attach'
 
-.PHONY += debug
+.PHONY: debug
 debug: gdb-attach-new-term qemu-debug-listen
 
-.PHONY += clean
+.PHONY: clean
 clean:
 	rm -f TAGS
-	rm -rf $(OUT_DIR)
+	rm -rf $(OUT_DIR)/*
 
-.PHONY += build
+.PHONY: build
 build: $(OUT_IMG) TAGS
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
@@ -82,12 +82,18 @@ $(OBJ_DIR)/%.s: %.S $(MAKEFILES)
 	$(CC) -E -o $@ -c $<
 
 define MAKE-DEPS =
-	set -e; rm -f $@
 	$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
 	@echo using TEMP_DEP = $(TEMP_DEP)
-	$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP) || (rm -f $(TEMP_DEP) && false)
-	sed -e 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $(TEMP_DEP) > $@ || (rm -f $(TEMP_DEP) $@ && false)
-	rm -f $(TEMP_DEP)
+	# Move existing file to *.old to ensure if we fail make doesn't
+	# see a stale file.
+	if test -f $@; then mv $@ $(TEMP_DEP).old; fi
+	$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
+	sed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
+
+	cp $(TEMP_DEP).sed $@;
+
+	# Comment out this rm to view the temp files output at each step.
+	rm $(TEMP_DEP)*
 endef
 
 $(DEP_DIR)/%.d: %.c $(MAKEFILES)
@@ -99,6 +105,6 @@ $(DEP_DIR)/%.d: %.S $(MAKEFILES)
 $(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
 
- # Include dependency files
+# Include dependency files
 -include $(SOURCES.c:%.c=$(DEP_DIR)/%.d)
 -include $(SOURCES.S:%.S=$(DEP_DIR)/%.d)
