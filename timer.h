@@ -16,12 +16,12 @@ err_t timer_queue(
   timer_id_t *out_timer_id);
 
 // Returns nanoseconds since system startup.
-time_t timer_systemnow();
+time timer_systemnow();
 
 void timer_do_expired_callbacks();
 
 void timer_rtc_tick();
 
-time_t timer_get_earliest_deadline();
+time timer_get_earliest_deadline();
 
 void timer_init();

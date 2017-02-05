@@ -15,7 +15,7 @@
 
 struct timer_node {
   RB_ENTRY(timer_node) rb;
-  time_t deadline;
+  time deadline;
   timer_callback_t callback;
   void *callback_state;
   timer_id_t timer_id;
@@ -23,7 +23,7 @@ struct timer_node {
 
 static void timer_do_callback(struct timer_node *n);
 
-DEFINE_KEY_COMPARER(timer_node_cmp, struct timer_node, time_t, deadline)
+DEFINE_KEY_COMPARER(timer_node_cmp, struct timer_node, time, deadline)
 
 RB_HEAD(timer_map, timer_node) timers = RB_INITIALIZER(&timers);
 RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
@@ -31,7 +31,7 @@ RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
 static timer_id_t next_timer_id = 0;
 
 // Store the highest systemnow value we've calculated so far.
-static time_t highest_systemnow = 0;
+static time highest_systemnow = 0;
 
 void timer_init() {
   highest_systemnow = 0;
@@ -42,13 +42,13 @@ void timer_rtc_tick() {
   timer_sp804_set_timeout(TIMER_SP804_1S_COUNTDOWN_TIMER, 1000 * TIMER_SP804_TICKS_PER_MS);
 }
 
-time_t timer_systemnow() {
-  time_t rtc_since_startup = DURATION_S * ((uint64_t) rtc_pl031_get_current());
+time timer_systemnow() {
+  time rtc_since_startup = DURATION_S * ((uint64_t) rtc_pl031_get_current());
 
   // We reset TIMER1 every tick of the RTC (1Hz)and it counts
   // down from 1000000 at 1MHz.
-  time_t hi_res_time_since_rtc_tick = DURATION_S - DURATION_US * ((uint64_t) timer_sp804_get_current(TIMER_SP804_1S_COUNTDOWN_TIMER));
-  time_t now = rtc_since_startup + hi_res_time_since_rtc_tick;
+  time hi_res_time_since_rtc_tick = DURATION_S - DURATION_US * ((uint64_t) timer_sp804_get_current(TIMER_SP804_1S_COUNTDOWN_TIMER));
+  time now = rtc_since_startup + hi_res_time_since_rtc_tick;
   highest_systemnow = MAX(now, highest_systemnow);
 
   // Return the highest systemnow value we've calculated so far, so that time
@@ -87,7 +87,7 @@ err_t timer_queue(
 void timer_do_expired_callbacks() {
   sc_LOG_IF(TRACE_TIMER, "");
 
-  time_t now = timer_systemnow();
+  time now = timer_systemnow();
 
   while(1) {
     struct timer_node *n = RB_MIN(timer_map, &timers);
@@ -122,7 +122,7 @@ static void timer_do_callback(struct timer_node *n) {
   n->callback(cbd, n->callback_state);
 }
 
-time_t timer_get_earliest_deadline() {
+time timer_get_earliest_deadline() {
   struct timer_node *n = RB_MIN(timer_map, &timers);
   if (n == NULL) {
     return UINT64_MAX;

@@ -20,6 +20,9 @@ struct thread_t{
 
   // Modify with thread_update_priority
   unsigned int priority;
+
+  uint8_t *stack_base;
+  uint32_t stack_size;
 };
 
 #define THREAD_STATE_INVALID 0
@@ -39,7 +42,3 @@ struct thread_t *thread_get(unsigned int thread_id);
 uint64_t thread_get_uint64_arg(struct thread_t* t, unsigned int argument_index);
 void thread_set_uint32_return(struct thread_t* t, uint32_t rv);
 void sc_print_thread(struct thread_t*);
-
-
-// TODO: Hide these behind an abstraction
-#define THREAD_LIMIT 8

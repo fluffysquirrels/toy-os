@@ -2,15 +2,31 @@
 
 #include "kernel.h"
 #include "stdbool.h"
+#include "stdlib.h"
 #include "synchronous_console.h"
+#include "third_party/OpenBSD_collections/src/tree.h"
 #include "util.h"
 
-#define STACK_SIZE 256
+#define THREAD_LIMIT 100
+#define STACK_SIZE 1024
 
-static unsigned int stacks[THREAD_LIMIT][STACK_SIZE];
+struct thread_node {
+  RB_ENTRY(thread_node) tree_node;
+  uint8_t *stack_base;
+  uint32_t stack_size;
+  struct thread_t thread;
+};
 
-static struct thread_t threads[THREAD_LIMIT];
+DEFINE_KEY_COMPARER(thread_node_cmp, struct thread_node, thread_id_t, thread.thread_id)
+
+RB_HEAD(thread_map, thread_node) threads = RB_INITIALIZER(&threads);
+RB_GENERATE(thread_map, thread_node, tree_node, thread_node_cmp)
+
+static struct thread_node *thread_node_find(unsigned int thread_id);
+static void thread_delete (struct thread_t *t);
+
 static unsigned int num_threads = 0;
+static thread_id_t largest_thread_id = 0;
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
@@ -18,15 +34,31 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
     return E_LIMIT;
   }
 
-  unsigned int thread_idx = num_threads;
-  num_threads++;
-  struct thread_t *thread = &threads[thread_idx];
+  struct thread_node *existing;
+  do {
+    largest_thread_id++;
+    existing = thread_node_find(largest_thread_id);
+  } while (existing != NULL);
 
-  unsigned int *stack_base = stacks[thread_idx];
+  thread_id_t thread_id = largest_thread_id;
+  num_threads++;
+
+  struct thread_node *thread_node = malloc(sizeof(struct thread_node));
+  ASSERT(thread_node != NULL);
+  memset(thread_node, 0, sizeof(struct thread_node));
+  struct thread_t *thread = &thread_node->thread;
+  thread->thread_id = thread_id;
+  RB_INSERT(thread_map, &threads, thread_node);
+
+  thread->stack_size = STACK_SIZE;
+  thread->stack_base = malloc(thread->stack_size);
+  ASSERT(thread->stack_base != NULL);
+  memset(thread->stack_base, 0, thread->stack_size);
+  // initial_stack is the last word of the stack.
+  uint8_t *initial_stack = thread->stack_base + thread->stack_size - 4;
 
   thread->cpsr = cpsr;
-  thread->thread_id = thread_idx;
-  thread->registers[13] /* sp */ = (unsigned int) (stack_base + STACK_SIZE - 16 /* why -16? */);
+  thread->registers[13] /* sp */ = (unsigned int) initial_stack;
   // Set lr to &sys_exit, so when the user mode function returns
   // it will call sys_exit and terminate gracefully.
   thread->registers[14] /* lr */ = (unsigned int) &sys_exit;
@@ -55,14 +87,37 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
   unsigned int old_state = t->state;
   t->state = state;
 
-  // TODO: Remove exited threads from the threads collection, re-use their entries.
-
   scheduler_update_thread_state(t, old_state);
+
+  if (state == THREAD_STATE_EXITED) {
+    thread_delete(t);
+    t = NULL;
+  }
+}
+
+static void thread_delete (struct thread_t *t) {
+  struct thread_node *node = thread_node_find(t->thread_id);
+  ASSERT(node != NULL);
+  RB_REMOVE(thread_map, &threads, node);
+  free(node->thread.stack_base);
+  node->thread.stack_base = NULL;
+  free(node);
+  node = NULL;
+  num_threads--;
+}
+
+static struct thread_node *thread_node_find(unsigned int thread_id) {
+  struct thread_node query = {
+    .thread = {
+      .thread_id = thread_id,
+    },
+  };
+  return RB_FIND(thread_map, &threads, &query);
 }
 
 struct thread_t *thread_get(unsigned int thread_id) {
-  ASSERT(thread_id < THREAD_LIMIT);
-  return &threads[thread_id];
+  struct thread_node *tn = thread_node_find(thread_id);
+  return tn == NULL ? NULL : &tn->thread;
 }
 
 uint64_t thread_get_uint64_arg(struct thread_t* t, unsigned int argument_index) {

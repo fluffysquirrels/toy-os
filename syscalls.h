@@ -14,8 +14,8 @@ typedef unsigned int err_t;
 typedef int iochar_t;
 #define EOF -1
 
-// time_t is a time in nanoseconds since some starting point.
-typedef uint64_t time_t;
+// time is a time in nanoseconds since some starting point.
+typedef uint64_t time;
 
 // duration_t is a time duration in nanoseconds.
 typedef uint64_t duration_t;

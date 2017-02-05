@@ -64,6 +64,7 @@ static void sysh_spawn(struct thread_t* thread) {
 
 static void sysh_exit(struct thread_t* thread) {
   thread_update_state(thread, THREAD_STATE_EXITED);
+  thread = NULL;
 }
 
 struct sysh_sleep_callback_state {
