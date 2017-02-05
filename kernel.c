@@ -13,7 +13,6 @@
 #include "timer_sp804.h"
 #include "uart.h"
 #include "util.h"
-#include "versatilepb.h"
 
 #ifndef TRACE_SCHEDULER
 #define TRACE_SCHEDULER 0

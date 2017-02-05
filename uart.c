@@ -6,7 +6,6 @@
 #include "uart.h"
 #include "uart_registers.h"
 #include "util.h"
-#include "versatilepb.h"
 
 #ifndef TRACE_UART
 #define TRACE_UART 0

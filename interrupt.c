@@ -3,7 +3,6 @@
 #include "interrupt_pl190.h"
 #include "synchronous_console.h"
 #include "util.h"
-#include "versatilepb.h"
 
 #ifndef TRACE_INTERRUPTS
 #define TRACE_INTERRUPTS 0

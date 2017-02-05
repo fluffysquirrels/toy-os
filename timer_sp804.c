@@ -4,7 +4,6 @@
 #include "timer.h"
 #include "timer_sp804.h"
 #include "timer_sp804_reg.h"
-#include "versatilepb.h"
 
 #ifndef TRACE_SP804
 #define TRACE_SP804 0
