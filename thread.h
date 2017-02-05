@@ -32,8 +32,6 @@ struct thread_t{
 #define THREAD_PRIORITY_DEFAULT 10
 #define THREAD_PRIORITY_MAX 20
 
-#define THREAD_ID_INVALID UINT_MAX
-
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread);
 void thread_update_state(struct thread_t *t, unsigned int state);
 void thread_update_priority (struct thread_t *t, unsigned int priority);
