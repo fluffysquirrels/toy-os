@@ -13,8 +13,9 @@ MAKEFILES = Makefile $(wildcard config/*.mk)
 OUT_DIR:= target
 OBJ_DIR:= $(OUT_DIR)/obj
 DEP_DIR:= $(OUT_DIR)/deps
+PREPROCESSED_DIR:= $(OUT_DIR)/preprocessed
 
-$(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR))
+$(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR) $(PREPROCESSED_DIR))
 
 ARCH_DIR=arch/$(CONFIG_ARCH)
 SOURCES.c := $(wildcard *.c)
@@ -34,6 +35,12 @@ CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld
 LDFLAGS=-N -Ttext=0x10000
+CONFIG_COMPILE_PREPROCESSED?=0
+ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"
+COMPILE_SOURCE_PREFIX:=$(PREPROCESSED_DIR)/
+else
+COMPILE_SOURCE_PREFIX=
+endif
 
 QEMU_SYSTEM_ARM = ../qemu/build/arm-softmmu/qemu-system-arm
 QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_IMG)
@@ -71,14 +78,14 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 $(OUT_IMG): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
-$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.d $(MAKEFILES)
+$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)/%.o: %.c $(DEP_DIR)/%.d $(MAKEFILES)
+$(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 .PRECIOUS: $(OBJ_DIR)/%.s
-$(OBJ_DIR)/%.s: %.S $(MAKEFILES)
+$(OBJ_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES)
 	$(CC) -E -o $@ -c $<
 
 define MAKE-DEPS =
@@ -96,15 +103,27 @@ define MAKE-DEPS =
 	rm $(TEMP_DEP)*
 endef
 
-$(DEP_DIR)/%.d: %.c $(MAKEFILES)
+$(DEP_DIR)/%.c.d: %.c $(MAKEFILES)
 	$(MAKE-DEPS)
 
-$(DEP_DIR)/%.d: %.S $(MAKEFILES)
+$(DEP_DIR)/%.S.d: %.S $(MAKEFILES)
 	$(MAKE-DEPS)
+
+.PHONY: preprocess-c
+preprocess-c: $(SOURCES.c:%.c=$(PREPROCESSED_DIR)/%.c)
+
+
+.PRECIOUS: $(PREPROCESSED_DIR)/%.c
+$(PREPROCESSED_DIR)/%.c: %.c $(DEP_DIR)/%.c.d $(MAKEFILES)
+	# sed command replaces gcc directives showing which source lines code came from,
+	# which would make the debugger show the original un-preprocessed source.
+	$(CC) $(CFLAGS_INCLUDES) -E $< |\
+	indent |\
+	sed -re 's,^(#[0-9]+),// gcc line \1,' > $@
 
 $(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
 
 # Include dependency files
--include $(SOURCES.c:%.c=$(DEP_DIR)/%.d)
--include $(SOURCES.S:%.S=$(DEP_DIR)/%.d)
+-include $(SOURCES.c:%.c=$(DEP_DIR)/%.c.d)
+-include $(SOURCES.S:%.S=$(DEP_DIR)/%.S.d)

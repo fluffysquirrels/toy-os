@@ -1,0 +1,8 @@
+# Make targets
+
+ * make preprocess-c
+   preprocess all .c files into target/preprocess/%.c
+
+ * make clean && CONFIG_COMPILE_PREPROCESSED=1 make build
+   Compile with preprocessed output so you can debug with all macros expanded.
+   Use 'make clean' before and after building with this.
