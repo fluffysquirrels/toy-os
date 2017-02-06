@@ -22,7 +22,8 @@ SOURCES.c := $(wildcard *.c)
 SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 
-OUT_IMG := $(OUT_DIR)/kernel.elf
+OUT_ELF := $(OUT_DIR)/kernel.elf
+OUT_RAW := $(OUT_DIR)/kernel.raw
 OBJECTS := $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
 OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
 OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
@@ -34,16 +35,17 @@ CFLAGS_INCLUDES=-I$(ARCH_DIR)
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld
-LDFLAGS=-N -Ttext=0x10000
+LDFLAGS= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings
 CONFIG_COMPILE_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"
 COMPILE_SOURCE_PREFIX:=$(PREPROCESSED_DIR)/
 else
 COMPILE_SOURCE_PREFIX=
 endif
+OBJCOPY=arm-none-eabi-objcopy
 
 QEMU_SYSTEM_ARM = ../qemu/build/arm-softmmu/qemu-system-arm
-QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_IMG)
+QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_ELF)
 
 .PHONY: qemu
 qemu: build
@@ -55,7 +57,7 @@ qemu-debug-listen: build
 
 .PHONY: gdb-attach
 gdb-attach: build
-	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file $(OUT_IMG)' -tui
+	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file $(OUT_ELF)' -tui
 
 .PHONY: gdb-attach-new-term
 gdb-attach-new-term: build
@@ -70,12 +72,15 @@ clean:
 	rm -rf $(OUT_DIR)/*
 
 .PHONY: build
-build: $(OUT_IMG) TAGS
+build: $(OUT_ELF) $(OUT_RAW) TAGS
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
 
-$(OUT_IMG): $(OBJECTS)
+$(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
+	$(OBJCOPY) -O binary $< $@
+
+$(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
 $(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES)
@@ -111,7 +116,6 @@ $(DEP_DIR)/%.S.d: %.S $(MAKEFILES)
 
 .PHONY: preprocess-c
 preprocess-c: $(SOURCES.c:%.c=$(PREPROCESSED_DIR)/%.c)
-
 
 .PRECIOUS: $(PREPROCESSED_DIR)/%.c
 $(PREPROCESSED_DIR)/%.c: %.c $(DEP_DIR)/%.c.d $(MAKEFILES)

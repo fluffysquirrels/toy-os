@@ -1,4 +1,5 @@
 .global _start
+.section .text.startup
 _start:
     /* Copy interrupt table to install it */
     mov r0, #0x00                /* r0: copy target */
