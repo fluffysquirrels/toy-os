@@ -10,7 +10,7 @@
 
 static isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
-void handle_interrupt() {
+void interrupt_handle() {
   sc_LOG_IF(TRACE_INTERRUPTS, "start");
 
 #if TRACE_INTERRUPTS
@@ -37,7 +37,7 @@ void handle_interrupt() {
   isr();
 
 #if TRACE_INTERRUPTS
-  sc_puts("handle_interrupt() returned from handler\n");
+  sc_puts("interrupt_handle() returned from handler\n");
   interrupt_pl190_log_status();
   sc_puts("\n");
 #endif // TRACE_INTERRUPTS

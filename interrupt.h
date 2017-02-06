@@ -18,7 +18,7 @@
 typedef void (*isr_t)(void);
 void interrupt_set_handler(unsigned char irq, isr_t isr);
 void interrupt_enable(unsigned char irq);
-void handle_interrupt();
+void interrupt_handle();
 
 typedef int8_t irq;
 #define IRQ_NONE (-1)

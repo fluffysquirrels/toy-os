@@ -56,7 +56,7 @@ static void scheduler_loop() {
 
     bool interrupt_active = interrupt_get_active() != IRQ_NONE;
     if(interrupt_active) {
-      handle_interrupt();
+      interrupt_handle();
       continue;
     }
 
@@ -107,7 +107,7 @@ static void scheduler_loop() {
     : stop_reason == ACTIVATE_RET_SYSCALL ? "=ACTIVATE_RET_SYSCALL": "");
 
     if(stop_reason == ACTIVATE_RET_IRQ) {
-      handle_interrupt(thread);
+      interrupt_handle(thread);
 
       // Cycle the thread to the back of the run queue
       trq_remove(thread->priority, thread);
