@@ -75,6 +75,22 @@ gdb-attach-new-term: build
 .PHONY: qemu-debug
 qemu-debug: gdb-attach-new-term qemu-debug-listen
 
+SERIAL_DEV=/dev/ttyUSB0
+PICOCOM_CMD:=picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" $(SERIAL_DEV)
+
+.PHONY: run-serial
+run-serial: $(OUT_RAW)
+	echo loady 0x10000 > $(SERIAL_DEV)
+	sleep 1
+	sb target/kernel.raw < $(SERIAL_DEV) > $(SERIAL_DEV)
+	sleep 1
+	echo go 0x10000 > $(SERIAL_DEV)
+	$(PICOCOM_CMD)
+
+.PHONY: term-serial
+term-serial:
+	$(PICOCOM_CMD)
+
 .PHONY: clean
 clean:
 	rm -f TAGS

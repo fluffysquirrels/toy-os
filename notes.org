@@ -51,21 +51,6 @@
 * Booting raspberry pi
 ** The current setup has a Raspberry Pi 2 with U-Boot on its microSD card, connected over its serial GPIO pins to a CP210x-based USB to serial adapter. I use U-Boot command to transfer an image over the serial connection and run it.
 
-** Useful commands:
-*** Start picocom
-picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" /dev/ttyUSB0
-*** Command line load
-make build &&
-echo loady 0x10000 > /dev/ttyUSB0 &&
-sleep 1 &&
-sb target/kernel.raw < /dev/ttyUSB0 > /dev/ttyUSB0 &&
-sleep 1 &&
-echo go 0x10000 > /dev/ttyUSB0 &&
-picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" /dev/ttyUSB0
-
-*** 
-go 0x00017fa8
-
 * Raspberry Pi bare metal
 ** https://github.com/rsta2/circle
    "A C++ bare metal environment for Raspberry Pi with USB"
