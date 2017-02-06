@@ -16,11 +16,12 @@
 *** err_t sys_sleep_until (time time_due)
 *** err_t sys_get_time (time &now)
 ** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
-** fork
+** fork?
 
 * Nice features:
 ** Track how much time a thread has consumed since it was scheduled and only
-   schedule what's left of its assigned quantum.
+   schedule what's left of its assigned quantum. Right now we schedule up to
+   the thread's quantum every time it's activated.
 ** Fancier scheduling algorithm. Fixed priority round robin is what's currently
    in there, and that can totally starve low priority threads.
 ** Thread stats: number of system calls, cpu time used
@@ -28,12 +29,21 @@
 ** Memory protection
 *** Stack overflow detection
 *** User-mode lockdown
-
+** Processes with different address spaces
 ** file interface with v_table for different drivers.
+** Reference counted handles to kernel objects
+** Virtaul file system
+** Multiple CPUs
+** I/O
+*** Network I/O
+*** Storage I/O
+*** Persistent file system
+*** SPI
 ** IPC
-** Network I/O
-** Disk I/O
-** File system
+*** Pipes
+*** Locks
+*** List processes
+*** kill
 
 * Nice:
 ** Preset stack and heap to dummy values.
