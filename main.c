@@ -32,16 +32,18 @@ int main() {
   //  timer_rpi_spam();
 
   // ASSERT(kspawn(0x10, &yield_thread, &t) == E_SUCCESS);
-  // ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(0x10, &spawner_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(0x10, &return_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(0x10, &exit_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &console_reader_thread, &t) == E_SUCCESS);
-  thread_update_priority(t, 20);
-  //  ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &heap_stat_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &sleep_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(0x10, &tests_thread, &t) == E_SUCCESS);
+
+  // ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
+  // thread_update_priority(t, 5);
+  // ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);
+  // thread_update_priority(t, 5);
 
   sc_puts("main() spawned threads\n");
 
