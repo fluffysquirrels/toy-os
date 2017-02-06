@@ -54,7 +54,7 @@ static void scheduler_loop() {
   while(1) {
     sc_LOG_IF(TRACE_SCHEDULER, "top of loop");
 
-    bool interrupt_active = interrupt_get_status() != 0;
+    bool interrupt_active = interrupt_get_active() != IRQ_NONE;
     if(interrupt_active) {
       handle_interrupt();
       continue;

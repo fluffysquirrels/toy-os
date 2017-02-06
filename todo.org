@@ -1,4 +1,5 @@
 * Bugs
+** sleep_thread not running smoothly on versatilepb
 
 * Tasks:
 ** u-boot rpi
