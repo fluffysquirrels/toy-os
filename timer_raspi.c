@@ -3,6 +3,7 @@
 #include "stdint.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "util.h"
 
 #define TIMER_RPI_BASE 0x3F003000
 // #define TIMER_RPI_BASE 0x20003000
@@ -56,4 +57,9 @@ void timer_raspi_print_status() {
     sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
     sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
     sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
+}
+
+void timer_raspi_set_timeout(duration_t d) {
+  UNUSED(d);
+  PANIC("WIP");
 }

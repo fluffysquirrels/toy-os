@@ -11,3 +11,7 @@ void arch_timer_init() {
 time arch_timer_systemnow() {
   return timer_raspi_systemnow();
 }
+
+void arch_timer_set_timeout(duration_t d) {
+  timer_raspi_set_timeout(d);
+}
