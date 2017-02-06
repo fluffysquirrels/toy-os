@@ -1,6 +1,7 @@
 #include "interrupt.h"
 
-#include "interrupt_pl190.h"
+#include "arch_interrupt_common.h"
+#include "arch_interrupt.h"
 #include "synchronous_console.h"
 #include "util.h"
 
@@ -10,11 +11,18 @@
 
 static isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
+struct interrupt_controller *ic;
+
+void interrupt_init() {
+  ic = arch_get_interrupt_controller();
+  ic->init();
+}
+
 void interrupt_handle() {
   sc_LOG_IF(TRACE_INTERRUPTS, "start");
 
 #if TRACE_INTERRUPTS
-  interrupt_pl190_log_status();
+  ic->log_status();
 #endif // TRACE_INTERRUPTS
 
   irq irq = interrupt_get_active();
@@ -38,7 +46,7 @@ void interrupt_handle() {
 
 #if TRACE_INTERRUPTS
   sc_puts("interrupt_handle() returned from handler\n");
-  interrupt_pl190_log_status();
+  ic->log_status();
   sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 }
@@ -56,9 +64,9 @@ void interrupt_enable(unsigned char irq) {
 
   sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);
 
-  interrupt_pl190_enable(irq);
+  ic->enable_interrupt(irq);
 }
 
 irq interrupt_get_active() {
-  return interrupt_pl190_get_active();
+  return ic->get_active_interrupt();
 }
