@@ -25,9 +25,6 @@ void heap_stat_thread();
 int main() {
   sc_puts("main()\n");
 
-  exercise_malloc();
-  exercise_trees();
-
   kernel_init();
 
   struct thread_t *t;
@@ -56,10 +53,6 @@ int main() {
 
 void tests_thread() {
   ASSERT(sys_invalid() == E_NOSUCHSYSCALL);
-
-  sc_printf(
-    "UINT64_MAX = %llu\n"
-    "          // 18446744073709551615\n", UINT64_MAX);
 
   sc_LOG("end");
 }
