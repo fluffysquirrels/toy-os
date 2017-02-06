@@ -16,7 +16,7 @@
 #define PIC_INTNUM_DMA      17
 
 typedef void (*isr_t)(void);
-void set_interrupt_handler(unsigned char irq, isr_t isr);
+void interrupt_set_handler(unsigned char irq, isr_t isr);
 void interrupt_enable(unsigned char irq);
 void handle_interrupt();
 

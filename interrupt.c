@@ -43,7 +43,7 @@ void handle_interrupt() {
 #endif // TRACE_INTERRUPTS
 }
 
-void set_interrupt_handler(unsigned char irq, isr_t isr) {
+void interrupt_set_handler(unsigned char irq, isr_t isr) {
   sc_LOGF_IF(TRACE_INTERRUPTS,
     "irq = %x   isr = %x", irq, (unsigned int) isr);
 

@@ -123,6 +123,6 @@ void uart_0_isr() {
 }
 
 void uart_init() {
-  set_interrupt_handler(PIC_INTNUM_UART0, uart_0_isr);
+  interrupt_set_handler(PIC_INTNUM_UART0, uart_0_isr);
   interrupt_enable(PIC_INTNUM_UART0);
 }
