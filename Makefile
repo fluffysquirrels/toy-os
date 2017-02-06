@@ -1,6 +1,15 @@
 # Disable built-in rules
 .SUFFIXES:
 
+# Doesn't work with empty checkout as rest of makefile won't load without a config/current.mk
+.PHONY: config-raspi2
+config-raspi2:
+	echo "include config/raspi2.mk" > config/current.mk
+
+.PHONY: config-versatilepb
+config-versatilepb:
+	echo "include config/versatilepb.mk" > config/current.mk
+
 # TODO: set default if no config
 CURRENT_CONFIG_FILE=config/current.mk
 ifeq ("$(wildcard $(CURRENT_CONFIG_FILE))","")
@@ -63,8 +72,8 @@ gdb-attach: build
 gdb-attach-new-term: build
 	gnome-terminal -e 'make gdb-attach'
 
-.PHONY: debug
-debug: gdb-attach-new-term qemu-debug-listen
+.PHONY: qemu-debug
+qemu-debug: gdb-attach-new-term qemu-debug-listen
 
 .PHONY: clean
 clean:
@@ -78,7 +87,7 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
 
 $(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) --strip-all --strip-debug -O binary $< $@
 
 $(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
