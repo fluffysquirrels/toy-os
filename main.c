@@ -6,7 +6,7 @@
 #include "syscalls.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"
-#include "timer_rpi.h"
+#include "timer_raspi.h"
 #include "util.h"
 
 void exercise_trees();

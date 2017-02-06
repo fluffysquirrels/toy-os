@@ -1,4 +1,4 @@
-#include "timer_rpi.h"
+#include "timer_raspi.h"
 
 #include "stdint.h"
 #include "synchronous_console.h"
@@ -23,26 +23,28 @@ static volatile unsigned int* base = (volatile unsigned int*) TIMER_RPI_BASE;
 #define TIMER_RPI_CS_M2 (1 << 2)
 #define TIMER_RPI_CS_M3 (1 << 3)
 
-uint64_t timer_rpi_get_counter();
+void timer_raspi_init() {
 
-void timer_rpi_spam() {
+}
+
+void timer_raspi_spam() {
   while (1) {
     for (uint64_t i = 0; i < 20000000LL; i++) { }
-    timer_rpi_print_status();
+    timer_raspi_print_status();
   }
 }
 
-time timer_rpi_get_systemtime() {
-  return timer_rpi_get_counter() * DURATION_US;
+time timer_raspi_systemnow() {
+  return timer_raspi_get_counter() * DURATION_US;
 }
 
-uint64_t timer_rpi_get_counter() {
+uint64_t timer_raspi_get_counter() {
   uint32_t hi = *(base + TIMER_RPI_CHI);
   uint32_t lo = *(base + TIMER_RPI_CLO);
   return (((uint64_t) hi) << 32) | ((uint64_t) lo);
 }
 
-void timer_rpi_print_status() {
+void timer_raspi_print_status() {
     sc_LOG("");
     sc_printf("  CS       = %x\n",   *(base + TIMER_RPI_CS));
     sc_printf("  CLO      = %u\n",   *(base + TIMER_RPI_CLO));
@@ -51,8 +53,7 @@ void timer_rpi_print_status() {
     sc_printf("  C1       = %u\n",   *(base + TIMER_RPI_C1));
     sc_printf("  C2       = %u\n",   *(base + TIMER_RPI_C2));
     sc_printf("  C3       = %u\n",   *(base + TIMER_RPI_C3));
-    sc_printf("  counter  = %llu\n", timer_rpi_get_counter());
-    sc_printf("  systemtime = %llu\n", timer_rpi_get_systemtime());
-    sc_printf("  systemtime ms = %llu\n", (timer_rpi_get_systemtime() / DURATION_MS));
-
+    sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
+    sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
+    sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
 }

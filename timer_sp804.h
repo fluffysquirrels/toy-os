@@ -8,10 +8,11 @@
 #include "syscalls.h"
 
 // QEMU runs the timers at 1MHz.
-#define TIMER_SP804_TICKS_PER_MS 1000
+#define TIMER_SP804_TICKS_PER_MS (1000)
 
-#define TIMER_SP804_SCHEDULER_TIMER    timer_sp804_timer0
-#define TIMER_SP804_1S_COUNTDOWN_TIMER timer_sp804_timer1
+// Rename SCHEDULER_TIMER
+#define TIMER_SP804_TIMEOUT_TIMER    (timer_sp804_timer0)
+#define TIMER_SP804_1S_COUNTDOWN_TIMER (timer_sp804_timer1)
 
 struct timer_sp804_t;
 extern struct timer_sp804_t *timer_sp804_timer0;

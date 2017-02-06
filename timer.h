@@ -15,7 +15,7 @@ err_t timer_queue(
   void *callback_state,
   timer_id_t *out_timer_id);
 
-// Returns nanoseconds since system startup.
+// Returns nanoseconds since some offset.
 time timer_systemnow();
 
 void timer_do_expired_callbacks();
@@ -23,3 +23,6 @@ void timer_do_expired_callbacks();
 time timer_get_earliest_deadline();
 
 void timer_init();
+
+// TODO: Make this static, callers should use higher level functions.
+void timer_set_arch_timeout(duration_t d);

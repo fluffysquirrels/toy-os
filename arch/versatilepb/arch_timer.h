@@ -1,5 +1,6 @@
 #pragma once
 
+#include "arch_timer_common.h"
 #include "syscalls.h"
 #include "timer_versatilepb.h"
 
@@ -9,4 +10,8 @@ void arch_timer_init() {
 
 time arch_timer_systemnow() {
   return timer_versatilepb_systemnow();
+}
+
+void arch_timer_set_timeout(duration_t d) {
+  timer_versatilepb_set_timeout(d);
 }

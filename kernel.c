@@ -21,13 +21,14 @@
 #endif
 
 static void scheduler_loop(void);
-
 static void scheduler_init();
 
 static void trq_init();
 static void trq_remove(unsigned int prio, struct thread_t* thread);
 static void trq_append(unsigned int prio, struct thread_t* thread);
 static struct thread_t* trq_peek_first(unsigned int prio);
+
+static void set_reschedule_timer(struct thread_t *t);
 
 static bool init_complete = false;
 
@@ -80,12 +81,7 @@ static void scheduler_loop() {
     if (thread == NULL) {
       sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping");
 
-      // TODO: Reduce duplication between this and activate.
-      duration_t max_thread_time = THREAD_QUANTUM_DURATION;
-      duration_t max_timer_time = timer_get_earliest_deadline() - timer_systemnow();
-      duration_t max_time = MIN(max_thread_time, max_timer_time);
-      uint64_t max_time_ticks = max_time / (DURATION_MS / TIMER_SP804_TICKS_PER_MS);
-      timer_sp804_set_timeout(TIMER_SP804_SCHEDULER_TIMER, (uint32_t) max_time_ticks);
+      set_reschedule_timer(NULL);
 
       sleep();
       sc_LOG_IF(TRACE_SCHEDULER, "woke up after sleep\n");
@@ -100,15 +96,7 @@ static void scheduler_loop() {
 
     ASSERT(thread->state == THREAD_STATE_READY);
 
-    // TODO: Store how much time a thread has consumed since it was
-    //       last scheduled and subtract that from its quantum for time to run it.
-
-    // TODO: Reduce duplication between this and no threads to run.
-    duration_t max_thread_time = THREAD_QUANTUM_DURATION;
-    duration_t max_timer_time = timer_get_earliest_deadline() - timer_systemnow();
-    duration_t max_time = MIN(max_thread_time, max_timer_time);
-    uint64_t max_time_ticks = max_time / (DURATION_MS / TIMER_SP804_TICKS_PER_MS);
-    timer_sp804_set_timeout(TIMER_SP804_SCHEDULER_TIMER, (uint32_t) max_time_ticks);
+    set_reschedule_timer(thread);
 
     unsigned int stop_reason = activate(thread);
 
@@ -130,6 +118,21 @@ static void scheduler_loop() {
   } // scheduler while loop
 
   /* Not reached */
+}
+
+static void set_reschedule_timer(struct thread_t *t) {
+  UNUSED(t);
+
+  // TODO: Store how much time a thread has consumed since it was
+  //       last scheduled and subtract that from its quantum to calculate how
+  //       long to run it.
+
+  duration_t max_thread_time = THREAD_QUANTUM_DURATION;
+  duration_t max_timer_time = timer_get_earliest_deadline() - timer_systemnow();
+  duration_t max_time = MIN(max_thread_time, max_timer_time);
+
+  // TODO: move this into timer.c? This code could use timer_queue.
+  timer_set_arch_timeout(max_time);
 }
 
 static void scheduler_init() {
