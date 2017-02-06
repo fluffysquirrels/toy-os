@@ -1,6 +1,18 @@
 .global _start
 .section .text.startup
 _start:
+    /* Set supervisor stack */
+    ldr sp, =0x07fffff0
+
+    // Zero out .bss section
+    // We will call  void *memset(void *bytes, int ch, int len)
+
+    ldr r0, =__bss_start__  // void *bytes
+    mov r1, #0x0             // int ch
+    ldr r12, =__bss_end__
+    sub r2, r12, r0         // int len
+    bl memset
+
     /* Copy interrupt table to install it */
     mov r0, #0x00                /* r0: copy target */
     ldr r1, =interrupt_table     /* r1: copy source */
@@ -17,9 +29,6 @@ keep_copying_interrupt_table:
        interrupts disabled */
     msr CPSR_c, #0xD2 /* IRQ mode, interrupts disabled */
     msr CPSR_c, #0xD3 /* Supervisor mode, interrupts disabled */
-
-    /* Set supervisor stack */
-    ldr sp, =0x07fffff0
 
     bl main
 
