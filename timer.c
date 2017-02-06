@@ -25,7 +25,7 @@ static void timer_do_callback(struct timer_node *n);
 
 DEFINE_KEY_COMPARER(timer_node_cmp, struct timer_node, time, deadline)
 
-RB_HEAD(timer_map, timer_node) timers = RB_INITIALIZER(&timers);
+static RB_HEAD(timer_map, timer_node) timers = RB_INITIALIZER(&timers);
 RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
 
 static timer_id_t next_timer_id = 0;

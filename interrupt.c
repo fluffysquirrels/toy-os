@@ -8,7 +8,7 @@
 #define TRACE_INTERRUPTS 0
 #endif
 
-isr_t interrupt_handlers[PIC_INTNUM_COUNT];
+static isr_t interrupt_handlers[PIC_INTNUM_COUNT];
 
 void pic_log_status();
 

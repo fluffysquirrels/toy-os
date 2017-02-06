@@ -19,7 +19,7 @@ struct thread_node {
 
 DEFINE_KEY_COMPARER(thread_node_cmp, struct thread_node, thread_id_t, thread.thread_id)
 
-RB_HEAD(thread_map, thread_node) threads = RB_INITIALIZER(&threads);
+static RB_HEAD(thread_map, thread_node) threads = RB_INITIALIZER(&threads);
 RB_GENERATE(thread_map, thread_node, tree_node, thread_node_cmp)
 
 static struct thread_node *thread_node_find(unsigned int thread_id);

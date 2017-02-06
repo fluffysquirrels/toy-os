@@ -150,7 +150,7 @@ struct thread_queue_entry {
 
 TAILQ_HEAD(thread_queue, thread_queue_entry);
 
-struct thread_queue thread_run_queues[THREAD_PRIORITY_MAX + 1];
+static struct thread_queue thread_run_queues[THREAD_PRIORITY_MAX + 1];
 
 static void trq_init() {
   for (unsigned int prio = 0; prio <= THREAD_PRIORITY_MAX; prio++) {

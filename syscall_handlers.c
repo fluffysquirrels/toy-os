@@ -17,7 +17,7 @@
 // prefix 'sysh_'
 typedef void (*sysh_t)(struct thread_t*);
 
-sysh_t syscall_handlers[SYSCALL_NUM_MAX + 1];
+static sysh_t syscall_handlers[SYSCALL_NUM_MAX + 1];
 
 void handle_syscall(struct thread_t* thread) {
   unsigned int syscall_num = thread->registers[12];
