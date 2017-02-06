@@ -6,6 +6,7 @@
 #include "syscalls.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"
+#include "timer_rpi.h"
 #include "util.h"
 
 void exercise_trees();
@@ -30,6 +31,8 @@ int main() {
   kernel_init();
 
   struct thread_t *t;
+
+  //  timer_rpi_spam();
 
   // ASSERT(kspawn(0x10, &yield_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(0x10, &busy_loop_thread, &t) == E_SUCCESS);

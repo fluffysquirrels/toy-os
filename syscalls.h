@@ -19,10 +19,10 @@ typedef uint64_t time;
 
 // duration_t is a time duration in nanoseconds.
 typedef uint64_t duration_t;
-#define DURATION_NS (uint64_t) 1       // Nanoseconds
-#define DURATION_US DURATION_NS * 1000 // Microseconds
-#define DURATION_MS DURATION_US * 1000 // Milliseconds
-#define DURATION_S  DURATION_MS * 1000 // Seconds
+#define DURATION_NS ((uint64_t) 1      ) // Nanoseconds
+#define DURATION_US (DURATION_NS * 1000) // Microseconds
+#define DURATION_MS (DURATION_US * 1000) // Milliseconds
+#define DURATION_S  (DURATION_MS * 1000) // Seconds
 
 typedef unsigned int thread_id_t;
 typedef unsigned int fd_t;

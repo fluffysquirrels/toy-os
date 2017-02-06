@@ -34,13 +34,7 @@ static bool init_complete = false;
 void kernel_init() {
   init_syscall_handlers();
   scheduler_init();
-
-  // Init devices
   uart_init();
-  rtc_pl031_init();
-  timer_sp804_init();
-  // After devices
-
   timer_init();
 
   init_complete = true;

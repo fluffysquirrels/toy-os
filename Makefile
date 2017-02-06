@@ -31,7 +31,7 @@ OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
 CC=arm-linux-gnueabi-gcc
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
-CFLAGS_INCLUDES=-I$(ARCH_DIR)
+CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld

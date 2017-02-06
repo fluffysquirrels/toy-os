@@ -20,8 +20,6 @@ time timer_systemnow();
 
 void timer_do_expired_callbacks();
 
-void timer_rtc_tick();
-
 time timer_get_earliest_deadline();
 
 void timer_init();

@@ -3,6 +3,7 @@
 #include "rtc_pl031_reg.h"
 #include "synchronous_console.h"
 #include "timer.h"
+#include "timer_versatilepb.h"
 #include "util.h"
 
 #ifndef TRACE_PL031
@@ -74,7 +75,7 @@ static void rtc_interrupt() {
   // Further timer_systemnow() never goes backwards because it saves the latest value
   // it has emitted; this hopefully covers the glitch entirely.
 
-  timer_rtc_tick();
+  timer_versatilepb_rtc_tick();
 
   uint32_t raw = rtc_pl031_get_raw();
   // Assert highest_value is equal to the current raw value (hasn't already been

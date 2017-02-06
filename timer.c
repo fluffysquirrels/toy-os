@@ -2,6 +2,7 @@
 
 #include "timer.h"
 
+#include "arch_timer.h"
 #include "rtc_pl031.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
@@ -30,30 +31,12 @@ RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
 
 static timer_id_t next_timer_id = 0;
 
-// Store the highest systemnow value we've calculated so far.
-static time highest_systemnow = 0;
-
 void timer_init() {
-  highest_systemnow = 0;
-}
-
-void timer_rtc_tick() {
-  sc_LOG_IF(TRACE_TIMER, "");
-  timer_sp804_set_timeout(TIMER_SP804_1S_COUNTDOWN_TIMER, 1000 * TIMER_SP804_TICKS_PER_MS);
+  arch_timer_init();
 }
 
 time timer_systemnow() {
-  time rtc_since_startup = DURATION_S * ((uint64_t) rtc_pl031_get_current());
-
-  // We reset TIMER1 every tick of the RTC (1Hz)and it counts
-  // down from 1000000 at 1MHz.
-  time hi_res_time_since_rtc_tick = DURATION_S - DURATION_US * ((uint64_t) timer_sp804_get_current(TIMER_SP804_1S_COUNTDOWN_TIMER));
-  time now = rtc_since_startup + hi_res_time_since_rtc_tick;
-  highest_systemnow = MAX(now, highest_systemnow);
-
-  // Return the highest systemnow value we've calculated so far, so that time
-  // doesn't go backwards. This breaks timers, for example.
-  return highest_systemnow;
+  return arch_timer_systemnow();
 }
 
 err_t timer_queue(
