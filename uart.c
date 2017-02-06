@@ -124,5 +124,5 @@ void uart_0_isr() {
 
 void uart_init() {
   set_interrupt_handler(PIC_INTNUM_UART0, uart_0_isr);
-  enable_interrupt(PIC_INTNUM_UART0);
+  interrupt_enable(PIC_INTNUM_UART0);
 }

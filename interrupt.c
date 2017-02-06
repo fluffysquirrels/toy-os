@@ -51,7 +51,7 @@ void set_interrupt_handler(unsigned char irq, isr_t isr) {
   interrupt_handlers[irq] = isr;
 }
 
-void enable_interrupt(unsigned char irq) {
+void interrupt_enable(unsigned char irq) {
   // Enable interrupt on controller
 
   sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);

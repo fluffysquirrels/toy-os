@@ -16,7 +16,7 @@ static void timer_raspi_isr();
 void timer_raspi_init() {
   // TODO:  set_isr();
   //  set_interrupt_handler(dunno, timer_raspi_isr);
-  //  enable_interrupt();
+  //  interrupt_enable();
 }
 
 static void timer_raspi_isr() {

@@ -43,7 +43,7 @@ static void isr_timer01();
 
 void timer_sp804_init() {
   set_interrupt_handler(PIC_INTNUM_TIMER01, isr_timer01);
-  enable_interrupt(PIC_INTNUM_TIMER01);
+  interrupt_enable(PIC_INTNUM_TIMER01);
 }
 
 uint32_t timer_sp804_get_current(struct timer_sp804_t *timer) {

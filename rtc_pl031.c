@@ -35,7 +35,7 @@ uint32_t rtc_pl031_get_current() {
 void rtc_pl031_init() {
   highest_value = 0;
   set_interrupt_handler(PIC_INTNUM_RTC, &rtc_interrupt);
-  enable_interrupt(PIC_INTNUM_RTC);
+  interrupt_enable(PIC_INTNUM_RTC);
 
   // Set counter value to 0
   *(RTC_BASE + RTC_LR) = 0;
