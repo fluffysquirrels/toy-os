@@ -1,37 +1,44 @@
 #include "timer_raspi.h"
 
+#include "arch_registers.h"
 #include "stdint.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "timer_raspi_reg.h"
 #include "util.h"
-
-#define TIMER_RPI_BASE 0x3F003000
-// #define TIMER_RPI_BASE 0x20003000
-// #define TIMER_RPI_BASE 0x7E003000
 
 static volatile unsigned int* base = (volatile unsigned int*) TIMER_RPI_BASE;
 
-#define TIMER_RPI_CS   (0x0  / sizeof(unsigned int))
-#define TIMER_RPI_CLO  (0x4  / sizeof(unsigned int))
-#define TIMER_RPI_CHI  (0x8  / sizeof(unsigned int))
-#define TIMER_RPI_C0   (0xc  / sizeof(unsigned int))
-#define TIMER_RPI_C1   (0x10 / sizeof(unsigned int))
-#define TIMER_RPI_C2   (0x14 / sizeof(unsigned int))
-#define TIMER_RPI_C3   (0x18 / sizeof(unsigned int))
-
-#define TIMER_RPI_CS_M0 (1 << 0)
-#define TIMER_RPI_CS_M1 (1 << 1)
-#define TIMER_RPI_CS_M2 (1 << 2)
-#define TIMER_RPI_CS_M3 (1 << 3)
+static void timer_raspi_clear_match();
+static bool timer_raspi_is_match();
+static void timer_raspi_isr();
 
 void timer_raspi_init() {
+  // TODO:  set_isr();
+  //  set_interrupt_handler(dunno, timer_raspi_isr);
+  //  enable_interrupt();
+}
 
+static void timer_raspi_isr() {
+  PANIC("WIP");
 }
 
 void timer_raspi_spam() {
+  timer_raspi_set_timeout(1 * DURATION_S);
   while (1) {
     for (uint64_t i = 0; i < 20000000LL; i++) { }
     timer_raspi_print_status();
+
+    if (timer_raspi_is_match()) {
+      sc_LOG("M3 pending");
+      timer_raspi_print_status();
+      sc_LOG("About to reset");
+      // Reset M3
+      timer_raspi_clear_match();
+      timer_raspi_set_timeout(1 * DURATION_S);
+      sc_LOG("M3 reset, next deadline set for 1s");
+      timer_raspi_print_status();
+    }
   }
 }
 
@@ -43,6 +50,33 @@ uint64_t timer_raspi_get_counter() {
   uint32_t hi = *(base + TIMER_RPI_CHI);
   uint32_t lo = *(base + TIMER_RPI_CLO);
   return (((uint64_t) hi) << 32) | ((uint64_t) lo);
+}
+
+void timer_raspi_set_deadline(time t) {
+  uint32_t deadline_count = (uint32_t) (t / DURATION_US);
+  *(base + TIMER_RPI_C3) = deadline_count;
+
+  if (t < timer_raspi_systemnow()) {
+    // Deadline has already passed. Call the ISR directly in case we
+    // don't get an interrupt.
+    timer_raspi_isr();
+  }
+}
+
+void timer_raspi_clear_deadline() {
+  timer_raspi_set_deadline(0);
+}
+
+static void timer_raspi_clear_match() {
+  *(base + TIMER_RPI_CS) = TIMER_RPI_CS_M3;
+}
+
+static bool timer_raspi_is_match() {
+  return *(base + TIMER_RPI_CS) & TIMER_RPI_CS_M3;
+}
+
+void timer_raspi_set_timeout(duration_t d) {
+  timer_raspi_set_deadline(timer_raspi_systemnow() + d);
 }
 
 void timer_raspi_print_status() {
@@ -57,9 +91,4 @@ void timer_raspi_print_status() {
     sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
     sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
     sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
-}
-
-void timer_raspi_set_timeout(duration_t d) {
-  UNUSED(d);
-  PANIC("WIP");
 }

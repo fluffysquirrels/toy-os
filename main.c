@@ -29,7 +29,9 @@ int main() {
 
   struct thread_t *t;
 
-  //  timer_rpi_spam();
+#if CONFIG_ARCH_raspi2
+  timer_raspi_spam();
+#endif
 
   // ASSERT(kspawn(0x10, &yield_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(0x10, &spawner_thread, &t) == E_SUCCESS);
