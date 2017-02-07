@@ -133,3 +133,15 @@ time timer_get_earliest_deadline() {
   }
   return n->deadline;
 }
+
+void timer_delay(duration_t d) {
+  sc_LOGF_IF(TRACE_TIMER, "d = %llu", d);
+  time now = timer_systemnow();
+  time deadline = now + d;
+  timer_delay_until(deadline);
+}
+
+void timer_delay_until(time t) {
+  sc_LOGF_IF(TRACE_TIMER, "t = %llu", t);
+  while (timer_systemnow() < t) {}
+}

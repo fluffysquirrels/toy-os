@@ -1,14 +1,12 @@
 * Bugs
-** sleep_thread not running smoothly on versatilepb
 
 * Tasks:
-** u-boot rpi
-*** Boot something on the rpi with u-boot
-*** Set a u-boot env to a string with spaces. Should just need to wrap in single quotes. http://www.denx.de/wiki/DULG/CommandLineParsing
-*** Copy something to u-boot over serial
-    kermit
-    minicom
-*** Script copying something to u-boot over serial
+** Use print_mem everywhere. You know why.
+** Encapsulate timers better. Probably move reschedule timer logic into
+   timer.c from kernel.c
+** Move scheduler out of kernel.c
+** Move versatilepb interrupts out of interrupt.h
+** Refactor timer indirection to use a struct like interrupt_controller
 
 * Features:
 
@@ -46,7 +44,9 @@
 *** List processes
 *** kill
 
-* Nice:
+* Nice
+** Compile depends on CFLAGS.
+** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
 ** Set user thread return values with a function in syscalls, fetch all arguments with functions too.

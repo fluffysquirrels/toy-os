@@ -55,11 +55,16 @@ void panic(char *string);
 void panicf(char *format, ...);
 void halt();
 void warn(char *string);
+
+void sc_print_uint32_memv(char *name, volatile uint32_t *addr);
+
 int sc_puts(char *string);
 void sc_putch(char ch);
+
 void sc_print_uint32_hex(uint32_t w);
 void sc_print_uint8_hex(char x);
 int sc_print_uint32_dec(uint32_t d);
 int sc_print_uint64_dec(uint64_t u);
+
 int sc_printf(char *format, ...);
 int sc_vprintf(char *format, va_list args);

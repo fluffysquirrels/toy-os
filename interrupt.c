@@ -2,6 +2,7 @@
 
 #include "arch_interrupt_common.h"
 #include "arch_interrupt.h"
+#include "context_switch.h"
 #include "synchronous_console.h"
 #include "util.h"
 
@@ -18,12 +19,13 @@ void interrupt_init() {
   ic->init();
 }
 
+void interrupt_log_status() {
+  sc_LOGF("\n  cpsr = %x", get_cpsr());
+  ic->log_status();
+}
+
 void interrupt_handle() {
   sc_LOG_IF(TRACE_INTERRUPTS, "start");
-
-#if TRACE_INTERRUPTS
-  ic->log_status();
-#endif // TRACE_INTERRUPTS
 
   irq irq = interrupt_get_active();
 
@@ -46,7 +48,7 @@ void interrupt_handle() {
 
 #if TRACE_INTERRUPTS
   sc_puts("interrupt_handle() returned from handler\n");
-  ic->log_status();
+  interrupt_log_status();
   sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 }
@@ -68,5 +70,9 @@ void interrupt_enable(unsigned char irq) {
 }
 
 irq interrupt_get_active() {
+#if TRACE_INTERRUPTS
+  interrupt_log_status();
+#endif // TRACE_INTERRUPTS
+
   return ic->get_active_interrupt();
 }

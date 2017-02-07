@@ -3,7 +3,7 @@
 #include "kernel.h"
 #include "thread.h"
 
-// Move these somewhere else.
+// TODO: Move these somewhere else.
 // Interrupt numbers
 /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0224i/Chdbeibh.html */
 #define PIC_INTNUM_COUNT    32
@@ -16,13 +16,16 @@
 #define PIC_INTNUM_DMA      17
 
 typedef void (*isr_t)(void);
+
+typedef int8_t irq;
+#define IRQ_NONE (-1)
+
 void interrupt_init();
 void interrupt_set_handler(unsigned char irq, isr_t isr);
 void interrupt_enable(unsigned char irq);
 void interrupt_handle();
+void interrupt_log_status();
 
-typedef int8_t irq;
-#define IRQ_NONE (-1)
 // Returns the number of an active interrupt, or IRQ_NONE if none are active.
 irq interrupt_get_active();
 

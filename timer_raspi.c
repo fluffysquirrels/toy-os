@@ -1,11 +1,18 @@
 #include "timer_raspi.h"
 
 #include "arch_registers.h"
+#include "context_switch.h"
+#include "interrupt.h"
 #include "stdint.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
 #include "timer_raspi_reg.h"
+#include "timer_sp804.h"
 #include "util.h"
+
+#ifndef TRACE_TIMER
+#define TRACE_TIMER 0
+#endif
 
 static volatile unsigned int* base = (volatile unsigned int*) TIMER_RPI_BASE;
 
@@ -13,33 +20,26 @@ static void timer_raspi_clear_match();
 static bool timer_raspi_is_match();
 static void timer_raspi_isr();
 
+#define RPI_INTNUM_TIMER 0
+
 void timer_raspi_init() {
-  // TODO:  set_isr();
-  //  interrupt_set_handler(dunno, timer_raspi_isr);
-  //  interrupt_enable();
+  interrupt_set_handler(RPI_INTNUM_TIMER, timer_raspi_isr);
+  interrupt_enable(RPI_INTNUM_TIMER);
 }
 
 static void timer_raspi_isr() {
-  PANIC("WIP");
-}
+  sc_LOG_IF(TRACE_TIMER, "");
+#if TRACE_TIMER
+  timer_raspi_print_status();
+#endif
+  if (timer_raspi_is_match()) {
+    sc_LOG_IF(TRACE_TIMER, "Clearing set match");
+    timer_raspi_clear_match();
+  } else {
 
-void timer_raspi_spam() {
-  timer_raspi_set_timeout(1 * DURATION_S);
-  while (1) {
-    for (uint64_t i = 0; i < 20000000LL; i++) { }
-    timer_raspi_print_status();
-
-    if (timer_raspi_is_match()) {
-      sc_LOG("M3 pending");
-      timer_raspi_print_status();
-      sc_LOG("About to reset");
-      // Reset M3
-      timer_raspi_clear_match();
-      timer_raspi_set_timeout(1 * DURATION_S);
-      sc_LOG("M3 reset, next deadline set for 1s");
-      timer_raspi_print_status();
-    }
+    sc_LOG_IF(TRACE_TIMER, "Not our match, ignoring it.");
   }
+  // Ignore other matching timers. I assume some other hardware is using them.
 }
 
 time timer_raspi_systemnow() {
@@ -47,18 +47,26 @@ time timer_raspi_systemnow() {
 }
 
 uint64_t timer_raspi_get_counter() {
-  uint32_t hi = *(base + TIMER_RPI_CHI);
+  // Documentation says to always read CLO first.
   uint32_t lo = *(base + TIMER_RPI_CLO);
+  uint32_t hi = *(base + TIMER_RPI_CHI);
   return (((uint64_t) hi) << 32) | ((uint64_t) lo);
 }
 
 void timer_raspi_set_deadline(time t) {
+  sc_LOGF_IF(TRACE_TIMER, "t = %llu", t);
   uint32_t deadline_count = (uint32_t) (t / DURATION_US);
   *(base + TIMER_RPI_C3) = deadline_count;
+
+#if TRACE_TIMER
+  timer_raspi_print_status();
+#endif
 
   if (t < timer_raspi_systemnow()) {
     // Deadline has already passed. Call the ISR directly in case we
     // don't get an interrupt.
+
+    sc_LOG_IF(TRACE_TIMER, "Deadline already expired. Calling ISR immediately.");
     timer_raspi_isr();
   }
 }
@@ -82,6 +90,7 @@ void timer_raspi_set_timeout(duration_t d) {
 void timer_raspi_print_status() {
     sc_LOG("");
     sc_printf("  CS       = %x\n",   *(base + TIMER_RPI_CS));
+    // Documentation says to always read CLO first.
     sc_printf("  CLO      = %u\n",   *(base + TIMER_RPI_CLO));
     sc_printf("  CHI      = %u\n",   *(base + TIMER_RPI_CHI));
     sc_printf("  C0       = %u\n",   *(base + TIMER_RPI_C0));

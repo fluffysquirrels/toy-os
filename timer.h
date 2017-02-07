@@ -26,3 +26,6 @@ void timer_init();
 
 // TODO: Make this static, callers should use higher level functions.
 void timer_set_arch_timeout(duration_t d);
+
+void timer_delay(duration_t d);
+void timer_delay_until(time t);

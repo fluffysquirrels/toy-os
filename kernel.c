@@ -34,10 +34,10 @@ static bool init_complete = false;
 
 void kernel_init() {
   init_syscall_handlers();
-  scheduler_init();
   interrupt_init();
   uart_init();
   timer_init();
+  scheduler_init();
 
   init_complete = true;
 }

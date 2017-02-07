@@ -1,8 +1,4 @@
 /* http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0271d/index.html */
-#define TIMER_BASE_0 ((volatile unsigned int*)0x101E2000)
-#define TIMER_BASE_1 ((volatile unsigned int*)0x101E2020)
-#define TIMER_BASE_2 ((volatile unsigned int*)0x101E3000)
-#define TIMER_BASE_3 ((volatile unsigned int*)0x101E3020)
 #define TIMER_LOAD    0x0 /* 0x00 bytes */
 #define TIMER_VALUE   0x1 /* 0x04 bytes */
 #define TIMER_CONTROL 0x2 /* 0x08 bytes */

@@ -118,4 +118,17 @@ irq_entry:
 .global sleep
 sleep:
     wfi
+    bx lr // Return
+
+.global get_cpsr
+get_cpsr:
+    // uint32_t get_cpsr()
+    // Returns CPSR
+    mrs r0, CPSR
+    bx lr
+
+.global set_cpsr
+set_cpsr:
+    // void set_cpsr(uint32_t cpsr)
+    msr CPSR, r0
     bx lr

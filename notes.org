@@ -50,8 +50,14 @@
 
 * Booting raspberry pi
 ** The current setup has a Raspberry Pi 2 with U-Boot on its microSD card, connected over its serial GPIO pins to a CP210x-based USB to serial adapter. I use U-Boot command to transfer an image over the serial connection and run it.
-
+** Speed up serial transfers
+   Blog post describing some of the changes
+     http://fw.hardijzer.nl/?p=138
+   USB serial adapter datasheet
+     https://www.silabs.com/Support%20Documents/TechnicalDocs/CP2102-9.pdf
 * Raspberry Pi bare metal
+** http://www.valvers.com/open-software/raspberry-pi/step04-bare-metal-programming-in-c-pt4/
+   https://github.com/BrianSidebotham/arm-tutorial-rpi/blob/master/part-5/armc-016/rpi-base.h
 ** https://github.com/rsta2/circle
    "A C++ bare metal environment for Raspberry Pi with USB"
 
@@ -64,6 +70,21 @@
 ** https://www.raspberrypi.org/forums/viewforum.php?f=72 -- bare metal rpi forum
 ** https://github.com/steve-bate/ChibiOS-RPi
 
+** GPIO pins on Pi 2 https://i.stack.imgur.com/sVvsB.jpg
+
+** Linux raspi
+*** device tree files in linux/arch/arm/boot/dts
+    bcm283x.dtsi:
+    bcm2835-cprman @ 7e101000
+      BCM2835 CPRMAN (clock manager for the "audio" domain)
+    bcm2835-system-timer @ 7e003000
+
+    bcm2836.dtsi:
+    armv7-timer
+    bcm2836-l1-intc @ 0x40000000 (parent)
+      driver at linux/drivers/irqchip/irq-bcm2836.c
+      LOCAL_IRQ_PENDING register at base + 0x060 + 4 * cpu number
+    bcm2836-armctrl-ic @ 0x7e00b200 (child)
 
 * C data structures libraries
 

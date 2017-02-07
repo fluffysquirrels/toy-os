@@ -52,6 +52,10 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
   sc_puts("\n");
 }
 
+void sc_print_uint32_memv(char *name, volatile uint32_t *addr) {
+  sc_printf("%s @ %x = %x\n", name, addr, *addr);
+}
+
 int sc_puts(char *string) {
   int bytes_written = 0;
   while(*string) {

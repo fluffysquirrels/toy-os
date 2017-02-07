@@ -1,12 +1,16 @@
+#include "context_switch.h"
 #include "kernel.h"
 #include "heap.h"
+#include "interrupt.h"
 #include "stdint.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"
+#include "timer.h"
 #include "timer_raspi.h"
+#include "timer_sp804.h"
 #include "util.h"
 
 void exercise_trees();
@@ -22,6 +26,8 @@ void tests_thread();
 void sleep_thread();
 void heap_stat_thread();
 
+void test_raspi_timers();
+
 int main() {
   sc_puts("main()\n");
 
@@ -30,7 +36,7 @@ int main() {
   struct thread_t *t;
 
 #if CONFIG_ARCH_raspi2
-  timer_raspi_spam();
+  test_raspi_timers();
 #endif
 
   // ASSERT(kspawn(0x10, &yield_thread, &t) == E_SUCCESS);
@@ -54,6 +60,25 @@ int main() {
   /* Not reached */
   return 0;
 }
+
+void test_raspi_timers() {
+  sc_LOG("Setting timeouts");
+  timer_raspi_set_timeout(1 * DURATION_S);
+  timer_sp804_set_timeout(timer_sp804_timer0, 1000000);
+
+  sc_LOG("Delaying");
+  timer_delay(3 * DURATION_S);
+  sc_LOG("Done delay");
+
+  interrupt_log_status();
+  timer_raspi_print_status();
+  timer_sp804_log_timer_state(timer_sp804_timer0);
+
+  sc_LOG("sleeping");
+  sleep();
+  sc_LOG("back from sleep");
+}
+
 
 void tests_thread() {
   ASSERT(sys_invalid() == E_NOSUCHSYSCALL);

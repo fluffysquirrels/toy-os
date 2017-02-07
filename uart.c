@@ -1,9 +1,11 @@
+#include "uart.h"
+
+#include "arch_interrupt_numbers.h"
 #include "interrupt.h"
 #include "kernel.h"
 #include "synchronous_console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
-#include "uart.h"
 #include "uart_registers.h"
 #include "util.h"
 
@@ -122,7 +124,9 @@ void uart_0_isr() {
 #endif // TRACE_UART
 }
 
+
 void uart_init() {
-  interrupt_set_handler(PIC_INTNUM_UART0, uart_0_isr);
-  interrupt_enable(PIC_INTNUM_UART0);
+  // TODO: Test this interrupt on raspi.
+  interrupt_set_handler(INTNUM_UART0, uart_0_isr);
+  interrupt_enable(INTNUM_UART0);
 }
