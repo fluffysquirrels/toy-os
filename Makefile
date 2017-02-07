@@ -79,7 +79,8 @@ SERIAL_DEV=/dev/ttyUSB0
 PICOCOM_CMD:=picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" $(SERIAL_DEV)
 
 .PHONY: run-serial
-run-serial: $(OUT_RAW)
+run-serial: $(OUT_RAW) build
+	du -ha --apparent-size target/kernel.raw
 	echo loady 0x10000 > $(SERIAL_DEV)
 	sleep 1
 	sb target/kernel.raw < $(SERIAL_DEV) > $(SERIAL_DEV)
@@ -119,18 +120,19 @@ $(OBJ_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES)
 	$(CC) -E -o $@ -c $<
 
 define MAKE-DEPS =
-	$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
+	echo MAKE-DEPS $@ : $<
+	@$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
 	@echo using TEMP_DEP = $(TEMP_DEP)
-	# Move existing file to *.old to ensure if we fail make doesn't
-	# see a stale file.
-	if test -f $@; then mv $@ $(TEMP_DEP).old; fi
-	$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
-	sed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
+	@# Move existing file to *.old to ensure if we fail make doesn't
+	@# see a stale file.
+	@if test -f $@; then mv $@ $(TEMP_DEP).old; fi
+	@$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
+	@sed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
 
-	cp $(TEMP_DEP).sed $@;
+	@cp $(TEMP_DEP).sed $@;
 
-	# Comment out this rm to view the temp files output at each step.
-	rm $(TEMP_DEP)*
+	@# Comment out this rm to view the temp files output at each step.
+	@rm $(TEMP_DEP)*
 endef
 
 $(DEP_DIR)/%.c.d: %.c $(MAKEFILES)
