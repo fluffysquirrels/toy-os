@@ -89,14 +89,14 @@ void timer_raspi_set_timeout(duration_t d) {
 
 void timer_raspi_print_status() {
     sc_LOG("");
-    sc_printf("  CS       = %x\n",   *(base + TIMER_RPI_CS));
-    // Documentation says to always read CLO first.
-    sc_printf("  CLO      = %u\n",   *(base + TIMER_RPI_CLO));
-    sc_printf("  CHI      = %u\n",   *(base + TIMER_RPI_CHI));
-    sc_printf("  C0       = %u\n",   *(base + TIMER_RPI_C0));
-    sc_printf("  C1       = %u\n",   *(base + TIMER_RPI_C1));
-    sc_printf("  C2       = %u\n",   *(base + TIMER_RPI_C2));
-    sc_printf("  C3       = %u\n",   *(base + TIMER_RPI_C3));
+    sc_print_uint32_memv("  CS ", base + TIMER_RPI_CS );
+    //Documentation says to always read CLO first.
+    sc_print_uint32_memv("  CLO", base + TIMER_RPI_CLO);
+    sc_print_uint32_memv("  CHI", base + TIMER_RPI_CHI);
+    sc_print_uint32_memv("  C0 ", base + TIMER_RPI_C0 );
+    sc_print_uint32_memv("  C1 ", base + TIMER_RPI_C1 );
+    sc_print_uint32_memv("  C2 ", base + TIMER_RPI_C2 );
+    sc_print_uint32_memv("  C3 ", base + TIMER_RPI_C3 );
     sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
     sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
     sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
