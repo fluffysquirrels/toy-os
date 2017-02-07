@@ -1,6 +1,7 @@
 #include "timer_sp804.h"
 
 #include "arch_registers.h"
+#include "arch_interrupt_numbers.h"
 #include "interrupt.h"
 #include "rtc_pl031.h"
 #include "synchronous_console.h"
@@ -48,11 +49,15 @@ static struct timer_sp804_t _timer3 = {
 struct timer_sp804_t *timer_sp804_timer3 = &_timer3;
 #endif // TIMER_SP804_BASE_3
 
+#ifdef INTNUM_SP804_TIMER01
 static void timer_sp804_isr_timer01();
+#endif // INTNUM_SP804_TIMER01
 
 void timer_sp804_init() {
-  interrupt_set_handler(PIC_INTNUM_TIMER01, timer_sp804_isr_timer01);
-  interrupt_enable(PIC_INTNUM_TIMER01);
+#ifdef INTNUM_SP804_TIMER01
+  interrupt_set_handler(INTNUM_SP804_TIMER01, timer_sp804_isr_timer01);
+  interrupt_enable(INTNUM_SP804_TIMER01);
+#endif // INTNUM_SP804_TIMER01
 }
 
 uint32_t timer_sp804_get_current(struct timer_sp804_t *timer) {
@@ -94,7 +99,8 @@ void timer_sp804_set_periodic(struct timer_sp804_t *timer, uint32_t value) {
 #endif
 }
 
-void timer_sp804_isr_timer01() {
+#ifdef INTNUM_SP804_TIMER01
+static void timer_sp804_isr_timer01() {
   sc_LOG_IF(TRACE_SP804, "start");
 #if TRACE_SP804
   timer_sp804_log_all_state();
@@ -117,6 +123,8 @@ void timer_sp804_isr_timer01() {
 
   warn("*(TIMER0/1 + TIMER_MIS) was clear");
 }
+#endif // INTNUM_SP804_TIMER01
+
 
 void timer_sp804_log_all_state() {
 #if TIMER_SP804_BASE_0

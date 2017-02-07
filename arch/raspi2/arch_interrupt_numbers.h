@@ -1,1 +1,3 @@
 #define INTNUM_UART0 19
+
+#define INTNUM_MAX 20

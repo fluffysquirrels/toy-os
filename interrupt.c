@@ -2,6 +2,7 @@
 
 #include "arch_interrupt_common.h"
 #include "arch_interrupt.h"
+#include "arch_interrupt_numbers.h"
 #include "context_switch.h"
 #include "synchronous_console.h"
 #include "util.h"
@@ -10,7 +11,7 @@
 #define TRACE_INTERRUPTS 0
 #endif
 
-static isr_t interrupt_handlers[PIC_INTNUM_COUNT];
+static isr_t interrupt_handlers[INTNUM_MAX + 1];
 
 struct interrupt_controller *ic;
 
@@ -33,7 +34,7 @@ void interrupt_handle() {
 
   ASSERT(irq != IRQ_NONE);
   ASSERT(irq >= 0);
-  ASSERT(irq < PIC_INTNUM_COUNT);
+  ASSERT(irq <= INTNUM_MAX);
 
   isr_t isr = interrupt_handlers[irq];
   if(!isr) {
@@ -57,6 +58,7 @@ void interrupt_set_handler(unsigned char irq, isr_t isr) {
   sc_LOGF_IF(TRACE_INTERRUPTS,
     "irq = %x   isr = %x", irq, (unsigned int) isr);
 
+  ASSERT(irq <= INTNUM_MAX);
   ASSERT(interrupt_handlers[irq] == NULL);
   interrupt_handlers[irq] = isr;
 }

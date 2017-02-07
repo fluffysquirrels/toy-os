@@ -1,5 +1,7 @@
-#include "interrupt.h"
 #include "rtc_pl031.h"
+
+#include "arch_interrupt_numbers.h"
+#include "interrupt.h"
 #include "rtc_pl031_reg.h"
 #include "synchronous_console.h"
 #include "timer.h"
@@ -10,7 +12,10 @@
 #define TRACE_PL031 0
 #endif
 
+#ifdef INTNUM_RTC
 static void rtc_interrupt();
+#endif // INTNUM_RTC
+
 static void rtc_set_match_in_future();
 
 #if TRACE_PL031
@@ -34,8 +39,10 @@ uint32_t rtc_pl031_get_current() {
 
 void rtc_pl031_init() {
   highest_value = 0;
-  interrupt_set_handler(PIC_INTNUM_RTC, &rtc_interrupt);
-  interrupt_enable(PIC_INTNUM_RTC);
+#ifdef INTNUM_RTC
+  interrupt_set_handler(INTNUM_RTC, &rtc_interrupt);
+  interrupt_enable(INTNUM_RTC);
+#endif // INTNUM_RTC
 
   // Set counter value to 0
   *(RTC_BASE + RTC_LR) = 0;
@@ -53,7 +60,7 @@ void rtc_pl031_init() {
 #endif
 
 }
-
+#ifdef INTNUM_RTC
 static void rtc_interrupt() {
   sc_LOG_IF(TRACE_PL031, "");
 #if TRACE_PL031
@@ -66,7 +73,7 @@ static void rtc_interrupt() {
 
   // In qemu, this interrupt fires and then some time later (sometimes 500ms)
   // the data register DR gets incremented. However the 1s high resolution timer
-  // is reset on this interupt via timer_rtc_tick(), causing systemnow() =
+  // is reset on this interrupt via timer_rtc_tick(), causing systemnow() =
   // rtc seconds + the 1s high resolution timer to jump back 1s.
   // The current hacky fix is to set the high resolution timer back 1s and then
   // immediately increment highest_value by 1, which the raw register should do anyway.
@@ -86,8 +93,9 @@ static void rtc_interrupt() {
 #if TRACE_PL031
   rtc_log_state();
 #endif
-
 }
+#endif // INTNUM_RTC
+
 
 static void rtc_set_match_in_future() {
   sc_LOG_IF(TRACE_PL031, "");

@@ -5,7 +5,6 @@
 ** Encapsulate timers better. Probably move reschedule timer logic into
    timer.c from kernel.c
 ** Move scheduler out of kernel.c
-** Move versatilepb interrupts out of interrupt.h
 ** Refactor timer indirection to use a struct like interrupt_controller
 
 * Features:
