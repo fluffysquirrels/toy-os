@@ -21,7 +21,6 @@ void interrupt_init() {
 }
 
 void interrupt_log_status() {
-  sc_LOGF("\n  cpsr = %x", get_cpsr());
   ic->log_status();
 }
 
@@ -68,7 +67,16 @@ void interrupt_enable(unsigned char irq) {
 
   sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);
 
+#if TRACE_INTERRUPTS
+  interrupt_log_status();
+#endif // TRACE_INTERRUPTS
+
   ic->enable_interrupt(irq);
+
+#if TRACE_INTERRUPTS
+  sc_LOG("Enabled");
+  interrupt_log_status();
+#endif // TRACE_INTERRUPTS
 }
 
 irq interrupt_get_active() {
