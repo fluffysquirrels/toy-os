@@ -18,9 +18,6 @@ static void rtc_interrupt();
 
 static void rtc_set_match_in_future();
 
-#if TRACE_PL031
-static void rtc_log_state();
-#endif
 
 // Store the highest time value we've observed.
 static uint32_t highest_value = 0;
@@ -56,7 +53,7 @@ void rtc_pl031_init() {
   rtc_set_match_in_future();
 
 #if TRACE_PL031
-  rtc_log_state();
+  rtc_pl031_log_state();
 #endif
 
 }
@@ -64,7 +61,7 @@ void rtc_pl031_init() {
 static void rtc_interrupt() {
   sc_LOG_IF(TRACE_PL031, "");
 #if TRACE_PL031
-  rtc_log_state();
+  rtc_pl031_log_state();
 #endif
   // Clear interrupt
   *(RTC_BASE + RTC_ICR) = RTC_ICR_CLEAR;
@@ -91,7 +88,7 @@ static void rtc_interrupt() {
   highest_value = raw + 1;
 
 #if TRACE_PL031
-  rtc_log_state();
+  rtc_pl031_log_state();
 #endif
 }
 #endif // INTNUM_RTC
@@ -103,18 +100,16 @@ static void rtc_set_match_in_future() {
   *(RTC_BASE + RTC_MR) = rtc_pl031_get_raw() + 1;
 }
 
-#if TRACE_PL031
-static void rtc_log_state() {
+void rtc_pl031_log_state() {
   sc_LOG("");
-  sc_printf("  DR      = %x\n", *(RTC_BASE + RTC_DR));
-  sc_printf("  MR      = %x\n", *(RTC_BASE + RTC_MR));
-  sc_printf("  LR      = %x\n", *(RTC_BASE + RTC_LR));
-  sc_printf("  CR      = %x\n", *(RTC_BASE + RTC_CR));
-  sc_printf("  IMSC    = %x\n", *(RTC_BASE + RTC_IMSC));
-  sc_printf("  RIS     = %x\n", *(RTC_BASE + RTC_RIS));
-  sc_printf("  MIS     = %x\n", *(RTC_BASE + RTC_MIS));
+  sc_print_uint32_memv("  DR  ", (RTC_BASE + RTC_DR));
+  sc_print_uint32_memv("  MR  ", (RTC_BASE + RTC_MR));
+  sc_print_uint32_memv("  LR  ", (RTC_BASE + RTC_LR));
+  sc_print_uint32_memv("  CR  ", (RTC_BASE + RTC_CR));
+  sc_print_uint32_memv("  IMSC", (RTC_BASE + RTC_IMSC));
+  sc_print_uint32_memv("  RIS ", (RTC_BASE + RTC_RIS));
+  sc_print_uint32_memv("  MIS ", (RTC_BASE + RTC_MIS));
   sc_puts("\n");
-  sc_printf("  highest_value  = %u\n", highest_value);
-  sc_printf("  raw            = %u\n", *(RTC_BASE + RTC_DR));
+  sc_printf("  highest_value     = %u\n", highest_value);
+  sc_printf("  raw               = %u\n", *(RTC_BASE + RTC_DR));
 }
-#endif

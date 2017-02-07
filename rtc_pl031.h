@@ -10,3 +10,4 @@
 
 uint32_t rtc_pl031_get_current();
 void rtc_pl031_init();
+void rtc_pl031_log_state();
