@@ -1,11 +1,14 @@
 * Bugs
+** With -DTRACE_INTERRUPTS rtc fails an assertion.
 
 * Tasks:
+** Don't compile code for other architectures. Remove #ifdef's that work around this.
 ** Use print_mem everywhere. You know why.
 ** Encapsulate timers better. Probably move reschedule timer logic into
    timer.c from kernel.c
 ** Move scheduler out of kernel.c
 ** Refactor timer indirection to use a struct like interrupt_controller
+** Rename synchronous_console -> console. Also sc_ prefix to con_?
 
 * Features:
 
@@ -17,6 +20,9 @@
 ** fork?
 
 * Nice features:
+** interrupt_disable().
+** Panic on other exceptions.
+** ISR runs directly instead of via activate() return value?
 ** Track how much time a thread has consumed since it was scheduled and only
    schedule what's left of its assigned quantum. Right now we schedule up to
    the thread's quantum every time it's activated.
@@ -30,7 +36,7 @@
 ** Processes with different address spaces
 ** file interface with v_table for different drivers.
 ** Reference counted handles to kernel objects
-** Virtaul file system
+** Virtual file system
 ** Multiple CPUs
 ** I/O
 *** Network I/O
@@ -44,6 +50,8 @@
 *** kill
 
 * Nice
+** Maybe break timer_raspi into board and peripheral specific components.
+** ASSERT_EQ();
 ** Compile depends on CFLAGS.
 ** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.

@@ -78,6 +78,7 @@
     bcm2835-cprman @ 7e101000
       BCM2835 CPRMAN (clock manager for the "audio" domain)
     bcm2835-system-timer @ 7e003000
+      driver at linux/drivers/clocksource/bcm2835_timer.c
 
     bcm2836.dtsi:
     armv7-timer
