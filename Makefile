@@ -98,7 +98,7 @@ clean:
 	rm -rf $(OUT_DIR)/*
 
 .PHONY: build
-build: $(OUT_ELF) $(OUT_RAW) TAGS
+build: TAGS $(OUT_ELF) $(OUT_RAW)
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
