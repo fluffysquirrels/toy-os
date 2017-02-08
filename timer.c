@@ -142,6 +142,8 @@ void timer_delay(duration_t d) {
 }
 
 void timer_delay_until(time t) {
-  sc_LOGF_IF(TRACE_TIMER, "t = %llu", t);
+  sc_LOGF_IF(TRACE_TIMER, "t   = %llu", t);
+  sc_LOGF_IF(TRACE_TIMER, "now = %llu", timer_systemnow());
+
   while (timer_systemnow() < t) {}
 }

@@ -66,8 +66,8 @@ void timer_raspi_set_deadline(time t) {
 #endif
 
   *(base + TIMER_RASPI_C3) = deadline_count;
-  sc_LOG("deadline set");
 #if TRACE_TIMER
+  sc_LOG("deadline set");
   timer_raspi_print_status();
 #endif
 
