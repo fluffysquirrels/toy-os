@@ -83,11 +83,22 @@ void uart_log_status(struct uart_t *u) {
   sc_printf("  rx_empty = %s\n",
             uart_rx_fifo_empty(u) ? "true" : "false");
 
-  sc_printf("  FR   = %x\n", *(u->addr + UART_FR));
-  sc_printf("  CR   = %x\n", *(u->addr + UART_CR));
-  sc_printf("  RIS  = %x\n", *(u->addr + UART_RIS));
-  sc_printf("  MIS  = %x\n", *(u->addr + UART_MIS));
-  sc_printf("  IMSC = %x\n", *(u->addr + UART_IMSC));
+  // Don't read DR or we will empty the fifo.
+  //  sc_print_uint32_memv("  UART_DR   ", u->addr + UART_DR   );
+  sc_print_uint32_memv("  UART_RSR  ", u->addr + UART_RSR  );
+  sc_print_uint32_memv("  UART_ECR  ", u->addr + UART_ECR  );
+  sc_print_uint32_memv("  UART_FR   ", u->addr + UART_FR   );
+  sc_print_uint32_memv("  UART_ILPR ", u->addr + UART_ILPR );
+  sc_print_uint32_memv("  UART_IBRD ", u->addr + UART_IBRD );
+  sc_print_uint32_memv("  UART_FBRD ", u->addr + UART_FBRD );
+  sc_print_uint32_memv("  UART_LCRH ", u->addr + UART_LCRH );
+  sc_print_uint32_memv("  UART_CR   ", u->addr + UART_CR   );
+  sc_print_uint32_memv("  UART_IFLS ", u->addr + UART_IFLS );
+  sc_print_uint32_memv("  UART_IMSC ", u->addr + UART_IMSC );
+  sc_print_uint32_memv("  UART_RIS  ", u->addr + UART_RIS  );
+  sc_print_uint32_memv("  UART_MIS  ", u->addr + UART_MIS  );
+  sc_print_uint32_memv("  UART_ICR  ", u->addr + UART_ICR  );
+  sc_print_uint32_memv("  UART_DMACR", u->addr + UART_DMACR);
 }
 
 extern struct file_t uart_0_file;
@@ -101,7 +112,7 @@ void uart_0_isr() {
   struct uart_t * u = uart_0;
 
 #if TRACE_UART
-  sc_puts("\nuart_0_isr()\n");
+  sc_LOG("");
   uart_log_status(u);
 #endif // TRACE_UART
 
