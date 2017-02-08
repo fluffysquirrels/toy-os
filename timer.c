@@ -115,8 +115,8 @@ void timer_do_expired_callbacks() {
 }
 
 static void timer_do_callback(struct timer_node *n) {
-  sc_LOGF_IF(TRACE_TIMER, "timer_id=%u", n->timer_id);
-  sc_LOGF_IF(TRACE_TIMER, "callback=%x", n->callback);
+  sc_LOGF_IF(TRACE_TIMER, "timer_id = %u", n->timer_id);
+  sc_LOGF_IF(TRACE_TIMER, "callback = %x", n->callback);
 
   if (n->callback != NULL) {
     struct timer_callback_data_t cbd = {

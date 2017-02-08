@@ -106,22 +106,30 @@ static void timer_sp804_isr_timer01() {
   timer_sp804_log_all_state();
 #endif
 
+  bool cleared_something = false;
+  
   if(*(_timer0.addr + TIMER_MIS)) { /* Timer0 went off */
+    cleared_something = true;
     *(_timer0.addr + TIMER_INTCLR) = 1; /* Clear interrupt */
     sc_LOG_IF(TRACE_SP804, "TIMER0 tick");
     timer_do_expired_callbacks();
-    return;
   }
 
 #if TIMER_SP804_BASE_1
   if(*(_timer1.addr + TIMER_MIS)) { /* Timer1 went off */
+    cleared_something = true;
     *(_timer1.addr + TIMER_INTCLR) = 1; /* Clear interrupt */
     sc_LOG_IF(TRACE_SP804, "TIMER1 tick");
-    return;
   }
 #endif // TIMER_SP804_BASE_1
 
-  warn("*(TIMER0/1 + TIMER_MIS) was clear");
+#if TRACE_SP804
+  timer_sp804_log_all_state();
+#endif
+
+  if(!cleared_something) {
+    warn("*(TIMER0/1 + TIMER_MIS) was clear");
+  }
 }
 #endif // INTNUM_SP804_TIMER01
 
@@ -141,7 +149,7 @@ void timer_sp804_log_all_state() {
 #endif
 }
 void timer_sp804_log_timer_state(struct timer_sp804_t *timer) {
-  sc_LOGF("%s", timer->name);
+  sc_LOGF("\n%s", timer->name);
 
   sc_printf("  TIMER_LOAD    = %x\n", *(timer->addr + TIMER_LOAD   ));
   sc_printf("  TIMER_VALUE   = %x\n", *(timer->addr + TIMER_VALUE  ));

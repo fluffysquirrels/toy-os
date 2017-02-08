@@ -29,7 +29,7 @@ void interrupt_handle() {
 
   irq irq = interrupt_get_active();
 
-  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", (uint32_t) irq);
+  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x, %u", (uint32_t) irq, (uint32_t) irq);
 
   ASSERT(irq != IRQ_NONE);
   ASSERT(irq >= 0);
@@ -47,15 +47,17 @@ void interrupt_handle() {
   isr();
 
 #if TRACE_INTERRUPTS
-  sc_puts("interrupt_handle() returned from handler\n");
+  sc_LOG("returned from handler\n");
   interrupt_log_status();
-  sc_puts("\n");
 #endif // TRACE_INTERRUPTS
 }
 
 void interrupt_set_handler(unsigned char irq, isr_t isr) {
   sc_LOGF_IF(TRACE_INTERRUPTS,
-    "irq = %x   isr = %x", irq, (unsigned int) isr);
+             "\n"
+             "  irq = %x, %u\n"
+             "  isr = %x",
+             irq, irq, (unsigned int) isr);
 
   ASSERT(irq <= INTNUM_MAX);
   ASSERT(interrupt_handlers[irq] == NULL);
@@ -65,8 +67,7 @@ void interrupt_set_handler(unsigned char irq, isr_t isr) {
 void interrupt_enable(unsigned char irq) {
   // Enable interrupt on controller
 
-  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x", irq);
-
+  sc_LOGF_IF(TRACE_INTERRUPTS, "irq = %x, %u", irq, irq);
 #if TRACE_INTERRUPTS
   interrupt_log_status();
 #endif // TRACE_INTERRUPTS
