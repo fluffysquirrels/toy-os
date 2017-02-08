@@ -151,11 +151,11 @@ void timer_sp804_log_all_state() {
 void timer_sp804_log_timer_state(struct timer_sp804_t *timer) {
   sc_LOGF("\n%s", timer->name);
 
-  sc_printf("  TIMER_LOAD    = %x\n", *(timer->addr + TIMER_LOAD   ));
-  sc_printf("  TIMER_VALUE   = %x\n", *(timer->addr + TIMER_VALUE  ));
-  sc_printf("  TIMER_CONTROL = %x\n", *(timer->addr + TIMER_CONTROL));
-  sc_printf("  TIMER_INTCLR  = %x\n", *(timer->addr + TIMER_INTCLR ));
-  sc_printf("  TIMER_RIS     = %x\n", *(timer->addr + TIMER_RIS    ));
-  sc_printf("  TIMER_MIS     = %x\n", *(timer->addr + TIMER_MIS    ));
-  sc_printf("  TIMER_BGLOAD  = %x\n", *(timer->addr + TIMER_BGLOAD ));
+  sc_print_uint32_memv("  TIMER_LOAD    ", timer->addr + TIMER_LOAD   );
+  sc_print_uint32_memv("  TIMER_VALUE   ", timer->addr + TIMER_VALUE  );
+  sc_print_uint32_memv("  TIMER_CONTROL ", timer->addr + TIMER_CONTROL);
+  sc_print_uint32_memv("  TIMER_INTCLR  ", timer->addr + TIMER_INTCLR );
+  sc_print_uint32_memv("  TIMER_RIS     ", timer->addr + TIMER_RIS    );
+  sc_print_uint32_memv("  TIMER_MIS     ", timer->addr + TIMER_MIS    );
+  sc_print_uint32_memv("  TIMER_BGLOAD  ", timer->addr + TIMER_BGLOAD );
 }
