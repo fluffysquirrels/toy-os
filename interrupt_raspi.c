@@ -78,12 +78,10 @@ static irq interrupt_raspi_get_active_interrupt() {
     int bank_irq = __builtin_ctz(bank2);
     return INTNUM_RASPI_BANK_2_MIN + bank_irq;
   }
-
-#else // CONFIG_ARCH_raspi2
+#endif // CONFIG_ARCH_raspi2
 
   // No banks non-zero
   return IRQ_NONE;
-#endif // CONFIG_ARCH_raspi2
 }
 
 static struct interrupt_controller ic = {
