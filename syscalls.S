@@ -1,12 +1,11 @@
 #include "asm_constants.h"
 
-#define SYSCALL_STUB(name, num)\
-    \
-.global name ;\
-name:;\
-    mov ip, #(num);\
-    svc 0;\
-    bx lr;
+#define SYSCALL_STUB(name, num) \
+  .global name                 ;\
+  name:                        ;\
+      mov ip, #(num)           ;\
+      svc 0                    ;\
+      bx lr                    ;
 
 SYSCALL_STUB(sys_yield, SYSCALL_NUM_YIELD)
 SYSCALL_STUB(sys_spawn, SYSCALL_NUM_SPAWN)
