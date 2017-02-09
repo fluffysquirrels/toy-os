@@ -5,7 +5,7 @@
 _start:
     // Set initial stacks, 2^16 = 64KB stack per mode
 
-    // Skip CPSR_MODE_USR, which has same sp as USR mode and would take us out
+    // Skip CPSR_MODE_USR, which has same sp as SYS mode and would take us out
     // of this privilege level.
     msr CPSR_c, #(CPSR_MODE_FIQ | CPSR_INTERRUPTS_DISABLED)
     ldr sp, =0x07fefff0
@@ -20,7 +20,7 @@ _start:
     msr CPSR_c, #(CPSR_MODE_UND | CPSR_INTERRUPTS_DISABLED)
     ldr sp, =0x07fafff0
     msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fffff0
+    ldr sp, =0x07f9fff0
 
 
     // Start in supervisor mode
