@@ -52,11 +52,11 @@ void kernel_run() {
 static void scheduler_loop() {
   sc_LOG_IF(TRACE_SCHEDULER, "start");
 
-  while(1) {
+  while (1) {
     sc_LOG_IF(TRACE_SCHEDULER, "top of loop");
 
     bool interrupt_active = interrupt_get_active() != IRQ_NONE;
-    if(interrupt_active) {
+    if (interrupt_active) {
       interrupt_handle();
       continue;
     }
@@ -99,7 +99,9 @@ static void scheduler_loop() {
 
     set_reschedule_timer(thread);
 
+    sc_LOGF_IF(TRACE_SCHEDULER, "cpsr = %x", get_cpsr());
     unsigned int stop_reason = activate(thread);
+    sc_LOGF_IF(TRACE_SCHEDULER, "cpsr = %x", get_cpsr());
 
     sc_LOGF_IF(TRACE_SCHEDULER,
       "activate returned %x%s\n",
@@ -107,7 +109,7 @@ static void scheduler_loop() {
       stop_reason == ACTIVATE_RET_IRQ     ? "=ACTIVATE_RET_IRQ"
     : stop_reason == ACTIVATE_RET_SYSCALL ? "=ACTIVATE_RET_SYSCALL": "");
 
-    if(stop_reason == ACTIVATE_RET_IRQ) {
+    if (stop_reason == ACTIVATE_RET_IRQ) {
       interrupt_handle(thread);
 
       // Cycle the thread to the back of the run queue
