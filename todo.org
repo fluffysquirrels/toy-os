@@ -1,4 +1,6 @@
 * Bugs
+** garbage from timer_delay* printf's
+** Handle timer_id overflow.
 
 * Tasks:
 ** Memory map
@@ -8,6 +10,13 @@
 ** Move scheduler out of kernel.c
 ** Refactor timer indirection to use a struct like interrupt_controller
 ** Rename synchronous_console -> console. Also sc_ prefix to con_?
+** Hard to debug scheduler when timer interrupts keep firing.
+*** Possible solution:
+    Don't fire RTC interrupt every second on versatilepb, because when debugging
+   the interrupt is constantly firing. Could set looping high resolution timer
+   to UINT32_MAX instead of 1000000, meaning we only need to handle a clock
+   interrupt every hour or so.
+
 
 * Features:
 
@@ -19,6 +28,7 @@
 ** fork?
 
 * Nice features:
+** Try using sending kernel.raw compressed to speed up load time.
 ** interrupt_disable().
 ** Panic on other exceptions.
 ** ISR runs directly instead of via activate() return value?
@@ -49,6 +59,7 @@
 *** kill
 
 * Nice
+** Rename print_uint32_memv -> _mem, volatile version can be called with non-volatile param.
 ** Maybe break timer_raspi into board and peripheral specific components.
 ** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.
