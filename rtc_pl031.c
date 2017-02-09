@@ -8,8 +8,8 @@
 #include "timer_versatilepb.h"
 #include "util.h"
 
-#ifndef TRACE_PL031
-#define TRACE_PL031 0
+#ifndef TRACE_TIMER
+#define TRACE_TIMER 0
 #endif
 
 #ifdef INTNUM_RTC
@@ -28,7 +28,7 @@ static uint32_t rtc_pl031_get_raw() {
 uint32_t rtc_pl031_get_current() {
   uint32_t raw = rtc_pl031_get_raw();
 
-#if TRACE_PL031
+#if TRACE_TIMER >= 2
   sc_printf("rtc_pl031_get_current:\n"
             "  raw = %u\n"
             "  highest_value = %u\n",
@@ -43,7 +43,7 @@ uint32_t rtc_pl031_get_current() {
 }
 
 void rtc_pl031_init() {
-  sc_LOG_IF(TRACE_PL031, "");
+  sc_LOG_IF(TRACE_TIMER, "");
 
 #ifdef INTNUM_RTC
   interrupt_set_handler(INTNUM_RTC, &rtc_interrupt);
@@ -58,15 +58,15 @@ void rtc_pl031_init() {
 
   rtc_set_match_in_future();
 
-#if TRACE_PL031
+#if TRACE_TIMER
   rtc_pl031_log_state();
 #endif
 
 }
 #ifdef INTNUM_RTC
 static void rtc_interrupt() {
-  sc_LOG_IF(TRACE_PL031, "");
-#if TRACE_PL031
+  sc_LOG_IF(TRACE_TIMER, "");
+#if TRACE_TIMER
   rtc_pl031_log_state();
 #endif
   // Clear interrupt
@@ -93,7 +93,7 @@ static void rtc_interrupt() {
   ASSERT_INT_BINOP(highest_value, <=, raw);
   highest_value = raw + 1;
 
-#if TRACE_PL031
+#if TRACE_TIMER
   rtc_pl031_log_state();
 #endif
 }
@@ -101,7 +101,7 @@ static void rtc_interrupt() {
 
 
 static void rtc_set_match_in_future() {
-  sc_LOG_IF(TRACE_PL031, "");
+  sc_LOG_IF(TRACE_TIMER, "");
   // Set match value to match on next second
   *(RTC_BASE + RTC_MR) = rtc_pl031_get_raw() + 1;
 }
