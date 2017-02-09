@@ -18,10 +18,10 @@ activate:
     // r1 = &thread.registers
     add r1, r0, #THREAD_OFFSET_registers
 
-    msr CPSR_c, #0xDF /* System mode */
+    msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
     ldr sp, [r1, #(4*13)] // restore user mode r13 (sp)
     ldr lr, [r1, #(4*14)] // restore user mode r14 (lr)
-    msr CPSR_c, #0xD3 /* Supervisor mode */
+    msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
 
     // lr is already saved on the supervisor stack, use it as a
     // register load source
@@ -54,10 +54,10 @@ svc_entry:
     // r1 = &thread.registers
     add r1, r0, #THREAD_OFFSET_registers
 
-    msr CPSR_c, #0xDF /* System mode */
+    msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
     str sp, [r1, #(4*13)] // save user mode r13 (sp)
     str lr, [r1, #(4*14)] // save user mode r14 (lr)
-    msr CPSR_c, #0xD3 /* Supervisor mode */
+    msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
 
     str lr, [r1, #(4*15)] // save user mode r15 (pc === supervisor mode's lr)
 
@@ -78,7 +78,7 @@ irq_entry:
     /* Save user state */
     // Switch to supervisor mode, which has a stack and thread pointer
     // to store user mode state with.
-    msr CPSR_c, #0xD3 /* Supervisor mode */
+    msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
 
     // push lr so we can calculate a save target in it
     push {lr}
@@ -95,10 +95,10 @@ irq_entry:
     // r1 = &thread.registers
     add r1, r0, #THREAD_OFFSET_registers
 
-    msr CPSR_c, #0xDF /* System mode */
+    msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
     str sp, [r1, #(4*13)] // save user mode r13 (sp)
     str lr, [r1, #(4*14)] // save user mode r14 (lr)
-    msr CPSR_c, #0xD2 /* IRQ mode */
+    msr CPSR_c, #(CPSR_MODE_IRQ | CPSR_INTERRUPTS_DISABLED)
     sub lr, lr, #0x4 /* lr is address of return address + 1 instruction */
     str lr, [r1, #(4*15)] // save user mode r15 (pc === supervisor mode's lr)
 
@@ -106,7 +106,7 @@ irq_entry:
     str ip, [r0, #THREAD_OFFSET_cpsr]
 
     /* Load supervisor mode state */
-    msr CPSR_c, #0xD3 /* Supervisor mode */
+    msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
     // Move stack past saved thread_t *thread
     add sp, sp, #0x4
     pop {r4-r11,ip,lr}
