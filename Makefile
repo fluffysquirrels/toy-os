@@ -18,8 +18,6 @@ config-raspi2:
 config-versatilepb:
 	echo "include config/versatilepb.mk" > config/current.mk
 
-# TODO: set default if no config
-CURRENT_CONFIG_FILE=config/current.mk
 ifeq ("$(wildcard $(CURRENT_CONFIG_FILE))","")
 $(error Missing config file "$(CURRENT_CONFIG_FILE)". Create it, e.g. just containing "include config/versatilepb.mk")
 endif
@@ -125,13 +123,13 @@ $(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES)
 
 .PRECIOUS: $(OBJ_DIR)/%.s
 $(OBJ_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES)
-	$(CC) -E -o $@ -c $<
+	$(CC) -E $(CFLAGS_INCLUDES) -o $@ -c $<
 
 define MAKE-DEPS =
 	echo MAKE-DEPS $@ : $<
 	@$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
 	@echo using TEMP_DEP = $(TEMP_DEP)
-	@# Move existing file to *.old to ensure if we fail make doesn't
+	@# Move existing file to *.old to ensure if we fail make does not
 	@# see a stale file.
 	@if test -f $@; then mv $@ $(TEMP_DEP).old; fi
 	@$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
