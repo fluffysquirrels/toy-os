@@ -1,3 +1,33 @@
+* Memory map
+** Initial stacks set in bootstrap.S
+    // Set initial stacks, 2^16 = 64KB stack per mode
+    msr CPSR_c, #(CPSR_MODE_USR | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fffff0
+    msr CPSR_c, #(CPSR_MODE_FIQ | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fefff0
+    msr CPSR_c, #(CPSR_MODE_IRQ | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fdfff0
+    msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fcfff0
+    // Skip CPSR_MODE_MON, as we won't be using secure extensions.
+    msr CPSR_c, #(CPSR_MODE_ABT | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fbfff0
+    // Skip CPSR_MODE_HYP, as we won't be using virtualisation extensions.
+    msr CPSR_c, #(CPSR_MODE_UND | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fafff0
+    // Skip CPSR_MODE_SYS, which has same sp as USR mode.
+** u-boot currently loads image to 0x10000, with entry point at 0x10000
+** The heap is in a statically-defined array in .bss, which is bounded by linker symbols __bss_start__ and __bss_end__
+** kspawned threads have their stacks allocated in the heap
+
+** TODO: Add more detail to this. Including:
+*** Peripheral blocks
+*** Link to SoC memory map
+*** End of RAM
+*** Current heap symbol names
+*** Exception vector
+*** End of image symbol?
+
 * ARM Registers
   r0-r1 (arguments, scratch, return values)
   r2-r3 (arguments, scratch)
