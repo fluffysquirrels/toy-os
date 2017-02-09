@@ -88,6 +88,13 @@ void thread_update_priority (struct thread_t *t, unsigned int priority) {
   unsigned int old_priority = t->priority;
   t->priority = priority;
 
+  sc_LOGF_IF(TRACE_THREAD,
+    "\n"
+    "  thread_id    = %x\n"
+    "  priority     = %x\n"
+    "  old_priority = %x",
+    t->thread_id, priority, old_priority);
+
   scheduler_update_thread_priority(t, old_priority);
 }
 
@@ -97,6 +104,13 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
 
   scheduler_update_thread_state(t, old_state);
 
+  sc_LOGF_IF(TRACE_THREAD,
+    "\n"
+    "  thread_id    = %x\n"
+    "  state        = %x\n"
+    "  old_state    = %x",
+    t->thread_id, state, old_state);
+
   if (state == THREAD_STATE_EXITED) {
     thread_delete(t);
     t = NULL;
@@ -104,6 +118,8 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
 }
 
 static void thread_delete (struct thread_t *t) {
+  sc_LOGF_IF(TRACE_THREAD, "thread_id = ", t->thread_id);
+
   struct thread_node *node = thread_node_find(t->thread_id);
   ASSERT(node != NULL);
   RB_REMOVE(thread_map, &threads, node);
