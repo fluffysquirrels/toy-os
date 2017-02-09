@@ -1,5 +1,4 @@
 * Bugs
-** With -DTRACE_INTERRUPTS rtc fails an assertion.
 
 * Tasks:
 ** Memory map
@@ -51,14 +50,12 @@
 
 * Nice
 ** Maybe break timer_raspi into board and peripheral specific components.
-** ASSERT_EQ();
 ** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
 ** Set user thread return values with a function in syscalls, fetch all arguments with functions too.
 ** Rename activate() -> activate_thread().
 ** Rename interrupt -> exception where appropriate, including interrupt_table -> exception_table
-** Use macro constants to refer to processor modes
 ** Tests
 ** Generate .h file with #define THREAD_OFFSET_* calculated with offsetof
 ** Assert register contents in busy_loop_thread()
