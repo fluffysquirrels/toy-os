@@ -126,7 +126,7 @@ $(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES) $(ENV_
 
 .PRECIOUS: $(OBJ_DIR)/%.s
 $(OBJ_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES)
-	$(CC) -E $(CFLAGS_INCLUDES) -o $@ -c $<
+	$(CC) -E $(CFLAGS) -o $@ -c $<
 
 define MAKE-DEPS =
 	echo MAKE-DEPS $@ : $<
