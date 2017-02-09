@@ -4,8 +4,9 @@
 .section .text.startup
 _start:
     // Set initial stacks, 2^16 = 64KB stack per mode
-    msr CPSR_c, #(CPSR_MODE_USR | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fffff0
+
+    // Skip CPSR_MODE_USR, which has same sp as USR mode and would take us out
+    // of this privilege level.
     msr CPSR_c, #(CPSR_MODE_FIQ | CPSR_INTERRUPTS_DISABLED)
     ldr sp, =0x07fefff0
     msr CPSR_c, #(CPSR_MODE_IRQ | CPSR_INTERRUPTS_DISABLED)
@@ -18,7 +19,9 @@ _start:
     // Skip CPSR_MODE_HYP, as we won't be using virtualisation extensions.
     msr CPSR_c, #(CPSR_MODE_UND | CPSR_INTERRUPTS_DISABLED)
     ldr sp, =0x07fafff0
-    // Skip CPSR_MODE_SYS, which has same sp as USR mode.
+    msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
+    ldr sp, =0x07fffff0
+
 
     // Start in supervisor mode
     msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
@@ -46,14 +49,33 @@ keep_copying_interrupt_table:
     bl main
 
 interrupt_table:
-    nop
-    nop
-    ldr pc, svc_entry_address
-    nop
-    nop
-    nop
-    ldr pc, irq_entry_address
-    nop
-svc_entry_address:   .word svc_entry
-irq_entry_address:   .word irq_entry
+    ldr pc, p_unhandled_exception // reset
+    ldr pc, p_unhandled_exception // undefined instruction
+    ldr pc, p_svc_entry           // supervisor call
+    ldr pc, p_unhandled_exception // prefetch abort
+    ldr pc, p_unhandled_exception // data abort
+    ldr pc, p_unhandled_exception // hypervisor mode entry
+    ldr pc, p_irq_entry           // irq interrupt
+    ldr pc, p_unhandled_exception // fiq interrupt
+p_svc_entry:           .word svc_entry
+p_irq_entry:           .word irq_entry
+p_unhandled_exception: .word unhandled_exception
 interrupt_table_end:
+
+unhandled_exception:
+    ldr r0, =unhandled_exception_message
+    bl sc_puts
+    bl halt
+
+unhandled_exception_message:    .string "\nUnhandled exception! Panic.\n"
+
+// interrupt_table:
+//     nop                       // reset
+//     nop                       // undefined instruction
+//     ldr pc, =svc_entry        // supervisor call
+//     nop                       // prefetch abort
+//     nop                       // data abort
+//     nop
+//     ldr pc, =irq_entry        // irq interrupt
+//     nop                       // fiq interrupt
+// interrupt_table_end:
