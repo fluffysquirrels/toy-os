@@ -56,6 +56,17 @@ void sc_print_uint32_memv(char *name, volatile uint32_t *addr) {
   sc_printf("%s @ %x = %x\n", name, addr, *addr);
 }
 
+void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes) {
+  volatile uint32_t *addr = start_addr;
+  int32_t remaining_bytes = bytes;
+  while (remaining_bytes > 0) {
+    sc_print_uint32_memv("", addr);
+
+    addr++;
+    remaining_bytes -= sizeof(*addr);
+  }
+}
+
 int sc_puts(char *string) {
   int bytes_written = 0;
   while(*string) {
