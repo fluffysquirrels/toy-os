@@ -7,6 +7,10 @@
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "util.h"
 
+#ifndef TRACE_THREAD
+#define TRACE_THREAD 0
+#endif // TRACE_THREAD
+
 #define THREAD_LIMIT 100
 #define STACK_SIZE 1024
 
@@ -29,6 +33,8 @@ static unsigned int num_threads = 0;
 static thread_id_t largest_thread_id = 0;
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
+
+  sc_LOGF_IF(TRACE_THREAD, "cpsr = %x, pc = %x", cpsr, (uint32_t) pc);
 
   if (num_threads >= THREAD_LIMIT) {
     return E_LIMIT;
@@ -70,6 +76,8 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
   if(out_thread != NULL) {
     *out_thread = thread;
   }
+
+  sc_LOGF_IF(TRACE_THREAD, "&thread = %x, thread_id = %x", thread, thread->thread_id);
 
   return E_SUCCESS;
 }
