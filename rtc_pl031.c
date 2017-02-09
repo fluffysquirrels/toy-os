@@ -18,7 +18,6 @@ static void rtc_interrupt();
 
 static void rtc_set_match_in_future();
 
-
 // Store the highest time value we've observed.
 static uint32_t highest_value = 0;
 
@@ -28,6 +27,15 @@ static uint32_t rtc_pl031_get_raw() {
 
 uint32_t rtc_pl031_get_current() {
   uint32_t raw = rtc_pl031_get_raw();
+
+#if TRACE_PL031
+  sc_printf("rtc_pl031_get_current:\n"
+            "  raw = %u\n"
+            "  highest_value = %u\n",
+            raw,
+            highest_value);
+#endif // TRACE_pl031
+
   highest_value = MAX(raw, highest_value);
 
   // Return the highest time value we've observed. Time should not go backwards.
@@ -35,14 +43,12 @@ uint32_t rtc_pl031_get_current() {
 }
 
 void rtc_pl031_init() {
-  highest_value = 0;
+  sc_LOG_IF(TRACE_PL031, "");
+
 #ifdef INTNUM_RTC
   interrupt_set_handler(INTNUM_RTC, &rtc_interrupt);
   interrupt_enable(INTNUM_RTC);
 #endif // INTNUM_RTC
-
-  // Set counter value to 0
-  *(RTC_BASE + RTC_LR) = 0;
 
   // Start timer
   *(RTC_BASE + RTC_CR) = RTC_CR_START;
@@ -84,7 +90,7 @@ static void rtc_interrupt() {
   uint32_t raw = rtc_pl031_get_raw();
   // Assert highest_value is equal to the current raw value (hasn't already been
   // incremented) or is lower, e.g. if the debugger has been running.
-  ASSERT(highest_value <= raw);
+  ASSERT_INT_BINOP(highest_value, <=, raw);
   highest_value = raw + 1;
 
 #if TRACE_PL031
