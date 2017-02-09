@@ -99,9 +99,7 @@ static void scheduler_loop() {
 
     set_reschedule_timer(thread);
 
-    sc_LOGF_IF(TRACE_SCHEDULER, "cpsr = %x", get_cpsr());
     unsigned int stop_reason = activate(thread);
-    sc_LOGF_IF(TRACE_SCHEDULER, "cpsr = %x", get_cpsr());
 
     sc_LOGF_IF(TRACE_SCHEDULER,
       "activate returned %x%s\n",
