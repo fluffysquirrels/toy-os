@@ -12,3 +12,18 @@
 
 #define THREAD_OFFSET_cpsr 0x0
 #define THREAD_OFFSET_registers 0x4
+
+// See page 1139 of ARM Architecture Reference Manual ARMv7-A and ARMv7-R edition version C.c
+#define CPSR_MODE_USR 0x10 // User mode
+#define CPSR_MODE_FIQ 0x11 // FIQ mode
+#define CPSR_MODE_IRQ 0x12 // IRQ mode
+#define CPSR_MODE_SVC 0x13 // Supervisor mode
+#define CPSR_MODE_MON 0x16 // Monitor mode
+#define CPSR_MODE_ABT 0x17 // Abort mode
+#define CPSR_MODE_HYP 0x1a // Hypervisor mode
+#define CPSR_MODE_UND 0x1b // Undefined mode
+#define CPSR_MODE_SYS 0x1f // System mode
+
+#define CPSR_IRQ_DISABLED (1 << 7)
+#define CPSR_FIQ_DISABLED (1 << 6)
+#define CPSR_INTERRUPTS_DISABLED (CPSR_IRQ_DISABLED | CPSR_FIQ_DISABLED)
