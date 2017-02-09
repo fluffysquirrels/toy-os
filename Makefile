@@ -1,6 +1,8 @@
 # Disable built-in rules
 .SUFFIXES:
 
+.PHONY: always-rebuild
+
 # TODO: set default if no config
 CURRENT_CONFIG_FILE=config/current.mk
 
@@ -28,9 +30,10 @@ MAKEFILES = Makefile $(wildcard config/*.mk)
 OUT_DIR:= target
 OBJ_DIR:= $(OUT_DIR)/obj
 DEP_DIR:= $(OUT_DIR)/deps
+ENV_DIR:= $(OUT_DIR)/env
 PREPROCESSED_DIR:= $(OUT_DIR)/preprocessed
 
-$(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR) $(PREPROCESSED_DIR))
+$(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR) $(ENV_DIR) $(PREPROCESSED_DIR))
 
 ARCH_DIR=arch/$(CONFIG_ARCH)
 SOURCES.c := $(wildcard *.c)
@@ -115,10 +118,10 @@ $(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
 $(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
-$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES)
+$(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-$(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES)
+$(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 .PRECIOUS: $(OBJ_DIR)/%.s
@@ -139,6 +142,7 @@ define MAKE-DEPS =
 
 	@# Comment out this rm to view the temp files output at each step.
 	@rm $(TEMP_DEP)*
+	@echo
 endef
 
 $(DEP_DIR)/%.c.d: %.c $(MAKEFILES)
@@ -160,6 +164,23 @@ $(PREPROCESSED_DIR)/%.c: %.c $(DEP_DIR)/%.c.d $(MAKEFILES)
 
 $(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<
+
+# Depend on this to re-run when environment variable CFLAGS changes
+$(ENV_DIR)/CFLAGS: always-rebuild
+	@echo Checking variable CFLAGS
+	@$(eval ENV_FILE!=echo "$(ENV_DIR)/CFLAGS")
+	@$(eval TEMP_ENV!=echo $(ENV_FILE).tmp.$$$$$$$$)
+	@#echo ENV_FILE $(ENV_FILE)
+	@#echo TEMP_ENV $(TEMP_ENV)
+	@echo $(CFLAGS) > $(TEMP_ENV)
+	@if ! diff $(TEMP_ENV) $(ENV_FILE); then \
+		echo variable CFLAGS changed; \
+		mv $(TEMP_ENV) $(ENV_FILE); \
+	else \
+		echo variable CFLAGS unchanged; \
+	fi
+	@rm -f $(TEMP_ENV)
+	@echo
 
 # Include dependency files
 -include $(SOURCES.c:%.c=$(DEP_DIR)/%.c.d)

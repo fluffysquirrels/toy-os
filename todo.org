@@ -52,7 +52,6 @@
 * Nice
 ** Maybe break timer_raspi into board and peripheral specific components.
 ** ASSERT_EQ();
-** Compile depends on CFLAGS.
 ** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
