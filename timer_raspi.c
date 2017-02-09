@@ -7,6 +7,7 @@
 #include "stdint.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "timer.h"
 #include "timer_raspi_reg.h"
 #include "timer_sp804.h"
 #include "util.h"
@@ -41,6 +42,8 @@ static void timer_raspi_isr() {
 #if TRACE_TIMER
     timer_raspi_print_status();
 #endif
+
+    timer_do_expired_callbacks();
   } else {
     PANIC("Interrupt was not our match.");
   }
