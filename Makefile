@@ -1,6 +1,14 @@
 # Disable built-in rules
 .SUFFIXES:
 
+# TODO: set default if no config
+CURRENT_CONFIG_FILE=config/current.mk
+
+.PHONY: config
+config:
+	@echo
+	cat config/current.mk
+
 # Doesn't work with empty checkout as rest of makefile won't load without a config/current.mk
 .PHONY: config-raspi2
 config-raspi2:
