@@ -1,3 +1,4 @@
+#include "asm_constants.h"
 #include "context_switch.h"
 #include "kernel.h"
 #include "heap.h"
@@ -28,8 +29,12 @@ void heap_stat_thread();
 
 void test_raspi_timers();
 
+void run_invalid_opcode();
+void print_exception_vector();
+void print_sctlr();
+
 int main() {
-  sc_puts("main()\n");
+  sc_LOG("");
 
   kernel_init();
 
@@ -39,21 +44,22 @@ int main() {
   test_raspi_timers();
 #endif
 
+
   // ASSERT(kspawn(CPSR_MODE_USR, &yield_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(CPSR_MODE_USR, &spawner_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(CPSR_MODE_USR, &return_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(CPSR_MODE_USR, &exit_thread, &t) == E_SUCCESS);
 
-  
-//  ASSERT(kspawn(CPSR_MODE_USR, &heap_stat_thread, &t) == E_SUCCESS);
+
+  ASSERT(kspawn(CPSR_MODE_USR, &heap_stat_thread, &t) == E_SUCCESS);
 //  ASSERT(kspawn(CPSR_MODE_USR, &tests_thread, &t) == E_SUCCESS);
 //  ASSERT(kspawn(CPSR_MODE_USR, &return_thread, &t) == E_SUCCESS);
 //  ASSERT(kspawn(CPSR_MODE_USR, &exit_thread, &t) == E_SUCCESS);
-//  ASSERT(kspawn(CPSR_MODE_USR, &sleep_thread, &t) == E_SUCCESS);
+  ASSERT(kspawn(CPSR_MODE_USR, &sleep_thread, &t) == E_SUCCESS);
 //  ASSERT(kspawn(CPSR_MODE_USR, &console_reader_thread, &t) == E_SUCCESS);
 
-  ASSERT(kspawn(CPSR_MODE_USR, &busy_loop_thread, &t) == E_SUCCESS);
-  thread_update_priority(t, 5);
+//  ASSERT(kspawn(CPSR_MODE_USR, &busy_loop_thread, &t) == E_SUCCESS);
+//  thread_update_priority(t, 5);
   // ASSERT(kspawn(CPSR_MODE_USR, &busy_loop_thread, &t) == E_SUCCESS);
   // thread_update_priority(t, 5);
 
@@ -65,24 +71,66 @@ int main() {
   return 0;
 }
 
-void test_raspi_timers() {
-  sc_LOG("Setting timeouts");
-  timer_raspi_set_timeout(1 * DURATION_S);
-  timer_sp804_set_timeout(timer_sp804_timer0, 1000000);
+void print_sctlr() {
+  sc_LOG("");
+  uint32_t sctlr = get_sctlr();
+  sc_printf("sctlr   = %x\n", sctlr);
+  sc_printf("  VE    = %x\n", sctlr & (1 << 24));
+  sc_printf("  V     = %x\n", sctlr & (1 << 13));
 
-  sc_LOG("Delaying");
-  timer_delay(3 * DURATION_S);
-  sc_LOG("Done delay");
+  sc_LOG("");
+  uint32_t vbar = get_vbar();
+  sc_printf("  vbar  = %x\n", vbar);
+
+  sc_print_mem_region((uint32_t *) vbar, 2 * 8 * 4);
+}
+
+void print_exception_vector() {
+  sc_LOG("");
+  sc_print_mem_region((uint32_t *) 0x0, 2 * 8 * 4);
+}
+
+void run_invalid_opcode() {
+  __asm__ volatile (".word 0xf7f0a000\n");
+}
+
+void test_raspi_timers() {
+  sc_LOG("Setting raspi timeout");
+  timer_raspi_set_timeout(100 * DURATION_MS);
+
+  timer_raspi_print_status();
+
+  sc_LOG("delaying");
+  timer_delay(200 * DURATION_MS);
+  sc_LOG("back from delay");
 
   interrupt_log_status();
   timer_raspi_print_status();
-  timer_sp804_log_timer_state(timer_sp804_timer0);
 
   sc_LOG("sleeping");
   sleep();
   sc_LOG("back from sleep");
-}
 
+
+
+
+
+//   sc_LOG("Setting sp804 timeout");
+//   timer_sp804_set_timeout(timer_sp804_timer0, 100 * TIMER_SP804_TICKS_PER_MS);
+// 
+//   timer_sp804_log_timer_state(timer_sp804_timer0);
+// 
+//   sc_LOG("delaying");
+//   timer_delay(200 * DURATION_MS);
+//   sc_LOG("back from delay");
+//
+//   interrupt_log_status();
+//   timer_sp804_log_timer_state(timer_sp804_timer0);
+//
+//   sc_LOG("sleeping");
+//   sleep();
+//   sc_LOG("back from sleep");
+}
 
 void tests_thread() {
   ASSERT(sys_invalid() == E_NOSUCHSYSCALL);
@@ -231,32 +279,30 @@ void yield_sub(unsigned int arg1) {
  }
 
 void busy_loop_thread() {
-  sc_puts("Start busy_loop_thread()\n");
-    __asm__ volatile(
-    "mov    r0,  #10 " "\n\t"
-    "mov    r1,  #1  " "\n\t"
-    "mov    r2,  #2  " "\n\t"
-    "mov    r3,  #3  " "\n\t"
-    "mov    r4,  #4  " "\n\t"
-    "mov    r5,  #5  " "\n\t"
-    "mov    r6,  #6  " "\n\t"
-    "mov    r7,  #7  " "\n\t"
-    "mov    r8,  #8  " "\n\t"
-    "mov    r9,  #9  " "\n\t"
-    "mov    r10, #10 " "\n\t"
-    "mov    r12, #12 " "\n\t"
-    :
-    :
-    : "cc",
-      "r0", "r1", "r2" , "r3" ,
-      "r4", "r5", "r6" , "r7" ,
-      "r8", "r9", "r10", "r12"
-  );
+  sc_LOG("Start");
+//    __asm__ volatile(
+//    "mov    r0,  #10 " "\n\t"
+//    "mov    r1,  #1  " "\n\t"
+//    "mov    r2,  #2  " "\n\t"
+//    "mov    r3,  #3  " "\n\t"
+//    "mov    r4,  #4  " "\n\t"
+//    "mov    r5,  #5  " "\n\t"
+//    "mov    r6,  #6  " "\n\t"
+//    "mov    r7,  #7  " "\n\t"
+//    "mov    r8,  #8  " "\n\t"
+//    "mov    r9,  #9  " "\n\t"
+//    "mov    r10, #10 " "\n\t"
+//    "mov    r12, #12 " "\n\t"
+//    :
+//    :
+//    : "cc",
+//      "r0", "r1", "r2" , "r3" ,
+//      "r4", "r5", "r6" , "r7" ,
+//      "r8", "r9", "r10", "r12"
+//  );
   while(1) {
-    int n = 0;
-
-    for(n = 0; n < 100000000; n = n + 1) {}
-    sc_puts("busy_loop() tick\n");
+    timer_delay(400 * DURATION_MS);
+    sc_LOG("tick");
   }
 }
 
@@ -354,7 +400,10 @@ void console_reader_thread() {
 #endif // TRACE_CONSOLE_READER
 
     err_t err = sys_read(&args, &result);
-    UNUSED(err);
+    if (err != E_SUCCESS) {
+      sc_LOGF("sys_read err = %u", err);
+      break;
+    }
 
 #if TRACE_CONSOLE_READER
     sc_printf("console_reader_thread() back from read\n"
@@ -380,7 +429,7 @@ void sleep_thread() {
   sc_LOG("start");
   while(1) {
     sc_LOG("loop");
-    sys_sleep(DURATION_MS * 100);
+    sys_sleep(DURATION_MS * 500);
   }
 }
 
