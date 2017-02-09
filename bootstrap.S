@@ -46,6 +46,12 @@ keep_copying_interrupt_table:
     cmp r1, r3
     bne keep_copying_interrupt_table
 
+    // Set VBAR to #0x0: sets exception vector location to #0x0.
+    // E.g. u-boot seems to point this at its own vector.
+    mov r0, #0x0
+    bl set_vbar
+
+    // Jump to C.
     bl main
 
 interrupt_table:
@@ -68,14 +74,3 @@ unhandled_exception:
     bl halt
 
 unhandled_exception_message:    .string "\nUnhandled exception! Panic.\n"
-
-// interrupt_table:
-//     nop                       // reset
-//     nop                       // undefined instruction
-//     ldr pc, =svc_entry        // supervisor call
-//     nop                       // prefetch abort
-//     nop                       // data abort
-//     nop
-//     ldr pc, =irq_entry        // irq interrupt
-//     nop                       // fiq interrupt
-// interrupt_table_end:

@@ -122,13 +122,31 @@ sleep:
 
 .global get_cpsr
 get_cpsr:
-    // uint32_t get_cpsr()
+    // uint32_t get_cpsr();
     // Returns CPSR
     mrs r0, CPSR
     bx lr
 
 .global set_cpsr
 set_cpsr:
-    // void set_cpsr(uint32_t cpsr)
+    // void set_cpsr(uint32_t cpsr);
     msr CPSR, r0
+    bx lr
+
+.global get_sctlr
+get_sctlr:
+    // uint32_t get_sctlr();
+    mrc p15, 0, r0, c1, c0, 0
+    bx lr
+
+.global get_vbar
+get_vbar:
+    // uint32_t get_vbar();
+    MRC p15, 0, r0, c12, c0, 0
+    bx lr
+
+    .global set_vbar
+set_vbar:
+    // void set_vbar(uint32_t vbar);
+    MCR p15, 0, r0, c12, c0, 0
     bx lr
