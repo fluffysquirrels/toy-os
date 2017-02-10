@@ -88,11 +88,13 @@ SERIAL_DEV=/dev/ttyUSB0
 PICOCOM_CMD:=picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" $(SERIAL_DEV)
 
 .PHONY: run-serial
-run-serial: $(OUT_RAW) build
+run-serial: $(OUT_RAW).gz build
 	du -ha --apparent-size target/kernel.raw
-	echo loady 0x10000 > $(SERIAL_DEV)
+	echo loady 0x200000 > $(SERIAL_DEV)
 	sleep 1
-	sb target/kernel.raw < $(SERIAL_DEV) > $(SERIAL_DEV)
+	sb target/kernel.raw.gz < $(SERIAL_DEV) > $(SERIAL_DEV)
+	sleep 1
+	echo unzip 0x200000 0x10000 > $(SERIAL_DEV)
 	sleep 1
 	echo go 0x10000 > $(SERIAL_DEV)
 	$(PICOCOM_CMD)
@@ -114,6 +116,9 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 
 $(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
 	$(OBJCOPY) --strip-all --strip-debug -O binary $< $@
+
+$(OUT_RAW).gz: $(OUT_RAW) $(MAKEFILES)
+	gzip -c $(OUT_RAW) > $(OUT_RAW).gz
 
 $(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a

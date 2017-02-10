@@ -28,7 +28,6 @@
 ** fork?
 
 * Nice features:
-** Try using sending kernel.raw compressed to speed up load time.
 ** interrupt_disable().
 ** Panic on other exceptions.
 ** ISR runs directly instead of via activate() return value?
