@@ -1,7 +1,7 @@
 #include "asm_constants.h"
 
-.global activate
-activate:
+.global activate_thread
+activate_thread:
     /* Arguments:
          r0: pointer to struct thread_t for the thread to activate
     */

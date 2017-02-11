@@ -79,10 +79,10 @@ void scheduler_loop() {
 
     set_reschedule_timer(thread);
 
-    unsigned int stop_reason = activate(thread);
+    unsigned int stop_reason = activate_thread(thread);
 
     sc_LOGF_IF(TRACE_SCHEDULER,
-      "activate returned %x%s\n",
+      "activate_thread returned %x%s\n",
       stop_reason,
       stop_reason == ACTIVATE_RET_IRQ     ? "=ACTIVATE_RET_IRQ"
     : stop_reason == ACTIVATE_RET_SYSCALL ? "=ACTIVATE_RET_SYSCALL": "");
