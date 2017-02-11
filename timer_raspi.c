@@ -2,7 +2,7 @@
 
 #include "arch_interrupt_numbers.h"
 #include "arch_registers.h"
-#include "arch_timer_common.h"
+#include "arch_timer.h"
 #include "context_switch.h"
 #include "interrupt.h"
 #include "stdint.h"

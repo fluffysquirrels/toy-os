@@ -1,6 +1,6 @@
 #include "timer_versatilepb.h"
 
-#include "arch_timer_common.h"
+#include "arch_timer.h"
 #include "rtc_pl031.h"
 #include "stdint.h"
 #include "synchronous_console.h"

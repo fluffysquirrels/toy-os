@@ -2,7 +2,7 @@
 
 #include "syscalls.h"
 
-// Contains declarations that arch-specific arch_timer.h should implement
+// Contains declarations that arch-specific arch_timer.c should implement
 
 struct arch_timer {
   void (*init)();

@@ -33,10 +33,11 @@ DEP_DIR:= $(OUT_DIR)/deps
 ENV_DIR:= $(OUT_DIR)/env
 PREPROCESSED_DIR:= $(OUT_DIR)/preprocessed
 
-$(shell mkdir -p $(OUT_DIR) $(OBJ_DIR) $(DEP_DIR) $(ENV_DIR) $(PREPROCESSED_DIR))
+$(shell mkdir -p $(OUT_DIR) $(ENV_DIR))
 
 ARCH_DIR=arch/$(CONFIG_ARCH)
 SOURCES.c := $(wildcard *.c)
+SOURCES.c += $(wildcard $(ARCH_DIR)/*.c)
 SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 
@@ -124,9 +125,11 @@ $(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
 
 $(OBJ_DIR)/%.o: $(OBJ_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJ_DIR)/%.o: $(COMPILE_SOURCE_PREFIX)%.c $(DEP_DIR)/%.c.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 .PRECIOUS: $(OBJ_DIR)/%.s
@@ -137,6 +140,7 @@ define MAKE-DEPS =
 	echo MAKE-DEPS $@ : $<
 	@$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
 	@echo using TEMP_DEP = $(TEMP_DEP)
+	@mkdir -p $(@D)
 	@# Move existing file to *.old to ensure if we fail make does not
 	@# see a stale file.
 	@if test -f $@; then mv $@ $(TEMP_DEP).old; fi
@@ -161,11 +165,13 @@ preprocess-c: $(SOURCES.c:%.c=$(PREPROCESSED_DIR)/%.c)
 
 .PRECIOUS: $(PREPROCESSED_DIR)/%.c
 $(PREPROCESSED_DIR)/%.c: %.c $(DEP_DIR)/%.c.d $(MAKEFILES)
-	# sed command replaces gcc directives showing which source lines code came from,
-	# which would make the debugger show the original un-preprocessed source.
+	@echo
+	mkdir -p $(@D)
+	@# sed command replaces gcc directives showing which source lines code came from,
+	@# which would make the debugger show the original un-preprocessed source.
 	$(CC) $(CFLAGS_INCLUDES) -E $< |\
-	indent |\
-	sed -re 's,^(#[0-9]+),// gcc line \1,' > $@
+	  indent |\
+	  sed -re 's,^(#[0-9]+),// gcc line \1,' > $@
 
 $(OBJ_DIR)/FreeRTOS_heap_4.o: third_party/FreeRTOS/heap_4.c $(MAKEFILES)
 	$(CC) $(CFLAGS) -I. -o $@ -c $<

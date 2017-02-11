@@ -1,7 +1,4 @@
-#pragma once
-
-#include "arch_timer_common.h"
-#include "syscalls.h"
+#include "arch_timer.h"
 #include "timer_raspi.h"
 
 struct arch_timer *arch_get_timer() {
