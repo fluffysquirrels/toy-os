@@ -19,8 +19,11 @@
 static volatile unsigned int* base = (volatile unsigned int*) TIMER_RASPI_BASE;
 
 static void timer_raspi_clear_match();
-static bool timer_raspi_is_match();
+
+#ifdef INTNUM_RASPI_TIMER
 static void timer_raspi_isr();
+static bool timer_raspi_is_match();
+#endif // INTNUM_RASPI_TIMER
 
 void timer_raspi_init() {
 #ifdef INTNUM_RASPI_TIMER
@@ -31,6 +34,7 @@ void timer_raspi_init() {
   timer_sp804_init();
 }
 
+#ifdef INTNUM_RASPI_TIMER
 static void timer_raspi_isr() {
   sc_LOG_IF(TRACE_TIMER, "");
 #if TRACE_TIMER
@@ -49,6 +53,7 @@ static void timer_raspi_isr() {
 
   timer_do_expired_callbacks();
 }
+#endif // INTNUM_RASPI_TIMER
 
 time timer_raspi_systemnow() {
   return timer_raspi_get_counter() * DURATION_US;
@@ -93,9 +98,11 @@ static void timer_raspi_clear_match() {
   *(base + TIMER_RASPI_CS) = TIMER_RASPI_CS_M3;
 }
 
+#ifdef INTNUM_RASPI_TIMER
 static bool timer_raspi_is_match() {
   return *(base + TIMER_RASPI_CS) & TIMER_RASPI_CS_M3;
 }
+#endif // INTNUM_RASPI_TIMER
 
 void timer_raspi_set_timeout(duration_t d) {
   timer_raspi_set_deadline(timer_raspi_systemnow() + d);
