@@ -42,6 +42,7 @@ SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 
 OUT_ELF := $(OUT_DIR)/kernel.elf
+OUT_SLIM_ELF := $(OUT_DIR)/kernel.slim.elf
 OUT_RAW := $(OUT_DIR)/kernel.raw
 OBJECTS := $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
 OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
@@ -110,7 +111,7 @@ clean:
 	rm -rf $(OUT_DIR)/*
 
 .PHONY: build
-build: TAGS $(OUT_ELF) $(OUT_RAW) $(OUT_RAW).gz
+build: TAGS $(OUT_ELF) $(OUT_RAW) $(OUT_RAW).gz $(OUT_SLIM_ELF) $(OUT_SLIM_ELF).gz
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
@@ -118,8 +119,11 @@ TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 $(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
 	$(OBJCOPY) --strip-all --strip-debug -O binary $< $@
 
-$(OUT_RAW).gz: $(OUT_RAW) $(MAKEFILES)
-	gzip -c $(OUT_RAW) > $(OUT_RAW).gz
+%.gz: %
+	gzip -c $< > $@
+
+$(OUT_SLIM_ELF): $(OUT_ELF)
+	$(OBJCOPY) --strip-all $< $@
 
 $(OUT_ELF): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $^ $(GCC_LIBS)/libgcc.a
