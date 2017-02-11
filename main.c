@@ -11,6 +11,7 @@
 #include "thread.h"
 #include "timer.h"
 #include "timer_sp804.h"
+#include "uart.h"
 #include "util.h"
 
 void exercise_trees();
@@ -22,6 +23,7 @@ void spawner_thread();
 void return_thread();
 void exit_thread();
 void console_reader_thread();
+void blocking_console_reader_thread();
 void tests_thread();
 void sleep_thread();
 void heap_stat_thread();
@@ -66,6 +68,7 @@ int main() {
 //  ASSERT(kspawn(CPSR_MODE_USR, &exit_thread, &t) == E_SUCCESS);
   ASSERT(kspawn(CPSR_MODE_USR, &sleep_thread, &t) == E_SUCCESS);
 //  ASSERT(kspawn(CPSR_MODE_USR, &console_reader_thread, &t) == E_SUCCESS);
+//  ASSERT(kspawn(CPSR_MODE_USR, &blocking_console_reader_thread, &t) == E_SUCCESS);
 
 //  ASSERT(kspawn(CPSR_MODE_USR, &busy_loop_thread, &t) == E_SUCCESS);
 //  thread_update_priority(t, 5);
@@ -451,6 +454,18 @@ void console_reader_thread() {
     if (buff[0] == 'c') {
       // Clear screen.
       sc_puts("\x1b[2J");
+    }
+  }
+}
+
+void blocking_console_reader_thread() {
+  sc_LOG("");
+  struct uart_t *u = uart_0;
+  while (1) {
+    if (!uart_rx_fifo_empty(u)) {
+      iochar_t ch = uart_getch(u);
+      ASSERT(ch != EOF);
+      sc_LOGF("read '%c'", (char)ch);
     }
   }
 }

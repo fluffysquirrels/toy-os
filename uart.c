@@ -135,9 +135,28 @@ void uart_0_isr() {
 #endif // TRACE_UART
 }
 
+static void uart_init_single(struct uart_t *uart) {
+  *(uart->addr + UART_CR) |=
+    UART_CR_UARTEN |
+    UART_CR_RXE |
+    UART_CR_TXE;
+}
 
 void uart_init() {
   // TODO: Test this interrupt on raspi.
   interrupt_set_handler(INTNUM_UART0, uart_0_isr);
   interrupt_enable(INTNUM_UART0);
+
+#ifdef UART_BASE_0
+  uart_init_single(uart_0);
+#endif // UART_BASE_0
+#ifdef UART_BASE_1
+  uart_init_single(uart_1);
+#endif // UART_BASE_1
+#ifdef UART_BASE_2
+  uart_init_single(uart_2);
+#endif // UART_BASE_2
+#ifdef UART_BASE_3
+  uart_init_single(uart_3);
+#endif // UART_BASE_3
 }
