@@ -4,7 +4,6 @@
 
 * Tasks:
 ** Memory map
-** Don't compile code for other architectures. Remove #ifdef's that work around this.
 ** Encapsulate timers better. Probably move reschedule timer logic into
    timer.c from kernel.c
 ** Move scheduler out of kernel.c

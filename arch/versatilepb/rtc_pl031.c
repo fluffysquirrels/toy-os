@@ -12,9 +12,7 @@
 #define TRACE_TIMER 0
 #endif
 
-#ifdef INTNUM_RTC
 static void rtc_interrupt();
-#endif // INTNUM_RTC
 
 static void rtc_set_match_in_future();
 
@@ -45,10 +43,8 @@ uint32_t rtc_pl031_get_current() {
 void rtc_pl031_init() {
   sc_LOG_IF(TRACE_TIMER, "");
 
-#ifdef INTNUM_RTC
   interrupt_set_handler(INTNUM_RTC, &rtc_interrupt);
   interrupt_enable(INTNUM_RTC);
-#endif // INTNUM_RTC
 
   // Start timer
   *(RTC_BASE + RTC_CR) = RTC_CR_START;
@@ -63,7 +59,6 @@ void rtc_pl031_init() {
 #endif
 
 }
-#ifdef INTNUM_RTC
 static void rtc_interrupt() {
   sc_LOG_IF(TRACE_TIMER, "");
 #if TRACE_TIMER
@@ -97,7 +92,6 @@ static void rtc_interrupt() {
   rtc_pl031_log_state();
 #endif
 }
-#endif // INTNUM_RTC
 
 
 static void rtc_set_match_in_future() {

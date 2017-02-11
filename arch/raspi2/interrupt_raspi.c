@@ -40,7 +40,6 @@ static void interrupt_raspi_log_status() {
 }
 
 static void interrupt_raspi_enable_interrupt(uint8_t irq) {
-#if CONFIG_ARCH_raspi2
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wtype-limits" // Ignore 0 <= unsigned
@@ -54,15 +53,9 @@ static void interrupt_raspi_enable_interrupt(uint8_t irq) {
   } else {
     PANICF("irq %u in unknown bank", (uint32_t) irq);
   }
-
-#else //CONFIG_ARCH_raspi2
-  UNUSED(irq);
-#endif //CONFIG_ARCH_raspi2
-
 }
 
 static irq interrupt_raspi_get_active_interrupt() {
-#ifdef CONFIG_ARCH_raspi2
   uint32_t basic = *(base + IC_RASPI_PENDING_BASIC);
   // masked_basic ignores bits signifying that interrupts are pending in
   // bank 1 or bank 2.
@@ -79,7 +72,6 @@ static irq interrupt_raspi_get_active_interrupt() {
     int bank_irq = __builtin_ctz(bank2);
     return INTNUM_RASPI_BANK_2_MIN + bank_irq;
   }
-#endif // CONFIG_ARCH_raspi2
 
   // No banks non-zero
   return IRQ_NONE;
