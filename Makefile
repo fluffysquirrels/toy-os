@@ -11,7 +11,6 @@ config:
 	@echo
 	cat config/current.mk
 
-# Doesn't work with empty checkout as rest of makefile won't load without a config/current.mk
 .PHONY: config-raspi2
 config-raspi2:
 	echo "include config/raspi2.mk" > config/current.mk
@@ -20,6 +19,7 @@ config-raspi2:
 config-versatilepb:
 	echo "include config/versatilepb.mk" > config/current.mk
 
+# Doesn't work with empty checkout as rest of makefile won't load without a config/current.mk
 ifeq ("$(wildcard $(CURRENT_CONFIG_FILE))","")
 $(error Missing config file "$(CURRENT_CONFIG_FILE)". Create it, e.g. just containing "include config/versatilepb.mk")
 endif
@@ -47,13 +47,13 @@ OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
 OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
 
 CC=arm-linux-gnueabi-gcc
-CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1
+CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -Os -ffunction-sections -fdata-sections
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
 CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-linux-gnueabi-ld
-LDFLAGS= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings
+LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections
 CONFIG_COMPILE_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"
 COMPILE_SOURCE_PREFIX:=$(PREPROCESSED_DIR)/
@@ -89,7 +89,7 @@ PICOCOM_CMD:=picocom --baud 115200 --imap lfcrlf --send-cmd "sb -vv" $(SERIAL_DE
 
 .PHONY: run-serial
 run-serial: $(OUT_RAW).gz build
-	du -ha --apparent-size target/kernel.raw
+	du -ha --apparent-size $(OUT_RAW) $(OUT_RAW).gz
 	echo loady 0x200000 > $(SERIAL_DEV)
 	sleep 1
 	sb target/kernel.raw.gz < $(SERIAL_DEV) > $(SERIAL_DEV)
@@ -109,7 +109,7 @@ clean:
 	rm -rf $(OUT_DIR)/*
 
 .PHONY: build
-build: TAGS $(OUT_ELF) $(OUT_RAW)
+build: TAGS $(OUT_ELF) $(OUT_RAW) $(OUT_RAW).gz
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
 	etags --declarations -o TAGS *.c *.h *.S
