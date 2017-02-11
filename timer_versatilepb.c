@@ -1,5 +1,6 @@
 #include "timer_versatilepb.h"
 
+#include "arch_timer_common.h"
 #include "rtc_pl031.h"
 #include "stdint.h"
 #include "synchronous_console.h"
@@ -55,4 +56,15 @@ void timer_versatilepb_set_deadline(time t) {
   duration_t timeout = t < now ? 0 : t - now;
 
   timer_versatilepb_set_timeout(timeout);
+}
+
+static struct arch_timer at = {
+  .init = timer_versatilepb_init,
+  .systemnow = timer_versatilepb_systemnow,
+  .set_deadline = timer_versatilepb_set_deadline,
+  .set_timeout = timer_versatilepb_set_timeout,
+};
+
+struct arch_timer *timer_versatilepb_get_arch_timer() {
+  return &at;
 }

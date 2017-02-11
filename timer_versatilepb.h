@@ -9,3 +9,5 @@ void timer_versatilepb_set_timeout(duration_t d);
 void timer_versatilepb_set_deadline(time t);
 
 void timer_versatilepb_rtc_tick();
+
+struct arch_timer *timer_versatilepb_get_arch_timer();

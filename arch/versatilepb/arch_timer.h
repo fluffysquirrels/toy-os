@@ -19,3 +19,7 @@ void arch_timer_set_timeout(duration_t d) {
 void arch_timer_set_deadline(time t) {
   timer_versatilepb_set_deadline(t);
 }
+
+struct arch_timer *arch_get_timer() {
+  return timer_versatilepb_get_arch_timer();
+}

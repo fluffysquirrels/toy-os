@@ -90,10 +90,6 @@ void timer_raspi_set_deadline(time t) {
   }
 }
 
-void timer_raspi_clear_deadline() {
-  timer_raspi_set_deadline(0);
-}
-
 static void timer_raspi_clear_match() {
   *(base + TIMER_RASPI_CS) = TIMER_RASPI_CS_M3;
 }
