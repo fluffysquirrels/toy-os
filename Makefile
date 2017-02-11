@@ -19,6 +19,10 @@ config-raspi2:
 config-versatilepb:
 	echo "include config/versatilepb.mk" > config/current.mk
 
+.PHONY: config-stm32f4
+config-stm32f4:
+	echo "include config/stm32f4.mk" > config/current.mk
+
 # Doesn't work with empty checkout as rest of makefile won't load without a config/current.mk
 ifeq ("$(wildcard $(CURRENT_CONFIG_FILE))","")
 $(error Missing config file "$(CURRENT_CONFIG_FILE)". Create it, e.g. just containing "include config/versatilepb.mk")

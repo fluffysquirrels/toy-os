@@ -35,17 +35,24 @@ void print_sctlr();
 void test_raspi_timers();
 #endif
 
+#if CONFIG_ARCH_stm32f4
+void stm32f4_scratch();
+#endif
+
 int main() {
+#if CONFIG_ARCH_stm32f4
+  stm32f4_scratch();
+#endif
   sc_LOG("");
 
   kernel_init();
-
-  struct thread_t *t;
 
 #if CONFIG_ARCH_raspi2
   test_raspi_timers();
 #endif
 
+
+  struct thread_t *t;
 
   // ASSERT(kspawn(CPSR_MODE_USR, &yield_thread, &t) == E_SUCCESS);
   // ASSERT(kspawn(CPSR_MODE_USR, &spawner_thread, &t) == E_SUCCESS);
@@ -71,6 +78,24 @@ int main() {
 
   /* Not reached */
   return 0;
+}
+
+void stm32f4_scratch() {
+  uint32_t n = 3; // d // a-i (0-8)
+  volatile uint32_t *gpion_base = (volatile uint32_t *)(0x4002000 + (0x400 * n)); // 0x4002c00
+  volatile uint32_t *gpion_bsrr = gpion_base + (0x18 / 4); // 0x4002c18
+  //  gpion_bsrr = 0xffff;
+//  led4_pin = 12;
+//  led3_pin = 13;
+//  led5_pin = 14;
+//  led6_pin = 15;
+
+  while (1) {
+    for (int n = 0; n < 100000; n++) {}
+    *gpion_bsrr = 0xf000;
+    for (int n = 0; n < 100000; n++) {}
+    *gpion_bsrr = 0xf0000000;
+  }
 }
 
 void print_sctlr() {
