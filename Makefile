@@ -54,7 +54,7 @@ CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
 LD=arm-none-eabi-ld
-LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections
+LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections --omagic
 CONFIG_COMPILE_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"
 COMPILE_SOURCE_PREFIX:=$(PREPROCESSED_DIR)/
