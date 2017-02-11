@@ -17,7 +17,7 @@
 #define TRACE_TIMER 0
 #endif
 
-static volatile unsigned int* base = (volatile unsigned int*) TIMER_RASPI_BASE;
+static volatile uint32_t* base = (volatile uint32_t*) TIMER_RASPI_BASE;
 
 static void timer_raspi_clear_match();
 
