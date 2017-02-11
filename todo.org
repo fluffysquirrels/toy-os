@@ -56,7 +56,6 @@
 
 * Nice
 ** Maybe break timer_raspi into board and peripheral specific components.
-** TAGS contains #defines from arch/**/*.h
 ** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
 ** Set user thread return values with a function in syscalls, fetch all arguments with functions too.

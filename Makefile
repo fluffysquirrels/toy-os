@@ -114,7 +114,7 @@ clean:
 build: TAGS $(OUT_ELF) $(OUT_RAW) $(OUT_RAW).gz $(OUT_SLIM_ELF) $(OUT_SLIM_ELF).gz
 
 TAGS: $(SOURCES.c) $(SOURCES.h) $(SOURCES.S)
-	etags --declarations -o TAGS *.c *.h *.S
+	etags --declarations -o TAGS $^
 
 $(OUT_RAW): $(OUT_ELF) $(MAKEFILES)
 	$(OBJCOPY) --strip-all --strip-debug -O binary $< $@
