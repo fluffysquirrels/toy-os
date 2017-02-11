@@ -1,4 +1,13 @@
 #pragma once
+
+#if CONFIG_ARCH_stm32f4
+#define KERNEL_STACK_BASE (0x20000000 + 192 * 1024 - 0x04) // End of RAM
+#else
+#define KERNEL_STACK_BASE 0x07fffff0
+#endif
+
+#define KERNEL_STACK_SIZE 4 * 1024 // 4 KB
+
 #define ACTIVATE_RET_IRQ 0x1
 #define ACTIVATE_RET_SYSCALL 0x2
 

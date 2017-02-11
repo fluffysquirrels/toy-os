@@ -3,25 +3,24 @@
 .global _start
 .section .text.startup
 _start:
-    // Set initial stacks, 2^16 = 64KB stack per mode
+    // Set initial stacks
 
     // Skip CPSR_MODE_USR, which has same sp as SYS mode and would take us out
     // of this privilege level.
     msr CPSR_c, #(CPSR_MODE_FIQ | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fefff0
+    ldr sp, =#(KERNEL_STACK_BASE - (0 * KERNEL_STACK_SIZE))
     msr CPSR_c, #(CPSR_MODE_IRQ | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fdfff0
+    ldr sp, =#(KERNEL_STACK_BASE - (1 * KERNEL_STACK_SIZE))
     msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fcfff0
+    ldr sp, =#(KERNEL_STACK_BASE - (2 * KERNEL_STACK_SIZE))
     // Skip CPSR_MODE_MON, as we won't be using secure extensions.
     msr CPSR_c, #(CPSR_MODE_ABT | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fbfff0
+    ldr sp, =#(KERNEL_STACK_BASE - (3 * KERNEL_STACK_SIZE))
     // Skip CPSR_MODE_HYP, as we won't be using virtualisation extensions.
     msr CPSR_c, #(CPSR_MODE_UND | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07fafff0
+    ldr sp, =#(KERNEL_STACK_BASE - (4 * KERNEL_STACK_SIZE))
     msr CPSR_c, #(CPSR_MODE_SYS | CPSR_INTERRUPTS_DISABLED)
-    ldr sp, =0x07f9fff0
-
+    ldr sp, =#(KERNEL_STACK_BASE - (5 * KERNEL_STACK_SIZE))
 
     // Start in supervisor mode
     msr CPSR_c, #(CPSR_MODE_SVC | CPSR_INTERRUPTS_DISABLED)
