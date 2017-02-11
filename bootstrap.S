@@ -34,17 +34,17 @@ _start:
     sub r2, r12, r0          // int len
     bl memset
 
-    /* Copy interrupt table to install it */
+    /* Copy exception vector to install it */
     mov r0, #0x00                /* r0: copy target */
-    ldr r1, =interrupt_table     /* r1: copy source */
-    ldr r3, =interrupt_table_end /* r3: copy end */
-keep_copying_interrupt_table:
+    ldr r1, =exception_vector     /* r1: copy source */
+    ldr r3, =exception_vector_end /* r3: copy end */
+keep_copying_exception_vector:
     ldr r2, [r1, #0x0]
     str r2, [r0, #0x0]
     add r0, r0, #0x4
     add r1, r1, #0x4
     cmp r1, r3
-    bne keep_copying_interrupt_table
+    bne keep_copying_exception_vector
 
     // Set VBAR to #0x0: sets exception vector location to #0x0.
     // E.g. u-boot seems to point this at its own vector.
@@ -54,7 +54,7 @@ keep_copying_interrupt_table:
     // Jump to C.
     bl main
 
-interrupt_table:
+exception_vector:
     ldr pc, p_unhandled_exception // reset
     ldr pc, p_unhandled_exception // undefined instruction
     ldr pc, p_svc_entry           // supervisor call
@@ -66,7 +66,7 @@ interrupt_table:
 p_svc_entry:           .word svc_entry
 p_irq_entry:           .word irq_entry
 p_unhandled_exception: .word unhandled_exception
-interrupt_table_end:
+exception_vector_end:
 
 unhandled_exception:
     ldr r0, =unhandled_exception_message
