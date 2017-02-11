@@ -3,11 +3,9 @@
 #include "timer.h"
 
 #include "arch_timer.h"
-#include "rtc_pl031.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
-#include "timer_sp804.h"
 #include "util.h"
 
 #ifndef TRACE_TIMER

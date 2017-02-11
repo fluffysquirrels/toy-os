@@ -10,7 +10,6 @@
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"
 #include "timer.h"
-#include "timer_raspi.h"
 #include "timer_sp804.h"
 #include "util.h"
 
@@ -27,11 +26,14 @@ void tests_thread();
 void sleep_thread();
 void heap_stat_thread();
 
-void test_raspi_timers();
-
 void run_invalid_opcode();
 void print_exception_vector();
 void print_sctlr();
+
+#if CONFIG_ARCH_raspi2
+#include "timer_raspi.h"
+void test_raspi_timers();
+#endif
 
 int main() {
   sc_LOG("");
@@ -94,6 +96,8 @@ void run_invalid_opcode() {
   __asm__ volatile (".word 0xf7f0a000\n");
 }
 
+#if CONFIG_ARCH_raspi2
+
 void test_raspi_timers() {
   sc_LOG("Setting raspi timeout");
   timer_raspi_set_timeout(100 * DURATION_MS);
@@ -131,6 +135,7 @@ void test_raspi_timers() {
 //   sleep();
 //   sc_LOG("back from sleep");
 }
+#endif // CONFIG_ARCH_raspi2
 
 void tests_thread() {
   ASSERT(sys_invalid() == E_NOSUCHSYSCALL);
