@@ -1,6 +1,6 @@
 #include "thread.h"
 
-#include "kernel.h"
+#include "scheduler.h"
 #include "stdbool.h"
 #include "stdlib.h"
 #include "synchronous_console.h"
