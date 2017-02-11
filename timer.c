@@ -31,12 +31,18 @@ RB_GENERATE(timer_map, timer_node, rb, timer_node_cmp)
 
 static timer_id_t next_timer_id = 0;
 
+static struct arch_timer *at = NULL;
+
 void timer_init() {
-  arch_timer_init();
+  at = arch_get_timer();
+  at->init();
 }
 
 time timer_systemnow() {
-  return arch_timer_systemnow();
+  if (at == NULL) {
+    return 0;
+  }
+  return at->systemnow();
 }
 
 err_t timer_queue(
@@ -64,7 +70,8 @@ err_t timer_queue(
 }
 
 void timer_set_deadline(time t) {
-  arch_timer_set_deadline(t);
+  ASSERT(at != NULL);
+  at->set_deadline(t);
 }
 
 void timer_do_expired_callbacks() {
