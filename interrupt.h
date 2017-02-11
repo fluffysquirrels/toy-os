@@ -16,12 +16,3 @@ void interrupt_log_status();
 
 // Returns the number of an active interrupt, or IRQ_NONE if none are active.
 irq interrupt_get_active();
-
-struct interrupt_controller {
-  void (*init)();
-  void (*log_status)();
-  void (*enable_interrupt)(uint8_t irq);
-
-  // Returns the number of an active interrupt, or IRQ_NONE if none are active.
-  irq (*get_active_interrupt)();
-};

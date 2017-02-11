@@ -1,5 +1,6 @@
 #include "interrupt_raspi.h"
 
+#include "arch_interrupt.h"
 #include "arch_interrupt_numbers.h"
 #include "arch_registers.h"
 #include "interrupt_raspi_reg.h"
