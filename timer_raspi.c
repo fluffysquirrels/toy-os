@@ -2,6 +2,7 @@
 
 #include "arch_interrupt_numbers.h"
 #include "arch_registers.h"
+#include "arch_timer_common.h"
 #include "context_switch.h"
 #include "interrupt.h"
 #include "stdint.h"
@@ -117,4 +118,15 @@ void timer_raspi_print_status() {
     sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
     sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
     sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
+}
+
+static struct arch_timer at = {
+  .init = timer_raspi_init,
+  .systemnow = timer_raspi_systemnow,
+  .set_deadline = timer_raspi_set_deadline,
+  .set_timeout = timer_raspi_set_timeout,
+};
+
+struct arch_timer *timer_raspi_get_arch_timer() {
+  return &at;
 }
