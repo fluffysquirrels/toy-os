@@ -102,13 +102,13 @@ static void rtc_set_match_in_future() {
 
 void rtc_pl031_log_state() {
   sc_LOG("");
-  sc_print_uint32_memv("  DR  ", (RTC_BASE + RTC_DR));
-  sc_print_uint32_memv("  MR  ", (RTC_BASE + RTC_MR));
-  sc_print_uint32_memv("  LR  ", (RTC_BASE + RTC_LR));
-  sc_print_uint32_memv("  CR  ", (RTC_BASE + RTC_CR));
-  sc_print_uint32_memv("  IMSC", (RTC_BASE + RTC_IMSC));
-  sc_print_uint32_memv("  RIS ", (RTC_BASE + RTC_RIS));
-  sc_print_uint32_memv("  MIS ", (RTC_BASE + RTC_MIS));
+  sc_print_uint32_mem("  DR  ", (RTC_BASE + RTC_DR));
+  sc_print_uint32_mem("  MR  ", (RTC_BASE + RTC_MR));
+  sc_print_uint32_mem("  LR  ", (RTC_BASE + RTC_LR));
+  sc_print_uint32_mem("  CR  ", (RTC_BASE + RTC_CR));
+  sc_print_uint32_mem("  IMSC", (RTC_BASE + RTC_IMSC));
+  sc_print_uint32_mem("  RIS ", (RTC_BASE + RTC_RIS));
+  sc_print_uint32_mem("  MIS ", (RTC_BASE + RTC_MIS));
   sc_puts("\n");
   sc_printf("  highest_value     = %u\n", highest_value);
   sc_printf("  raw               = %u\n", *(RTC_BASE + RTC_DR));

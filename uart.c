@@ -84,21 +84,21 @@ void uart_log_status(struct uart_t *u) {
             uart_rx_fifo_empty(u) ? "true" : "false");
 
   // Don't read DR or we will empty the fifo.
-  //  sc_print_uint32_memv("  UART_DR   ", u->addr + UART_DR   );
-  sc_print_uint32_memv("  UART_RSR  ", u->addr + UART_RSR  );
-  sc_print_uint32_memv("  UART_ECR  ", u->addr + UART_ECR  );
-  sc_print_uint32_memv("  UART_FR   ", u->addr + UART_FR   );
-  sc_print_uint32_memv("  UART_ILPR ", u->addr + UART_ILPR );
-  sc_print_uint32_memv("  UART_IBRD ", u->addr + UART_IBRD );
-  sc_print_uint32_memv("  UART_FBRD ", u->addr + UART_FBRD );
-  sc_print_uint32_memv("  UART_LCRH ", u->addr + UART_LCRH );
-  sc_print_uint32_memv("  UART_CR   ", u->addr + UART_CR   );
-  sc_print_uint32_memv("  UART_IFLS ", u->addr + UART_IFLS );
-  sc_print_uint32_memv("  UART_IMSC ", u->addr + UART_IMSC );
-  sc_print_uint32_memv("  UART_RIS  ", u->addr + UART_RIS  );
-  sc_print_uint32_memv("  UART_MIS  ", u->addr + UART_MIS  );
-  sc_print_uint32_memv("  UART_ICR  ", u->addr + UART_ICR  );
-  sc_print_uint32_memv("  UART_DMACR", u->addr + UART_DMACR);
+  //  sc_print_uint32_mem("  UART_DR   ", u->addr + UART_DR   );
+  sc_print_uint32_mem("  UART_RSR  ", u->addr + UART_RSR  );
+  sc_print_uint32_mem("  UART_ECR  ", u->addr + UART_ECR  );
+  sc_print_uint32_mem("  UART_FR   ", u->addr + UART_FR   );
+  sc_print_uint32_mem("  UART_ILPR ", u->addr + UART_ILPR );
+  sc_print_uint32_mem("  UART_IBRD ", u->addr + UART_IBRD );
+  sc_print_uint32_mem("  UART_FBRD ", u->addr + UART_FBRD );
+  sc_print_uint32_mem("  UART_LCRH ", u->addr + UART_LCRH );
+  sc_print_uint32_mem("  UART_CR   ", u->addr + UART_CR   );
+  sc_print_uint32_mem("  UART_IFLS ", u->addr + UART_IFLS );
+  sc_print_uint32_mem("  UART_IMSC ", u->addr + UART_IMSC );
+  sc_print_uint32_mem("  UART_RIS  ", u->addr + UART_RIS  );
+  sc_print_uint32_mem("  UART_MIS  ", u->addr + UART_MIS  );
+  sc_print_uint32_mem("  UART_ICR  ", u->addr + UART_ICR  );
+  sc_print_uint32_mem("  UART_DMACR", u->addr + UART_DMACR);
 }
 
 extern struct file_t uart_0_file;

@@ -68,7 +68,7 @@ void panicf(char *format, ...);
 void halt();
 void warn(char *string);
 
-void sc_print_uint32_memv(char *name, volatile uint32_t *addr);
+void sc_print_uint32_mem(char *name, volatile uint32_t *addr);
 void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes);
 
 int sc_puts(char *string);
