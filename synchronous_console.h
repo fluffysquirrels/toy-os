@@ -63,9 +63,9 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 
 void assert(bool cond, char *string);
 void assertf(bool cond, char *format, ...);
-void panic(char *string);
-void panicf(char *format, ...);
-void halt();
+void panic(char *string) __attribute__ ((noreturn));
+void panicf(char *format, ...) __attribute__ ((noreturn));
+void halt() __attribute__ ((noreturn));
 void warn(char *string);
 
 void sc_print_uint32_mem(char *name, volatile uint32_t *addr);
