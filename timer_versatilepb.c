@@ -4,6 +4,7 @@
 #include "stdint.h"
 #include "synchronous_console.h"
 #include "syscalls.h"
+#include "timer.h"
 #include "timer_sp804.h"
 #include "util.h"
 
@@ -43,7 +44,15 @@ void timer_versatilepb_set_timeout(duration_t d) {
   uint64_t d_ticks = d / (DURATION_MS / TIMER_SP804_TICKS_PER_MS);
   uint32_t d_ticks_uint32 =
       d_ticks > UINT32_MAX
-    ? UINT32_MAX
+    ? UINT32_MAX // Wake up after UINT32_MAX on overflow
+                 // We can go back to sleep again then.
     : (uint32_t) d_ticks;
   timer_sp804_set_timeout(TIMER_SP804_TIMEOUT_TIMER, d_ticks_uint32);
+}
+
+void timer_versatilepb_set_deadline(time t) {
+  time now = timer_systemnow();
+  duration_t timeout = t < now ? 0 : t - now;
+
+  timer_versatilepb_set_timeout(timeout);
 }

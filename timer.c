@@ -23,7 +23,6 @@ struct timer_node {
 };
 
 static void timer_do_callback(struct timer_node *n);
-// static void timer_set_next_arch_deadline();
 
 DEFINE_KEY_COMPARER(timer_node_cmp, struct timer_node, time, deadline)
 
@@ -60,28 +59,12 @@ err_t timer_queue(
   }
 
   sc_LOGF_IF(TRACE_TIMER, "timer_id = %u", timer_id);
-  //  timer_set_next_arch_deadline();
-
-  // Note: We don't need to set a hardware timer. Before it activates a thread
-  // the scheduler will set its timer to fire before the earliest due time of
-  // any of our timers.
 
   return E_SUCCESS;
 }
 
-// static void timer_set_next_arch_deadline() {
-//   PANIC("WIP");
-//   time earliest_deadline = timer_get_earliest_deadline();
-//   if (earliest_deadline == UINT64_MAX) {
-//     arch_timer_clear_deadline();
-//   } else {
-//     arch_timer_set_deadline(earliest_deadline);
-//   }
-// }
-
-// TODO: Make this static, callers should use higher level functions.
-void timer_set_arch_timeout(duration_t d) {
-  arch_timer_set_timeout(d);
+void timer_set_deadline(time t) {
+  arch_timer_set_deadline(t);
 }
 
 void timer_do_expired_callbacks() {

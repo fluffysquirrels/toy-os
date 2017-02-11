@@ -15,3 +15,7 @@ time arch_timer_systemnow() {
 void arch_timer_set_timeout(duration_t d) {
   timer_versatilepb_set_timeout(d);
 }
+
+void arch_timer_set_deadline(time t) {
+  timer_versatilepb_set_deadline(t);
+}
