@@ -94,18 +94,11 @@ void timer_do_expired_callbacks() {
     if (n == NULL || n->deadline > now) {
       return;
     }
-#if TRACE_TIMER
+
     sc_LOGF_IF(TRACE_TIMER,
         "Found expired timer id=%u\n"
         "  deadline = %llu\n"
         "  now      = %llu", n->timer_id, n->deadline, now);
-    sc_puts("  deadline = ");
-    sc_print_uint64_dec(n->deadline);
-    sc_puts("\n");
-    sc_puts("  now      = ");
-    sc_print_uint64_dec(now);
-    sc_puts("\n");
-#endif
 
     timer_do_callback(n);
     RB_REMOVE(timer_map, &timers, n);
