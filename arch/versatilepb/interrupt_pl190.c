@@ -31,7 +31,7 @@ static void interrupt_pl190_enable_interrupt(uint8_t irq) {
 }
 
 static irq interrupt_pl190_get_active_interrupt() {
-  unsigned int pic_irqstatus = interrupt_pl190_get_status();
+  uint32_t pic_irqstatus = interrupt_pl190_get_status();
   if (pic_irqstatus == 0) {
     return IRQ_NONE;
   }

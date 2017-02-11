@@ -82,7 +82,7 @@ void sc_putch(char ch) {
   uart_sync_putch(uart_0, ch);
 }
 
-void sc_print_uint32_hex(unsigned int w) {
+void sc_print_uint32_hex(uint32_t w) {
   sc_puts("0x");
   sc_print_uint8_hex(w >> 28);
   sc_print_uint8_hex(w >> 24);
@@ -103,7 +103,7 @@ void sc_print_uint8_hex(char x) {
   } // No other cases
 }
 
-int sc_print_uint32_dec(unsigned int u) {
+int sc_print_uint32_dec(uint32_t u) {
   if (u == 0) {
     sc_putch('0');
     return 1;

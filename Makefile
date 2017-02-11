@@ -47,13 +47,13 @@ OBJECTS := $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
 OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
 OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
 
-CC=arm-linux-gnueabi-gcc
+CC=arm-none-eabi-gcc
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -Os -ffunction-sections -fdata-sections
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
 CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
-LD=arm-linux-gnueabi-ld
+LD=arm-none-eabi-ld
 LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections
 CONFIG_COMPILE_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"

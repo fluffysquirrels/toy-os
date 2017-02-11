@@ -12,13 +12,13 @@
 #endif
 
 struct timer_sp804_t {
-  volatile unsigned int *addr;
+  volatile uint32_t *addr;
   char *name;
 };
 
 #ifdef TIMER_SP804_BASE_0
 static struct timer_sp804_t _timer0 = {
-  .addr = (volatile unsigned int *) TIMER_SP804_BASE_0,
+  .addr = (volatile uint32_t *) TIMER_SP804_BASE_0,
   .name = "TIMER0",
 };
 struct timer_sp804_t *timer_sp804_timer0 = &_timer0;
@@ -26,7 +26,7 @@ struct timer_sp804_t *timer_sp804_timer0 = &_timer0;
 
 #ifdef TIMER_SP804_BASE_1
 static struct timer_sp804_t _timer1 = {
-  .addr = (volatile unsigned int *) TIMER_SP804_BASE_1,
+  .addr = (volatile uint32_t *) TIMER_SP804_BASE_1,
   .name = "TIMER1",
 };
 struct timer_sp804_t *timer_sp804_timer1 = &_timer1;
@@ -34,7 +34,7 @@ struct timer_sp804_t *timer_sp804_timer1 = &_timer1;
 
 #ifdef TIMER_SP804_BASE_2
 static struct timer_sp804_t _timer2 = {
-  .addr = (volatile unsigned int *) TIMER_SP804_BASE_2,
+  .addr = (volatile uint32_t *) TIMER_SP804_BASE_2,
   .name = "TIMER2",
 };
 struct timer_sp804_t *timer_sp804_timer2 = &_timer2;
@@ -42,7 +42,7 @@ struct timer_sp804_t *timer_sp804_timer2 = &_timer2;
 
 #ifdef TIMER_SP804_BASE_3
 static struct timer_sp804_t _timer3 = {
-  .addr = (volatile unsigned int *) TIMER_SP804_BASE_3,
+  .addr = (volatile uint32_t *) TIMER_SP804_BASE_3,
   .name = "TIMER3",
 };
 struct timer_sp804_t *timer_sp804_timer3 = &_timer3;

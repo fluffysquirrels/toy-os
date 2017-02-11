@@ -14,31 +14,31 @@
 #endif
 
 struct uart_t {
-  volatile unsigned int *addr;
+  volatile uint32_t *addr;
 };
 
 struct uart_t uart_0_ = {
-  .addr = (volatile unsigned int *) UART_BASE_0
+  .addr = (volatile uint32_t *) UART_BASE_0
 };
 struct uart_t *uart_0 = &uart_0_;
 
 #ifdef UART_BASE_1
 struct uart_t uart_1_ = {
-  .addr = (volatile unsigned int *) UART_BASE_1
+  .addr = (volatile uint32_t *) UART_BASE_1
 };
 struct uart_t *uart_1 = &uart_1_;
 #endif // UART_BASE_1
 
 #ifdef UART_BASE_2
 struct uart_t uart_2_ = {
-  .addr = (volatile unsigned int *) UART_BASE_2
+  .addr = (volatile uint32_t *) UART_BASE_2
 };
 struct uart_t *uart_2 = &uart_2_;
 #endif // UART_BASE_2
 
 #ifdef UART_BASE_3
 struct uart_t uart_3_ = {
-  .addr = (volatile unsigned int *) UART_BASE_3
+  .addr = (volatile uint32_t *) UART_BASE_3
 };
 struct uart_t *uart_3 = &uart_3_;
 #endif // UART_BASE_3

@@ -2,7 +2,7 @@
 
 // PIC = Primary Interrupt Controller
 /* http://infocenter.arm.com/help/topic/com.arm.doc.dui0224i/I1042232.html */
-#define PIC ((volatile unsigned int*)0x10140000)
+#define PIC ((volatile uint32_t*)0x10140000)
 /* http://infocenter.arm.com/help/topic/com.arm.doc.ddi0181e/I1006461.html */
 #define VIC_IRQSTATUS    0x0   // 0x0 bytes
 #define VIC_FIQSTATUS    0x1   // 0x4 bytes

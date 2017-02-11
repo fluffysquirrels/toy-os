@@ -1,4 +1,4 @@
-#define RTC_BASE ((volatile unsigned int*) 0x101E8000)
+#define RTC_BASE ((volatile uint32_t*) 0x101E8000)
 
 #define RTC_DR   0x0     // 0x00 bytes
 #define RTC_MR   0x1     // 0x04 bytes

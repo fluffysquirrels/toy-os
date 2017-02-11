@@ -6,7 +6,6 @@
 #pragma once
 
 #include "stdint.h"
-#include "syscall.h"
 
 uint32_t rtc_pl031_get_current();
 void rtc_pl031_init();
