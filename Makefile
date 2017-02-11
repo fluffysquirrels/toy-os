@@ -48,13 +48,14 @@ OBJECTS := $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
 OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
 OBJECTS += $(OBJ_DIR)/FreeRTOS_heap_4.o
 
-CC=arm-none-eabi-gcc
+GCC_TARGET=arm-none-eabi
+CC=$(GCC_TARGET)-gcc
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -ffunction-sections -fdata-sections
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
 CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
-LD=arm-none-eabi-ld
+LD=$(GCC_TARGET)-ld
 LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections --omagic
 CONFIG_COMPILE_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_PREPROCESSED)" "1"
@@ -62,7 +63,8 @@ COMPILE_SOURCE_PREFIX:=$(PREPROCESSED_DIR)/
 else
 COMPILE_SOURCE_PREFIX=
 endif
-OBJCOPY=arm-none-eabi-objcopy
+OBJCOPY=$(GCC_TARGET)-objcopy
+GDB=$(GCC_TARGET)-gdb
 
 QEMU_SYSTEM_ARM = ../qemu/build/arm-softmmu/qemu-system-arm
 QEMU_CMD = $(QEMU_SYSTEM_ARM) -M $(CONFIG_QEMU_MACHINE) -cpu cortex-a8 -nographic -kernel $(OUT_ELF)
@@ -77,7 +79,7 @@ qemu-debug-listen: build
 
 .PHONY: gdb-attach
 gdb-attach: build
-	arm-none-eabi-gdb -ex 'target remote localhost:1234' -ex 'symbol-file $(OUT_ELF)' -tui
+	$(GDB) -ex 'target remote localhost:1234' -ex 'symbol-file $(OUT_ELF)' -tui
 
 .PHONY: gdb-attach-new-term
 gdb-attach-new-term: build
