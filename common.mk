@@ -1,11 +1,19 @@
 # Disable built-in rules
 MAKEFLAGS += --no-builtin-rules --no-builtin-variables --warn-undefined-variables
 
+# Verbose mode
+# Set environment variable V=1 to increase verbosity
+# Prefix lines with $Q to always run them but hide their command if not in verbose mode.
+# Prefix lines with $(VO) to only run them in verbose mode.
 V?= 0
 ifeq ($V, 0)
-	Q = @
+# Quiet mode.
+  Q  = @
+  VO = @\#
 else
-	Q =
+# Verbose mode.
+  Q  =
+  VO =
 endif
 
 .DEFAULT_GOAL := nothing
@@ -54,22 +62,22 @@ $(PREPROCESSED_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
 	@mkdir -p $(@D)
 	$(CC) -E $(CFLAGS) -o $@ -c $<
 
-define MAKE_DEPS =
-	$Qecho MAKE_DEPS $@ : $<
+define MAKE_DEPS
+	$(VO)@echo MAKE_DEPS $@ : $<
 	$Q$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
-	$Q#echo using TEMP_DEP = $(TEMP_DEP)
+	@#echo using TEMP_DEP = $(TEMP_DEP)
 	$Qmkdir -p $(@D)
-	$Q# Move existing file to *.old to ensure if we fail make does not
-	$Q# see a stale file.
+	@# Move existing file to *.old to ensure if we fail make does not
+	@# see a stale file.
 	$Qif test -f $@; then mv $@ $(TEMP_DEP).old; fi
 	$Q$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
 	$Qsed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
 
 	$Qcp $(TEMP_DEP).sed $@;
 
-	$Q# Comment out this rm to view the temp files output at each step.
+	@# Comment out this rm to view the temp files output at each step.
 	$Qrm $(TEMP_DEP)*
-	$Qecho
+	$(VO)@echo
 endef
 
 $(DEP_DIR)/%.c.d: %.c $(MAKEFILES)
