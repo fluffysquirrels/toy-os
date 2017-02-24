@@ -1,5 +1,18 @@
 # Disable built-in rules
-.SUFFIXES:
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables --warn-undefined-variables
+
+V?= 0
+ifeq ($V, 0)
+	Q = @
+else
+	Q =
+endif
+
+.DEFAULT_GOAL := nothing
+
+.PHONY: nothing
+nothing:
+	@echo No default goal.
 
 .PHONY: always-rebuild
 
@@ -9,7 +22,7 @@ DEP_DIR=$(OUT_DIR)/deps
 ENV_DIR=$(OUT_DIR)/env
 PREPROCESSED_DIR=$(OUT_DIR)/preprocessed
 
-MAKEFILES+=common.mk
+MAKEFILES = $(MAKEFILE_LIST)
 
 CONFIG_COMPILE_C_PREPROCESSED?=0
 ifeq "$(CONFIG_COMPILE_C_PREPROCESSED)" "1"
@@ -25,6 +38,9 @@ LD=$(GCC_PREFIX)ld
 OBJCOPY=$(GCC_PREFIX)objcopy
 GDB=$(GCC_PREFIX)gdb
 
+OBJECTS = $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
+OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
+
 $(OBJ_DIR)/%.o: $(PREPROCESSED_DIR)/%.s $(DEP_DIR)/%.S.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -o $@ -c $<
@@ -39,21 +55,21 @@ $(PREPROCESSED_DIR)/%.s: %.S $(DEP_DIR)/%.S.d $(MAKEFILES) $(ENV_DIR)/CFLAGS
 	$(CC) -E $(CFLAGS) -o $@ -c $<
 
 define MAKE_DEPS =
-	echo MAKE_DEPS $@ : $<
-	@$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
-	@echo using TEMP_DEP = $(TEMP_DEP)
-	@mkdir -p $(@D)
-	@# Move existing file to *.old to ensure if we fail make does not
-	@# see a stale file.
-	@if test -f $@; then mv $@ $(TEMP_DEP).old; fi
-	@$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
-	@sed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
+	$Qecho MAKE_DEPS $@ : $<
+	$Q$(eval TEMP_DEP!=echo $@.tmp.$$$$$$$$)
+	$Q#echo using TEMP_DEP = $(TEMP_DEP)
+	$Qmkdir -p $(@D)
+	$Q# Move existing file to *.old to ensure if we fail make does not
+	$Q# see a stale file.
+	$Qif test -f $@; then mv $@ $(TEMP_DEP).old; fi
+	$Q$(CC) $(CFLAGS_INCLUDES) -E -MM -MP $< > $(TEMP_DEP).pp || (rm -f $(TEMP_DEP)* && false)
+	$Qsed --expression 's,\($*\)\.o[ :]*,$(OBJ_DIR)/\1.o $@ : ,g' < $(TEMP_DEP).pp > $(TEMP_DEP).sed || (rm -f $(TEMP_DEP)* && false)
 
-	@cp $(TEMP_DEP).sed $@;
+	$Qcp $(TEMP_DEP).sed $@;
 
-	@# Comment out this rm to view the temp files output at each step.
-	@rm $(TEMP_DEP)*
-	@echo
+	$Q# Comment out this rm to view the temp files output at each step.
+	$Qrm $(TEMP_DEP)*
+	$Qecho
 endef
 
 $(DEP_DIR)/%.c.d: %.c $(MAKEFILES)
@@ -118,3 +134,7 @@ clean:
 
 .PHONY: build
 build: TAGS
+
+.PHONY: list-targets
+list-targets:
+	@make -np | egrep '^\.PHONY' | tr ' ' '\n' | tail -n+2 | sort -u
