@@ -26,7 +26,7 @@ void handle_syscall(struct thread_t* thread) {
   sysh_t handler = NULL;
   if (syscall_num > SYSCALL_NUM_MAX ||
       (handler = syscall_handlers[syscall_num]) == NULL) {
-    sc_LOGF("warn: syscall with unknown syscall_num = %u\n", syscall_num);
+    LOGF("warn: syscall with unknown syscall_num = %u\n", syscall_num);
     thread_set_uint32_return(thread, E_NOSUCHSYSCALL);
     return;
   }

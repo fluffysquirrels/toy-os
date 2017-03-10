@@ -71,7 +71,7 @@ void scheduler_loop() {
     }
 
 #if TRACE_SCHEDULER
-    sc_LOGF("thread_id=%x", thread->thread_id);
+    LOGF("thread_id=%x", thread->thread_id);
     sc_print_thread(thread);
 #endif // TRACE_SCHEDULER
 

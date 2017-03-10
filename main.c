@@ -206,8 +206,8 @@ void exercise_trees() {
   ASSERT(result != NULL);
   ASSERT(result->k == 750);
   ASSERT(result->v == 250);
-  sc_LOGF("UINT32_MAX=%u", UINT32_MAX);
-  sc_LOGF("result @ %x { k=%u v=%u }", result, result->k, result->v);
+  LOGF("UINT32_MAX=%u", UINT32_MAX);
+  LOGF("result @ %x { k=%u v=%u }", result, result->k, result->v);
   // Free tree.
   void *tmp;
   RB_FOREACH_SAFE(it, int_map, &head, tmp) {
@@ -434,7 +434,7 @@ void console_reader_thread() {
 
     err_t err = sys_read(&args, &result);
     if (err != E_SUCCESS) {
-      sc_LOGF("sys_read err = %u", err);
+      LOGF("sys_read err = %u", err);
       break;
     }
 
@@ -465,7 +465,7 @@ void blocking_console_reader_thread() {
     if (!uart_rx_fifo_empty(u)) {
       iochar_t ch = uart_getch(u);
       ASSERT(ch != EOF);
-      sc_LOGF("read '%c'", (char)ch);
+      LOGF("read '%c'", (char)ch);
     }
   }
 }

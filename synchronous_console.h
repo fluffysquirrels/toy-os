@@ -13,7 +13,7 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 
 #define ASSERT_MSG(cond, msg)                                       \
   if (!(cond)) {                                                    \
-    sc_LOGF("Assert failed: %s\n"                                   \
+    LOGF("Assert failed: %s\n"                                   \
             "    %s\n"                                              \
             "Panic.\n",                                             \
             #cond, msg);                                            \
@@ -27,7 +27,7 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 // can be cast to uint64_t.
 #define ASSERT_INT_BINOP(lhs, op, rhs)                           \
   if (!((lhs) op (rhs))) {                                       \
-    sc_LOGF("Assert failed: needed %s %s %s\n"                   \
+    LOGF("Assert failed: needed %s %s %s\n"                   \
             "  left side  %s = %llu\n"                           \
             "  right side %s = %llu\n",                          \
             #lhs, #op, #rhs,                                     \
@@ -50,13 +50,13 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 
 #define LOGF_IF(cond, format, ...)\
   if (cond) {\
-    sc_LOGF(format, __VA_ARGS__);\
+    LOGF(format, __VA_ARGS__);\
   }
 
 #define sc_LOG(msg)\
-  sc_LOGF("%s", msg)
+  LOGF("%s", msg)
 
-#define sc_LOGF(format, ...)\
+#define LOGF(format, ...)\
   sc_logf(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
 
 void halt() __attribute__ ((noreturn));

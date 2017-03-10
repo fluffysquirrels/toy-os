@@ -21,7 +21,7 @@ static irq interrupt_raspi_get_active_interrupt();
 static void interrupt_raspi_init() {}
 
 static void interrupt_raspi_log_status() {
-  sc_LOGF("@ %x", IC_RASPI_BASE);
+  LOGF("@ %x", IC_RASPI_BASE);
   sc_print_uint32_mem("  IC_RASPI_PENDING_BASIC  ", base + IC_RASPI_PENDING_BASIC);
   sc_print_uint32_mem("  IC_RASPI_PENDING_1      ", base + IC_RASPI_PENDING_1    );
   sc_print_uint32_mem("  IC_RASPI_PENDING_2      ", base + IC_RASPI_PENDING_2    );

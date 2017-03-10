@@ -148,7 +148,7 @@ void timer_sp804_log_all_state() {
 #endif
 }
 void timer_sp804_log_timer_state(struct timer_sp804_t *timer) {
-  sc_LOGF("\n%s", timer->name);
+  LOGF("\n%s", timer->name);
 
   sc_print_uint32_mem("  TIMER_LOAD    ", timer->addr + TIMER_LOAD   );
   sc_print_uint32_mem("  TIMER_VALUE   ", timer->addr + TIMER_VALUE  );
