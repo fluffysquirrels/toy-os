@@ -32,6 +32,8 @@ void run_invalid_opcode();
 void print_exception_vector();
 void print_sctlr();
 
+void test_printf();
+
 #if CONFIG_ARCH_raspi2
 #include "timer_raspi.h"
 void test_raspi_timers();
@@ -42,6 +44,8 @@ void stm32f4_scratch();
 #endif
 
 int main() {
+  test_printf();
+
 #if CONFIG_ARCH_stm32f4
   stm32f4_scratch();
 #endif
@@ -81,6 +85,15 @@ int main() {
 
   /* Not reached */
   return 0;
+}
+
+void test_printf() {
+  LOG("");
+  printf("u: %u\n", (unsigned int) 1234567890);
+  printf("lu: %lu\n", (long unsigned int) 1234567890);
+  printf("llu: %llu\n", (long long unsigned int) 3876543211234567890LL);
+  printf("x: %x\n", (unsigned int) 0x12345678);
+  printf("lx: %lx\n", (long unsigned int) 0x12345678);
 }
 
 void stm32f4_scratch() {
