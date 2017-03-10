@@ -107,9 +107,9 @@ void timer_raspi_print_status() {
     sc_print_uint32_mem("  C1 ", base + TIMER_RASPI_C1 );
     sc_print_uint32_mem("  C2 ", base + TIMER_RASPI_C2 );
     sc_print_uint32_mem("  C3 ", base + TIMER_RASPI_C3 );
-    sc_printf("  counter  = %llu\n", timer_raspi_get_counter());
-    sc_printf("  systemnow = %llu\n", timer_raspi_systemnow());
-    sc_printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
+    printf("  counter  = %llu\n", timer_raspi_get_counter());
+    printf("  systemnow = %llu\n", timer_raspi_systemnow());
+    printf("  systemnow ms = %llu\n", (timer_raspi_systemnow() / DURATION_MS));
 }
 
 static struct arch_timer at = {

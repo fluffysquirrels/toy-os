@@ -69,7 +69,7 @@ exception_vector_end:
 
 unhandled_exception:
     ldr r0, =unhandled_exception_message
-    bl sc_puts
+    bl puts
     bl halt
 
 unhandled_exception_message:    .string "\nUnhandled exception! Panic.\n"

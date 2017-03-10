@@ -155,55 +155,55 @@ void thread_set_uint32_return(struct thread_t* t, uint32_t rv) {
 }
 
 void sc_print_thread(struct thread_t *thread) {
-  sc_puts("thread {\n");
-  sc_puts("  .cpsr = ");
+  puts("thread {\n");
+  puts("  .cpsr = ");
   sc_print_uint32_hex(thread->cpsr);
-  sc_puts(" .state = ");
+  puts(" .state = ");
   sc_print_uint32_hex(thread->state);
-  sc_puts(" .thread_id = ");
+  puts(" .thread_id = ");
   sc_print_uint32_hex(thread->thread_id);
-  sc_puts("\n");
-  sc_printf(" .priority = %x\n", thread->priority);
+  puts("\n");
+  printf(" .priority = %x\n", thread->priority);
 
-  sc_puts("     r0 = ");
+  puts("     r0 = ");
   sc_print_uint32_hex(thread->registers[0]);
-  sc_puts("     r1 = ");
+  puts("     r1 = ");
   sc_print_uint32_hex(thread->registers[1]);
-  sc_puts("     r2 = ");
+  puts("     r2 = ");
   sc_print_uint32_hex(thread->registers[2]);
-  sc_puts("     r3 = ");
+  puts("     r3 = ");
   sc_print_uint32_hex(thread->registers[3]);
-  sc_puts("\n");
+  puts("\n");
 
-  sc_puts("     r4 = ");
+  puts("     r4 = ");
   sc_print_uint32_hex(thread->registers[4]);
-  sc_puts("     r5 = ");
+  puts("     r5 = ");
   sc_print_uint32_hex(thread->registers[5]);
-  sc_puts("     r6 = ");
+  puts("     r6 = ");
   sc_print_uint32_hex(thread->registers[6]);
-  sc_puts("     r7 = ");
+  puts("     r7 = ");
   sc_print_uint32_hex(thread->registers[7]);
-  sc_puts("\n");
+  puts("\n");
 
-  sc_puts("     r8 = ");
+  puts("     r8 = ");
   sc_print_uint32_hex(thread->registers[8]);
-  sc_puts("     r9 = ");
+  puts("     r9 = ");
   sc_print_uint32_hex(thread->registers[9]);
-  sc_puts("    r10 = ");
+  puts("    r10 = ");
   sc_print_uint32_hex(thread->registers[10]);
-  sc_puts(" r11/fp = ");
+  puts(" r11/fp = ");
   sc_print_uint32_hex(thread->registers[11]);
-  sc_puts("\n");
+  puts("\n");
 
-  sc_puts(" r12/ip = ");
+  puts(" r12/ip = ");
   sc_print_uint32_hex(thread->registers[12]);
-  sc_puts(" r13/sp = ");
+  puts(" r13/sp = ");
   sc_print_uint32_hex(thread->registers[13]);
-  sc_puts(" r14/lr = ");
+  puts(" r14/lr = ");
   sc_print_uint32_hex(thread->registers[14]);
-  sc_puts(" r15/pc = ");
+  puts(" r15/pc = ");
   sc_print_uint32_hex(thread->registers[15]);
-  sc_puts("\n");
+  puts("\n");
 
-  sc_puts("}\n");
+  puts("}\n");
 }

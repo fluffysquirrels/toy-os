@@ -9,22 +9,24 @@ void halt() {
 }
 
 void warn(char *string) {
-  sc_puts("warn: ");
-  sc_puts(string);
-  sc_puts("\n");
+  puts("warn: ");
+  puts(string);
+  puts("\n");
 }
 
 void logf_(const char *file, uint32_t line, const char *func, char *format, ...) {
-  sc_printf("%u %s:%u: %s(): ", (uint32_t) (timer_systemnow() / DURATION_MS), file, line, func);
+  printf("%lu %s:%lu: %s(): ",
+         (uint32_t) (timer_systemnow() / DURATION_MS),
+         file, line, func);
   va_list args;
   va_start(args, format);
   sc_vprintf(format, args);
   va_end(args);
-  sc_puts("\n");
+  puts("\n");
 }
 
 void sc_print_uint32_mem(char *name, volatile uint32_t *addr) {
-  sc_printf("%s @ %x = %x\n", name, addr, *addr);
+  printf("%s @ %p = %lx\n", name, (void *) addr, *addr);
 }
 
 void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes) {
@@ -38,7 +40,7 @@ void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes) {
   }
 }
 
-int sc_puts(char *string) {
+int puts(char *string) {
   int bytes_written = 0;
   while(*string) {
     sc_putch(*string);
@@ -53,8 +55,8 @@ void sc_putch(char ch) {
   uart_sync_putch(uart_0, ch);
 }
 
-void sc_print_uint32_hex(uint32_t w) {
-  sc_puts("0x");
+int sc_print_uint32_hex(uint32_t w) {
+  puts("0x");
   sc_print_uint8_hex(w >> 28);
   sc_print_uint8_hex(w >> 24);
   sc_print_uint8_hex(w >> 20);
@@ -63,6 +65,7 @@ void sc_print_uint32_hex(uint32_t w) {
   sc_print_uint8_hex(w >> 8);
   sc_print_uint8_hex(w >> 4);
   sc_print_uint8_hex(w);
+  return 10;
 }
 
 void sc_print_uint8_hex(char x) {
@@ -96,7 +99,7 @@ int sc_print_uint32_dec(uint32_t u) {
     ASSERT(buffCurr >= buff);
   }
 
-  return sc_puts(buffCurr);
+  return puts(buffCurr);
 }
 
 int sc_print_uint64_dec(uint64_t u) {
@@ -121,10 +124,10 @@ int sc_print_uint64_dec(uint64_t u) {
     ASSERT(buffCurr >= buff);
   }
 
-  return sc_puts(buffCurr);
+  return puts(buffCurr);
 }
 
-int sc_printf(char *format, ...) {
+int printf(char *format, ...) {
   va_list args;
   va_start(args, format);
   int ret = sc_vprintf(format, args);
@@ -156,6 +159,14 @@ int sc_vprintf(char *format, va_list args) {
         uint64_t n = va_arg(args, uint64_t);
         chars_written += sc_print_uint64_dec(n);
         curr += 3;
+      } else if (peekeq(curr, "lu")) {
+        uint32_t n = va_arg(args, uint32_t);
+        chars_written += sc_print_uint32_dec(n);
+        curr += 2;
+      } else if (peekeq(curr, "lx")) {
+        uint32_t n = va_arg(args, uint32_t);
+        chars_written += sc_print_uint32_hex(n);
+        curr += 2;
       } else {
         switch (*curr) {
         case 'c':;
@@ -165,7 +176,7 @@ int sc_vprintf(char *format, va_list args) {
           break;
         case 's':;
           char *s = va_arg(args, char *);
-          chars_written += sc_puts(s);
+          chars_written += puts(s);
           break;
         case 'u':;
           int u = va_arg(args, unsigned int);

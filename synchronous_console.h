@@ -27,7 +27,7 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
 // can be cast to uint64_t.
 #define ASSERT_INT_BINOP(lhs, op, rhs)                           \
   if (!((lhs) op (rhs))) {                                       \
-    LOGF("Assert failed: needed %s %s %s\n"                   \
+    LOGF("Assert failed: needed %s %s %s\n"                      \
             "  left side  %s = %llu\n"                           \
             "  right side %s = %llu\n",                          \
             #lhs, #op, #rhs,                                     \
@@ -39,10 +39,9 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
 #define PANIC(str) PANICF("%s", str)
 
 #define PANICF(format, ...)                         \
-  sc_printf("panic in %s() @ %s:%s : "              \
+  printf("panic in %s() @ %s:%s : "                 \
             , __func__, __FILE__, STR(__LINE__));   \
-  sc_printf(format, __VA_ARGS__);                   \
-  sc_puts("\n");                                    \
+  printf(format "\n", __VA_ARGS__);                 \
   halt();
 
 #define LOG_IF(cond, msg)\
@@ -65,13 +64,13 @@ void warn(char *string);
 void sc_print_uint32_mem(char *name, volatile uint32_t *addr);
 void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes);
 
-int sc_puts(char *string);
+int puts(char *string);
 void sc_putch(char ch);
 
-void sc_print_uint32_hex(uint32_t w);
+int sc_print_uint32_hex(uint32_t w);
 void sc_print_uint8_hex(char x);
 int sc_print_uint32_dec(uint32_t d);
 int sc_print_uint64_dec(uint64_t u);
 
-int sc_printf(char *format, ...);
+int printf(char *format, ...);
 int sc_vprintf(char *format, va_list args);

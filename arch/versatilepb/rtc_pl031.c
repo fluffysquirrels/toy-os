@@ -27,11 +27,11 @@ uint32_t rtc_pl031_get_current() {
   uint32_t raw = rtc_pl031_get_raw();
 
 #if TRACE_TIMER >= 2
-  sc_printf("rtc_pl031_get_current:\n"
-            "  raw = %u\n"
-            "  highest_value = %u\n",
-            raw,
-            highest_value);
+  printf("rtc_pl031_get_current:\n"
+         "  raw = %lu\n"
+         "  highest_value = %lu\n",
+         raw,
+         highest_value);
 #endif // TRACE_pl031
 
   highest_value = MAX(raw, highest_value);
@@ -109,7 +109,7 @@ void rtc_pl031_log_state() {
   sc_print_uint32_mem("  IMSC", (RTC_BASE + RTC_IMSC));
   sc_print_uint32_mem("  RIS ", (RTC_BASE + RTC_RIS));
   sc_print_uint32_mem("  MIS ", (RTC_BASE + RTC_MIS));
-  sc_puts("\n");
-  sc_printf("  highest_value     = %u\n", highest_value);
-  sc_printf("  raw               = %u\n", *(RTC_BASE + RTC_DR));
+  puts("\n");
+  printf("  highest_value     = %lu\n", highest_value);
+  printf("  raw               = %lu\n", *(RTC_BASE + RTC_DR));
 }

@@ -30,10 +30,10 @@ size_t heap_get_min_free() {
 }
 
 void sc_print_heap_stats() {
-  sc_printf(
+  printf(
     "Heap stats:\n"
     "  Free:         %u\n"
     "  Minimum free: %u\n",
-    (uint32_t) heap_get_free(),
-    (uint32_t) heap_get_min_free());
+    heap_get_free(),
+    heap_get_min_free());
 }

@@ -18,7 +18,7 @@ SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -ffunction-sections -fdata-sections
-CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
+CFLAGS_ERRORS=-Wall -Wextra -Werror
 CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 

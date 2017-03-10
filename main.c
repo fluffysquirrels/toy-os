@@ -75,7 +75,7 @@ int main() {
   // ASSERT(kspawn(CPSR_MODE_USR, &busy_loop_thread, &t) == E_SUCCESS);
   // thread_update_priority(t, 5);
 
-  sc_puts("main() spawned threads\n");
+  puts("main() spawned threads\n");
 
   kernel_run();
 
@@ -104,13 +104,13 @@ void stm32f4_scratch() {
 void print_sctlr() {
   LOG("");
   uint32_t sctlr = get_sctlr();
-  sc_printf("sctlr   = %x\n", sctlr);
-  sc_printf("  VE    = %x\n", sctlr & (1 << 24));
-  sc_printf("  V     = %x\n", sctlr & (1 << 13));
+  printf("sctlr   = %lx\n", sctlr);
+  printf("  VE    = %lx\n", sctlr & (1 << 24));
+  printf("  V     = %lx\n", sctlr & (1 << 13));
 
   LOG("");
   uint32_t vbar = get_vbar();
-  sc_printf("  vbar  = %x\n", vbar);
+  printf("  vbar  = %lx\n", vbar);
 
   sc_print_mem_region((uint32_t *) vbar, 2 * 8 * 4);
 }
@@ -197,7 +197,7 @@ void exercise_trees() {
   struct int_map_node *it = NULL;
   RB_FOREACH(it, int_map, &head) {
 #if 0
-    sc_printf("%x:%x\n", it->k, it->v);
+    printf("%x:%x\n", it->k, it->v);
 #endif
   }
 
@@ -252,7 +252,7 @@ void exercise_malloc() {
 }
 
 void yield_thread() {
-  sc_puts("Start yield()\n");
+  puts("Start yield()\n");
   __asm__ volatile(
     "mov    r0,  #10 " "\n\t"
     "mov    r1,  #1  " "\n\t"
@@ -276,7 +276,7 @@ void yield_thread() {
   sys_yield();
   unsigned int n = 17;
   while(1) {
-    sc_puts("In yield() loop\n");
+    puts("In yield() loop\n");
     n++;
     yield_sub(n);
 
@@ -306,9 +306,9 @@ void yield_thread() {
 
 void yield_sub(unsigned int arg1) {
   UNUSED(arg1);
-  sc_puts("In yield_sub() 1\n");
+  puts("In yield_sub() 1\n");
   sys_yield();
-  sc_puts("In yield_sub() 2\n");
+  puts("In yield_sub() 2\n");
  }
 
 void busy_loop_thread() {
@@ -342,7 +342,7 @@ void busy_loop_thread() {
 void spawn_one();
 
 void spawner_thread() {
-  sc_puts("spawn_thread()\n");
+  puts("spawn_thread()\n");
 
   for (int i = 0; i < 3; i++) {
     spawn_one();
@@ -360,44 +360,44 @@ void spawn_one() {
   struct spawn_result_t result;
   err_t ret = sys_spawn(&args, &result);
 
-  sc_puts("spawn_thread() sys_spawn returned\n");
-  sc_puts("  result.thread_id = ");
+  puts("spawn_thread() sys_spawn returned\n");
+  puts("  result.thread_id = ");
   sc_print_uint32_hex(result.thread_id);
-  sc_puts("  ret = ");
+  puts("  ret = ");
   sc_print_uint32_hex(ret);
-  sc_puts("\n");
+  puts("\n");
 
   if(ret == E_SUCCESS) {
-    sc_puts("spawn_thread() sys_spawn success\n");
+    puts("spawn_thread() sys_spawn success\n");
   } else {
-    sc_puts("spawn_thread() sys_spawn error\n");
+    puts("spawn_thread() sys_spawn error\n");
   }
 }
 
 void return_thread() {
-  sc_puts("return_thread() start\n");
+  puts("return_thread() start\n");
   sys_yield();
-  sc_puts("return_thread() end\n");
+  puts("return_thread() end\n");
 }
 
 void exit_thread() {
-  sc_puts("exit_thread() start\n");
+  puts("exit_thread() start\n");
   sys_exit();
 }
 
 void log_ch(int ch) {
-  sc_puts("  getch got ");
+  puts("  getch got ");
   sc_print_uint32_hex(ch);
-  sc_puts(" = ");
+  puts(" = ");
   if (ch == -1) {
-    sc_puts("EOF");
+    puts("EOF");
   } else {
     ASSERT(ch >= 0 && ch < 256);
-    sc_puts("'");
+    puts("'");
     sc_putch((char) ch);
-    sc_puts("'");
+    puts("'");
   }
-  sc_puts("\n");
+  puts("\n");
 }
 
 #ifndef TRACE_CONSOLE_READER
@@ -405,7 +405,7 @@ void log_ch(int ch) {
 #endif
 
 void console_reader_thread() {
-  sc_puts("console_reader_thread()\n");
+  puts("console_reader_thread()\n");
 
   char buff[16];
   struct read_args_t args = {
@@ -419,17 +419,17 @@ void console_reader_thread() {
     memset(buff, '\0', sizeof(buff));
     result.bytes_read = -1;
 #if TRACE_CONSOLE_READER
-    sc_puts("\nconsole_reader_thread() about to read\n");
-    sc_puts("sys_read args:\n");
-    sc_puts("  .fd = ");
+    puts("\nconsole_reader_thread() about to read\n");
+    puts("sys_read args:\n");
+    puts("  .fd = ");
     sc_print_uint32_hex(args.fd);
-    sc_puts("\n");
-    sc_puts("  .buff = ");
+    puts("\n");
+    puts("  .buff = ");
     sc_print_uint32_hex((unsigned int) args.buff);
-    sc_puts("\n");
-    sc_puts("  .len = ");
+    puts("\n");
+    puts("  .len = ");
     sc_print_uint32_hex(args.len);
-    sc_puts("\n");
+    puts("\n");
 #endif // TRACE_CONSOLE_READER
 
     err_t err = sys_read(&args, &result);
@@ -439,7 +439,7 @@ void console_reader_thread() {
     }
 
 #if TRACE_CONSOLE_READER
-    sc_printf("console_reader_thread() back from read\n"
+    printf("console_reader_thread() back from read\n"
               "sys_read err = %x\n"
               "sys_read result:\n"
               "  .bytes_read = %x\n"
@@ -448,12 +448,12 @@ void console_reader_thread() {
               , result.bytes_read,
               buff);
 #else  // TRACE_CONSOLE_READER
-    sc_printf("console_reader() read '%s'\n", buff);
+    printf("console_reader() read '%s'\n", buff);
 #endif // TRACE_CONSOLE_READER
 
     if (buff[0] == 'c') {
       // Clear screen.
-      sc_puts("\x1b[2J");
+      puts("\x1b[2J");
     }
   }
 }

@@ -65,22 +65,22 @@ iochar_t uart_getch(struct uart_t *uart) {
 }
 
 void uart_log_getch(iochar_t ch) {
-  sc_puts("  getch got ");
+  puts("  getch got ");
   sc_print_uint32_hex(ch);
-  sc_puts(" = ");
+  puts(" = ");
   if (ch == -1) {
-    sc_puts("EOF");
+    puts("EOF");
   } else {
     ASSERT(ch >= 0 && ch < 256);
-    sc_puts("'");
+    puts("'");
     sc_putch((char) ch);
-    sc_puts("'");
+    puts("'");
   }
-  sc_puts("\n");
+  puts("\n");
 }
 
 void uart_log_status(struct uart_t *u) {
-  sc_printf("  rx_empty = %s\n",
+  printf("  rx_empty = %s\n",
             uart_rx_fifo_empty(u) ? "true" : "false");
 
   // Don't read DR or we will empty the fifo.

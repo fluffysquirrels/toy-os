@@ -25,18 +25,18 @@ static void interrupt_raspi_log_status() {
   sc_print_uint32_mem("  IC_RASPI_PENDING_BASIC  ", base + IC_RASPI_PENDING_BASIC);
   sc_print_uint32_mem("  IC_RASPI_PENDING_1      ", base + IC_RASPI_PENDING_1    );
   sc_print_uint32_mem("  IC_RASPI_PENDING_2      ", base + IC_RASPI_PENDING_2    );
-  sc_puts("\n");
+  puts("\n");
   sc_print_uint32_mem("  IC_RASPI_FIQ_CONTROL    ", base + IC_RASPI_FIQ_CONTROL  );
-  sc_puts("\n");
+  puts("\n");
   sc_print_uint32_mem("  IC_RASPI_ENABLE_1       ", base + IC_RASPI_ENABLE_1     );
   sc_print_uint32_mem("  IC_RASPI_ENABLE_2       ", base + IC_RASPI_ENABLE_2     );
   sc_print_uint32_mem("  IC_RASPI_ENABLE_BASIC   ", base + IC_RASPI_ENABLE_BASIC );
-  sc_puts("\n");
+  puts("\n");
   sc_print_uint32_mem("  IC_RASPI_DISABLE_1      ", base + IC_RASPI_DISABLE_1    );
   sc_print_uint32_mem("  IC_RASPI_DISABLE_2      ", base + IC_RASPI_DISABLE_2    );
   sc_print_uint32_mem("  IC_RASPI_DISABLE_BASIC  ", base + IC_RASPI_DISABLE_BASIC);
 
-  sc_puts("\n");
+  puts("\n");
 }
 
 static void interrupt_raspi_enable_interrupt(uint8_t irq) {
