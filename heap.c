@@ -12,12 +12,12 @@
 
 void* malloc(size_t size) {
   void *rv = pvPortMalloc(size);
-  sc_LOGF_IF(TRACE_MALLOC, "size=%x rv=%x", size, rv);
+  LOGF_IF(TRACE_MALLOC, "size=%x rv=%x", size, rv);
   return rv;
 }
 
 void free(void *p) {
-  sc_LOGF_IF(TRACE_MALLOC, "p=%x", p);
+  LOGF_IF(TRACE_MALLOC, "p=%x", p);
   vPortFree(p);
 }
 

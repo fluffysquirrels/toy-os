@@ -21,7 +21,7 @@ static sysh_t syscall_handlers[SYSCALL_NUM_MAX + 1];
 
 void handle_syscall(struct thread_t* thread) {
   unsigned int syscall_num = thread->registers[12];
-  sc_LOGF_IF(TRACE_SYSCALL, "syscall_num = %x", syscall_num);
+  LOGF_IF(TRACE_SYSCALL, "syscall_num = %x", syscall_num);
 
   sysh_t handler = NULL;
   if (syscall_num > SYSCALL_NUM_MAX ||
@@ -32,7 +32,7 @@ void handle_syscall(struct thread_t* thread) {
   }
 
 
-  sc_LOGF_IF(TRACE_SYSCALL, "calling syscall handler @ %x", (unsigned int) handler);
+  LOGF_IF(TRACE_SYSCALL, "calling syscall handler @ %x", (unsigned int) handler);
 
   handler(thread);
 
@@ -75,7 +75,7 @@ static void sysh_sleep_callback(struct timer_callback_data_t data, void *cbs_raw
 
 static void sysh_sleep(struct thread_t* thread) {
   duration_t d = thread_get_uint64_arg(thread, 0);
-  sc_LOGF_IF(TRACE_SYSCALL, "d = %llu", d);
+  LOGF_IF(TRACE_SYSCALL, "d = %llu", d);
 
   struct sysh_sleep_callback_state *cbs = malloc(sizeof(struct sysh_sleep_callback_state));
   ASSERT(cbs != NULL);
@@ -89,7 +89,7 @@ static void sysh_sleep(struct thread_t* thread) {
     return;
   }
 
-  sc_LOGF_IF(TRACE_SYSCALL, "timer_id=%x", timer_id);
+  LOGF_IF(TRACE_SYSCALL, "timer_id=%x", timer_id);
 
   thread_update_state(thread, THREAD_STATE_BLOCKED);
 }

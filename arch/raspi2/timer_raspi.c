@@ -62,7 +62,7 @@ uint64_t timer_raspi_get_counter() {
 }
 
 void timer_raspi_set_deadline(time t) {
-  sc_LOGF_IF(TRACE_TIMER, "t = %llu", t);
+  LOGF_IF(TRACE_TIMER, "t = %llu", t);
   uint32_t deadline_count = (uint32_t) (t / DURATION_US);
 
 #if TRACE_TIMER

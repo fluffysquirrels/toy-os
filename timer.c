@@ -62,7 +62,7 @@ err_t timer_queue(
     *out_timer_id = timer_id;
   }
 
-  sc_LOGF_IF(TRACE_TIMER, "timer_id = %u", timer_id);
+  LOGF_IF(TRACE_TIMER, "timer_id = %u", timer_id);
 
   return E_SUCCESS;
 }
@@ -83,7 +83,7 @@ void timer_do_expired_callbacks() {
       return;
     }
 
-    sc_LOGF_IF(TRACE_TIMER,
+    LOGF_IF(TRACE_TIMER,
         "Found expired timer id=%u\n"
         "  deadline = %llu\n"
         "  now      = %llu", n->timer_id, n->deadline, now);
@@ -96,8 +96,8 @@ void timer_do_expired_callbacks() {
 }
 
 static void timer_do_callback(struct timer_node *n) {
-  sc_LOGF_IF(TRACE_TIMER, "timer_id = %u", n->timer_id);
-  sc_LOGF_IF(TRACE_TIMER, "callback = %x", n->callback);
+  LOGF_IF(TRACE_TIMER, "timer_id = %u", n->timer_id);
+  LOGF_IF(TRACE_TIMER, "callback = %x", n->callback);
 
   if (n->callback != NULL) {
     struct timer_callback_data_t cbd = {
@@ -116,15 +116,15 @@ time timer_get_earliest_deadline() {
 }
 
 void timer_delay(duration_t d) {
-  sc_LOGF_IF(TRACE_TIMER, "d = %llu", d);
+  LOGF_IF(TRACE_TIMER, "d = %llu", d);
   time now = timer_systemnow();
   time deadline = now + d;
   timer_delay_until(deadline);
 }
 
 void timer_delay_until(time t) {
-  sc_LOGF_IF(TRACE_TIMER, "t   = %llu", t);
-  sc_LOGF_IF(TRACE_TIMER, "now = %llu", timer_systemnow());
+  LOGF_IF(TRACE_TIMER, "t   = %llu", t);
+  LOGF_IF(TRACE_TIMER, "now = %llu", timer_systemnow());
 
   while (timer_systemnow() < t) {}
 }

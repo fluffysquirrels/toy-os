@@ -81,7 +81,7 @@ void scheduler_loop() {
 
     unsigned int stop_reason = activate_thread(thread);
 
-    sc_LOGF_IF(TRACE_SCHEDULER,
+    LOGF_IF(TRACE_SCHEDULER,
       "activate_thread returned %x%s\n",
       stop_reason,
       stop_reason == ACTIVATE_RET_IRQ     ? "=ACTIVATE_RET_IRQ"

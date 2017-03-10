@@ -64,7 +64,7 @@ uint32_t timer_sp804_get_current(struct timer_sp804_t *timer) {
 }
 
 void timer_sp804_set_timeout(struct timer_sp804_t *timer, uint32_t value) {
-  sc_LOGF_IF(TRACE_TIMER, "timer %s value=%u", timer->name, value);
+  LOGF_IF(TRACE_TIMER, "timer %s value=%u", timer->name, value);
 #if TRACE_TIMER
   timer_sp804_log_timer_state(timer);
 #endif
@@ -82,7 +82,7 @@ void timer_sp804_set_timeout(struct timer_sp804_t *timer, uint32_t value) {
 }
 
 void timer_sp804_set_periodic(struct timer_sp804_t *timer, uint32_t value) {
-  sc_LOGF_IF(TRACE_TIMER, "timer %s value=%u", timer->name, value);
+  LOGF_IF(TRACE_TIMER, "timer %s value=%u", timer->name, value);
 #if TRACE_TIMER
   timer_sp804_log_timer_state(timer);
 #endif

@@ -34,7 +34,7 @@ static thread_id_t largest_thread_id = 0;
 
 err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) {
 
-  sc_LOGF_IF(TRACE_THREAD, "cpsr = %x, pc = %x", cpsr, (uint32_t) pc);
+  LOGF_IF(TRACE_THREAD, "cpsr = %x, pc = %x", cpsr, (uint32_t) pc);
 
   if (num_threads >= THREAD_LIMIT) {
     return E_LIMIT;
@@ -77,7 +77,7 @@ err_t kspawn(unsigned int cpsr, void (*pc)(void), struct thread_t **out_thread) 
     *out_thread = thread;
   }
 
-  sc_LOGF_IF(TRACE_THREAD, "&thread = %x, thread_id = %x", thread, thread->thread_id);
+  LOGF_IF(TRACE_THREAD, "&thread = %x, thread_id = %x", thread, thread->thread_id);
 
   return E_SUCCESS;
 }
@@ -88,7 +88,7 @@ void thread_update_priority (struct thread_t *t, unsigned int priority) {
   unsigned int old_priority = t->priority;
   t->priority = priority;
 
-  sc_LOGF_IF(TRACE_THREAD,
+  LOGF_IF(TRACE_THREAD,
     "\n"
     "  thread_id    = %x\n"
     "  priority     = %x\n"
@@ -104,7 +104,7 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
 
   scheduler_update_thread_state(t, old_state);
 
-  sc_LOGF_IF(TRACE_THREAD,
+  LOGF_IF(TRACE_THREAD,
     "\n"
     "  thread_id    = %x\n"
     "  state        = %x\n"
@@ -118,7 +118,7 @@ void thread_update_state (struct thread_t *t, unsigned int state) {
 }
 
 static void thread_delete (struct thread_t *t) {
-  sc_LOGF_IF(TRACE_THREAD, "thread_id = ", t->thread_id);
+  LOGF_IF(TRACE_THREAD, "thread_id = ", t->thread_id);
 
   struct thread_node *node = thread_node_find(t->thread_id);
   ASSERT(node != NULL);
