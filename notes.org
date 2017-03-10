@@ -78,6 +78,32 @@
    })
 
 
+
+* STM32F4 boot
+** Set 0x40013800 = 0x3
+   Alias SRAM to 0x0000.
+
+
+> flash banks
+#0 : stm32f4x.flash (stm32f2x) at 0x00000000, size 0x00000000, buswidth 0, chipwidth 0
+> help flash
+flash
+      NOR flash command group (command valid any time)
+  flash bank bank_id driver_name base_address size_bytes chip_width_bytes
+            bus_width_bytes target [driver_options ...]
+        Define a new bank with the given name, using the specified NOR
+        flash driver. (configuration command)
+
+Unlocked flash with this:
+  mww 0x40023C08 0x08192A3B; mww 0x40023C08 0x4C5D6E7F; mww 0x40023C14 0x0fffaaed
+Then wrote it with this:
+  flash write_image erase /home/alex/tmp/stm_demo.hex 0
+Based on: https://community.arm.com/iot/embedded/b/embedded-blog/posts/unlocking-the-stm32f4-discovery-board-with-openocd
+
+* STM32F4 discovery links
+** http://www.st.com/en/microcontrollers/stm32f407vg.html
+** http://www.st.com/en/evaluation-tools/stm32f4discovery.html
+
 * Booting raspberry pi
 ** The current setup has a Raspberry Pi 2 with U-Boot on its microSD card, connected over its serial GPIO pins to a CP210x-based USB to serial adapter. I use U-Boot command to transfer an image over the serial connection and run it.
 ** Speed up serial transfers

@@ -1,6 +1,8 @@
 * Bugs
 ** garbage from timer_delay* printf's
 ** Handle timer_id overflow.
+** raspi still sometimes hanging on syscalls.
+
 
 * Tasks:
 ** Memory map
@@ -14,6 +16,9 @@
    to UINT32_MAX instead of 1000000, meaning we only need to handle a clock
    interrupt every hour or so.
 
+** Rename arch -> plat, hw, or something.
+** Template make target $(ENV_DIR)/CFLAGS, do the same for LDFLAGS, maybe others.
+
 
 * Features:
 
@@ -23,6 +28,7 @@
 *** err_t sys_get_time (time &now)
 ** Use a pattern for syscall returns: no such syscall, complete with value, blocked.
 ** fork?
+
 
 * Nice features:
 ** interrupt_disable().
@@ -54,7 +60,9 @@
 *** List processes
 *** kill
 
+
 * Nice
+** Rename *_t to *. _t suffix is reserved by POSIX.
 ** Maybe break timer_raspi into board and peripheral specific components.
 ** Preset stack and heap to dummy values.
 ** Support registering callbacks when each timer fires. Enables looser coupling.
@@ -62,6 +70,7 @@
 ** Tests
 ** Generate .h file with #define THREAD_OFFSET_* calculated with offsetof
 ** Assert register contents in busy_loop_thread()
+
 
 * Won't do
 ** Modify Makefile to enable precise rebuild on changing TRACE_* variables
