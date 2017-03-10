@@ -36,7 +36,7 @@ void handle_syscall(struct thread_t* thread) {
 
   handler(thread);
 
-  sc_LOG_IF(TRACE_SYSCALL, "return from syscall handler");
+  LOG_IF(TRACE_SYSCALL, "return from syscall handler");
 }
 
 static void sysh_yield(struct thread_t* thread) {

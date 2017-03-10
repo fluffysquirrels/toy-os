@@ -30,10 +30,10 @@ void scheduler_init() {
 }
 
 void scheduler_loop() {
-  sc_LOG_IF(TRACE_SCHEDULER, "start");
+  LOG_IF(TRACE_SCHEDULER, "start");
 
   while (1) {
-    sc_LOG_IF(TRACE_SCHEDULER, "top of loop");
+    LOG_IF(TRACE_SCHEDULER, "top of loop");
 
     bool interrupt_active = interrupt_get_active() != IRQ_NONE;
     if (interrupt_active) {
@@ -60,12 +60,12 @@ void scheduler_loop() {
     }
 
     if (thread == NULL) {
-      sc_LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping");
+      LOG_IF(TRACE_SCHEDULER, "no threads ready, sleeping");
 
       set_reschedule_timer(NULL);
 
       sleep();
-      sc_LOG_IF(TRACE_SCHEDULER, "woke up after sleep\n");
+      LOG_IF(TRACE_SCHEDULER, "woke up after sleep\n");
 
       continue;
     }

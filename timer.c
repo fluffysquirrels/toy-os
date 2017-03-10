@@ -73,7 +73,7 @@ void timer_set_deadline(time t) {
 }
 
 void timer_do_expired_callbacks() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
 
   time now = timer_systemnow();
 

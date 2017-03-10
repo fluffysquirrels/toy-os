@@ -23,7 +23,7 @@ void timer_versatilepb_init() {
 }
 
 void timer_versatilepb_rtc_tick() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
   timer_sp804_set_timeout(TIMER_SP804_1S_COUNTDOWN_TIMER, 1000 * TIMER_SP804_TICKS_PER_MS);
 }
 

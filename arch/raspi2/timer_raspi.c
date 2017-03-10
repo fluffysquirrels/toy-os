@@ -32,12 +32,12 @@ void timer_raspi_init() {
 }
 
 static void timer_raspi_isr() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
 #if TRACE_TIMER
   timer_raspi_print_status();
 #endif
   if (timer_raspi_is_match()) {
-    sc_LOG_IF(TRACE_TIMER, "Clearing set match");
+    LOG_IF(TRACE_TIMER, "Clearing set match");
     timer_raspi_clear_match();
   } else {
     PANIC("Interrupt was not our match.");
@@ -79,7 +79,7 @@ void timer_raspi_set_deadline(time t) {
     // Deadline has already passed. Handle it directly in case we don't
     // hit an interrupt.
 
-    sc_LOG_IF(TRACE_TIMER, "Deadline already expired. Handling it directly.");
+    LOG_IF(TRACE_TIMER, "Deadline already expired. Handling it directly.");
     timer_raspi_clear_match();
     timer_do_expired_callbacks();
   }

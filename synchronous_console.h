@@ -45,7 +45,7 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
   sc_puts("\n");                                    \
   halt();
 
-#define sc_LOG_IF(cond, msg)\
+#define LOG_IF(cond, msg)\
   LOGF_IF(cond, "%s", msg)
 
 #define LOGF_IF(cond, format, ...)\

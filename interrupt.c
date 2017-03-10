@@ -24,7 +24,7 @@ void interrupt_log_status() {
 }
 
 void interrupt_handle() {
-  sc_LOG_IF(TRACE_INTERRUPTS, "start");
+  LOG_IF(TRACE_INTERRUPTS, "start");
 
   irq irq = interrupt_get_active();
 

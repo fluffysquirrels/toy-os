@@ -41,7 +41,7 @@ uint32_t rtc_pl031_get_current() {
 }
 
 void rtc_pl031_init() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
 
   interrupt_set_handler(INTNUM_RTC, &rtc_interrupt);
   interrupt_enable(INTNUM_RTC);
@@ -60,7 +60,7 @@ void rtc_pl031_init() {
 
 }
 static void rtc_interrupt() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
 #if TRACE_TIMER
   rtc_pl031_log_state();
 #endif
@@ -95,7 +95,7 @@ static void rtc_interrupt() {
 
 
 static void rtc_set_match_in_future() {
-  sc_LOG_IF(TRACE_TIMER, "");
+  LOG_IF(TRACE_TIMER, "");
   // Set match value to match on next second
   *(RTC_BASE + RTC_MR) = rtc_pl031_get_raw() + 1;
 }

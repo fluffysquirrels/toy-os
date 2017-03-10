@@ -100,7 +100,7 @@ void timer_sp804_set_periodic(struct timer_sp804_t *timer, uint32_t value) {
 
 #ifdef INTNUM_SP804_TIMER01
 static void timer_sp804_isr_timer01() {
-  sc_LOG_IF(TRACE_TIMER, "start");
+  LOG_IF(TRACE_TIMER, "start");
 #if TRACE_TIMER
   timer_sp804_log_all_state();
 #endif
@@ -110,7 +110,7 @@ static void timer_sp804_isr_timer01() {
   if(*(_timer0.addr + TIMER_MIS)) { /* Timer0 went off */
     cleared_something = true;
     *(_timer0.addr + TIMER_INTCLR) = 1; /* Clear interrupt */
-    sc_LOG_IF(TRACE_TIMER, "TIMER0 tick");
+    LOG_IF(TRACE_TIMER, "TIMER0 tick");
     timer_do_expired_callbacks();
   }
 
@@ -118,7 +118,7 @@ static void timer_sp804_isr_timer01() {
   if(*(_timer1.addr + TIMER_MIS)) { /* Timer1 went off */
     cleared_something = true;
     *(_timer1.addr + TIMER_INTCLR) = 1; /* Clear interrupt */
-    sc_LOG_IF(TRACE_TIMER, "TIMER1 tick");
+    LOG_IF(TRACE_TIMER, "TIMER1 tick");
   }
 #endif // TIMER_SP804_BASE_1
 
