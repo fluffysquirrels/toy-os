@@ -3,7 +3,7 @@
 #include "arch_interrupt_numbers.h"
 #include "interrupt.h"
 #include "rtc_pl031_reg.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "timer.h"
 #include "timer_versatilepb.h"
 #include "util.h"

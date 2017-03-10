@@ -3,7 +3,7 @@
 #include "arch_interrupt_numbers.h"
 #include "interrupt.h"
 #include "kernel.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
 #include "uart_registers.h"

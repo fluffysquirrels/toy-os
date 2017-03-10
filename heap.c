@@ -2,7 +2,7 @@
 
 #include "third_party/FreeRTOS/port.h"
 #include "stdlib.h"
-#include "synchronous_console.h"
+#include "console.h"
 
 // See also config and shims in third_party/FreeRTOS/FreeRTOS.h
 

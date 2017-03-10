@@ -5,7 +5,7 @@
 #include "arch_registers.h"
 #include "interrupt_raspi_reg.h"
 #include "stdint.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "util.h"
 
 #ifndef TRACE_INTERRUPTS

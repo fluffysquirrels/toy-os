@@ -5,7 +5,7 @@
 #include "interrupt.h"
 #include "stdint.h"
 #include "stdlib.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscalls.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "thread.h"

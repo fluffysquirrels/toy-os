@@ -3,7 +3,7 @@
 #include "interrupt.h"
 #include "scheduler.h"
 #include "stdbool.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscall_handlers.h"
 #include "timer.h"
 #include "uart.h"

@@ -3,7 +3,7 @@
 #include "arch_registers.h"
 #include "arch_interrupt_numbers.h"
 #include "interrupt.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "timer.h"
 #include "timer_sp804_reg.h"
 

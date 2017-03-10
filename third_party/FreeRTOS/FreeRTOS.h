@@ -2,7 +2,7 @@
 
 #include "stdint.h"
 #include "util.h"
-#include "synchronous_console.h"
+#include "console.h"
 
 #define configTOTAL_HEAP_SIZE 10 * 1024 * 1024
 

@@ -6,7 +6,7 @@
 #include "context_switch.h"
 #include "interrupt.h"
 #include "stdint.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscalls.h"
 #include "timer.h"
 #include "timer_raspi_reg.h"

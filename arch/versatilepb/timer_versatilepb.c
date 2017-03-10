@@ -3,7 +3,7 @@
 #include "arch_timer.h"
 #include "rtc_pl031.h"
 #include "stdint.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscalls.h"
 #include "timer.h"
 #include "timer_sp804.h"

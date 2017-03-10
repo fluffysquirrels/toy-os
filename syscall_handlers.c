@@ -2,7 +2,7 @@
 #include "kernel.h"
 #include "stdint.h"
 #include "stdlib.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
 #include "timer.h"

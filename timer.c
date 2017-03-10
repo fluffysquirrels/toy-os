@@ -4,7 +4,7 @@
 
 #include "arch_timer.h"
 #include "stdlib.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "third_party/OpenBSD_collections/src/tree.h"
 #include "util.h"
 

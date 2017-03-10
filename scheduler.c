@@ -4,7 +4,7 @@
 #include "context_switch.h"
 #include "interrupt.h"
 #include "stdlib.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "syscall_handlers.h"
 #include "syscalls.h"
 #include "third_party/OpenBSD_collections/src/queue.h"

@@ -1,5 +1,5 @@
 #include "stdarg.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "timer.h"
 #include "uart.h"
 #include "util.h"

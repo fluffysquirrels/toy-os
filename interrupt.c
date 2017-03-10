@@ -3,7 +3,7 @@
 #include "arch_interrupt.h"
 #include "arch_interrupt_numbers.h"
 #include "context_switch.h"
-#include "synchronous_console.h"
+#include "console.h"
 #include "util.h"
 
 #ifndef TRACE_INTERRUPTS

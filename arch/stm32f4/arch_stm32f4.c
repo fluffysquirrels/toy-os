@@ -1,6 +1,6 @@
 #include "arch_timer.h"
 #include "arch_interrupt.h"
-#include "synchronous_console.h"
+#include "console.h"
 
 
 struct arch_timer *arch_get_timer() {
