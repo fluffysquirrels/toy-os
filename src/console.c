@@ -20,7 +20,7 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
          file, line, func);
   va_list args;
   va_start(args, format);
-  sc_vprintf(format, args);
+  vprintf(format, args);
   va_end(args);
   puts("\n");
 }
@@ -130,14 +130,14 @@ int sc_print_uint64_dec(uint64_t u) {
 int printf(char *format, ...) {
   va_list args;
   va_start(args, format);
-  int ret = sc_vprintf(format, args);
+  int ret = vprintf(format, args);
   va_end(args);
   return ret;
 }
 
 static bool peekeq(char *buff, char *test);
 
-int sc_vprintf(char *format, va_list args) {
+int vprintf(char *format, va_list args) {
   int chars_written = 0;
 
   char *curr = format;

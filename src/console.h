@@ -73,4 +73,4 @@ int sc_print_uint32_dec(uint32_t d);
 int sc_print_uint64_dec(uint64_t u);
 
 int printf(char *format, ...);
-int sc_vprintf(char *format, va_list args);
+int vprintf(char *format, va_list args);
