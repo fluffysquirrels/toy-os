@@ -101,7 +101,7 @@ static void rtc_set_match_in_future() {
 }
 
 void rtc_pl031_log_state() {
-  sc_LOG("");
+  LOG("");
   sc_print_uint32_mem("  DR  ", (RTC_BASE + RTC_DR));
   sc_print_uint32_mem("  MR  ", (RTC_BASE + RTC_MR));
   sc_print_uint32_mem("  LR  ", (RTC_BASE + RTC_LR));

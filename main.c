@@ -45,7 +45,7 @@ int main() {
 #if CONFIG_ARCH_stm32f4
   stm32f4_scratch();
 #endif
-  sc_LOG("");
+  LOG("");
 
   kernel_init();
 
@@ -102,13 +102,13 @@ void stm32f4_scratch() {
 }
 
 void print_sctlr() {
-  sc_LOG("");
+  LOG("");
   uint32_t sctlr = get_sctlr();
   sc_printf("sctlr   = %x\n", sctlr);
   sc_printf("  VE    = %x\n", sctlr & (1 << 24));
   sc_printf("  V     = %x\n", sctlr & (1 << 13));
 
-  sc_LOG("");
+  LOG("");
   uint32_t vbar = get_vbar();
   sc_printf("  vbar  = %x\n", vbar);
 
@@ -116,7 +116,7 @@ void print_sctlr() {
 }
 
 void print_exception_vector() {
-  sc_LOG("");
+  LOG("");
   sc_print_mem_region((uint32_t *) 0x0, 2 * 8 * 4);
 }
 
@@ -127,48 +127,48 @@ void run_invalid_opcode() {
 #if CONFIG_ARCH_raspi2
 
 void test_raspi_timers() {
-  sc_LOG("Setting raspi timeout");
+  LOG("Setting raspi timeout");
   timer_raspi_set_timeout(100 * DURATION_MS);
 
   timer_raspi_print_status();
 
-  sc_LOG("delaying");
+  LOG("delaying");
   timer_delay(200 * DURATION_MS);
-  sc_LOG("back from delay");
+  LOG("back from delay");
 
   interrupt_log_status();
   timer_raspi_print_status();
 
-  sc_LOG("sleeping");
+  LOG("sleeping");
   sleep();
-  sc_LOG("back from sleep");
+  LOG("back from sleep");
 
 
 
 
 
-//   sc_LOG("Setting sp804 timeout");
+//   LOG("Setting sp804 timeout");
 //   timer_sp804_set_timeout(timer_sp804_timer0, 100 * TIMER_SP804_TICKS_PER_MS);
 // 
 //   timer_sp804_log_timer_state(timer_sp804_timer0);
 // 
-//   sc_LOG("delaying");
+//   LOG("delaying");
 //   timer_delay(200 * DURATION_MS);
-//   sc_LOG("back from delay");
+//   LOG("back from delay");
 //
 //   interrupt_log_status();
 //   timer_sp804_log_timer_state(timer_sp804_timer0);
 //
-//   sc_LOG("sleeping");
+//   LOG("sleeping");
 //   sleep();
-//   sc_LOG("back from sleep");
+//   LOG("back from sleep");
 }
 #endif // CONFIG_ARCH_raspi2
 
 void tests_thread() {
   ASSERT(sys_invalid() == E_NOSUCHSYSCALL);
 
-  sc_LOG("end");
+  LOG("end");
 }
 
 struct int_map_node {
@@ -183,7 +183,7 @@ RB_HEAD(int_map, int_map_node);
 RB_GENERATE(int_map, int_map_node, rb, int_map_cmp)
 
 void exercise_trees() {
-  sc_LOG("");
+  LOG("");
   struct int_map head;
   RB_INIT(&head);
 
@@ -222,7 +222,7 @@ void exercise_trees() {
   free(x);
   x = NULL;
 
-  sc_LOG("end");
+  LOG("end");
 }
 
 void exercise_malloc() {
@@ -312,7 +312,7 @@ void yield_sub(unsigned int arg1) {
  }
 
 void busy_loop_thread() {
-  sc_LOG("Start");
+  LOG("Start");
 //    __asm__ volatile(
 //    "mov    r0,  #10 " "\n\t"
 //    "mov    r1,  #1  " "\n\t"
@@ -335,7 +335,7 @@ void busy_loop_thread() {
 //  );
   while(1) {
     timer_delay(400 * DURATION_MS);
-    sc_LOG("tick");
+    LOG("tick");
   }
 }
 
@@ -459,7 +459,7 @@ void console_reader_thread() {
 }
 
 void blocking_console_reader_thread() {
-  sc_LOG("");
+  LOG("");
   struct uart_t *u = uart_0;
   while (1) {
     if (!uart_rx_fifo_empty(u)) {
@@ -471,15 +471,15 @@ void blocking_console_reader_thread() {
 }
 
 void sleep_thread() {
-  sc_LOG("start");
+  LOG("start");
   while(1) {
-    sc_LOG("loop");
+    LOG("loop");
     sys_sleep(DURATION_MS * 500);
   }
 }
 
 void heap_stat_thread() {
-  sc_LOG("start");
+  LOG("start");
   while(1) {
     sc_print_heap_stats();
     sys_sleep(DURATION_MS * 1000);

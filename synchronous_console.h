@@ -53,7 +53,7 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
     LOGF(format, __VA_ARGS__);\
   }
 
-#define sc_LOG(msg)\
+#define LOG(msg)\
   LOGF("%s", msg)
 
 #define LOGF(format, ...)\

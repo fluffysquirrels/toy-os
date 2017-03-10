@@ -46,7 +46,7 @@ void interrupt_handle() {
   isr();
 
 #if TRACE_INTERRUPTS
-  sc_LOG("returned from handler\n");
+  LOG("returned from handler\n");
   interrupt_log_status();
 #endif // TRACE_INTERRUPTS
 }
@@ -74,7 +74,7 @@ void interrupt_enable(unsigned char irq) {
   ic->enable_interrupt(irq);
 
 #if TRACE_INTERRUPTS
-  sc_LOG("Enabled");
+  LOG("Enabled");
   interrupt_log_status();
 #endif // TRACE_INTERRUPTS
 }

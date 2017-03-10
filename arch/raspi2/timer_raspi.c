@@ -71,7 +71,7 @@ void timer_raspi_set_deadline(time t) {
 
   *(base + TIMER_RASPI_C3) = deadline_count;
 #if TRACE_TIMER
-  sc_LOG("deadline set");
+  LOG("deadline set");
   timer_raspi_print_status();
 #endif
 
@@ -98,7 +98,7 @@ void timer_raspi_set_timeout(duration_t d) {
 }
 
 void timer_raspi_print_status() {
-    sc_LOG("");
+    LOG("");
     sc_print_uint32_mem("  CS ", base + TIMER_RASPI_CS );
     //Documentation says to always read CLO first.
     sc_print_uint32_mem("  CLO", base + TIMER_RASPI_CLO);

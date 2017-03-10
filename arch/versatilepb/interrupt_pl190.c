@@ -20,7 +20,7 @@ static uint32_t interrupt_pl190_get_status() {
 }
 
 static void interrupt_pl190_log_status() {
-  sc_LOG("");
+  LOG("");
   sc_print_uint32_mem("  VIC_IRQSTATUS", PIC + VIC_IRQSTATUS);
   sc_print_uint32_mem("  VIC_RAWINTR  ", PIC + VIC_RAWINTR  );
   sc_print_uint32_mem("  VIC_INTENABLE", PIC + VIC_INTENABLE);

@@ -76,7 +76,7 @@ void timer_sp804_set_timeout(struct timer_sp804_t *timer, uint32_t value) {
     TIMER_CONTROL_INTEN;
 
 #if TRACE_TIMER
-  sc_LOG("Timer set");
+  LOG("Timer set");
   timer_sp804_log_timer_state(timer);
 #endif
 }

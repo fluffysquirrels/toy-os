@@ -112,7 +112,7 @@ void uart_0_isr() {
   struct uart_t * u = uart_0;
 
 #if TRACE_UART
-  sc_LOG("");
+  LOG("");
   uart_log_status(u);
 #endif // TRACE_UART
 
