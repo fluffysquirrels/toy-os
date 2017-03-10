@@ -1,3 +1,6 @@
+# Disable built-in rules
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables --warn-undefined-variables
+
 # TODO: set default if no config
 CURRENT_CONFIG_FILE=config/current.mk
 
@@ -7,8 +10,6 @@ $(error Missing config file "$(CURRENT_CONFIG_FILE)". Create it, e.g. just conta
 endif
 include $(CURRENT_CONFIG_FILE)
 
-MAKEFILES += $(wildcard config/*.mk) Makefile
-
 ARCH_DIR=arch/$(CONFIG_ARCH)
 SOURCES.c := $(wildcard *.c)
 SOURCES.c += $(wildcard $(ARCH_DIR)/*.c)
@@ -16,16 +17,15 @@ SOURCES.c += third_party/FreeRTOS/heap_4.c
 SOURCES.h := $(wildcard *.h)
 SOURCES.S := $(wildcard *.S)
 
-OBJECTS = $(SOURCES.c:%.c=$(OBJ_DIR)/%.o)
-OBJECTS += $(SOURCES.S:%.S=$(OBJ_DIR)/%.o)
-
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -ffunction-sections -fdata-sections
 CFLAGS_ERRORS=-pedantic -Wall -Wextra -Werror
 CFLAGS_INCLUDES=-I$(ARCH_DIR) -I.
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 
 LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections --omagic
-GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
+#GCC_LIBS=/usr/lib/gcc-cross/arm-linux-gnueabi/5
+GCC_LIBS=/home/alex/Downloads/bin/gcc-arm-none-eabi-5_4-2016q3/lib/gcc/arm-none-eabi/5.4.1
+
 LDLIBS+=$(GCC_LIBS)/libgcc.a
 
 GCC_PREFIX=arm-none-eabi-
