@@ -4,35 +4,6 @@
 #include "uart.h"
 #include "util.h"
 
-void assert(bool cond, char *string) {
-  assertf(cond, "%s", string);
-}
-
-void assertf(bool cond, char *format, ...) {
-  if (!cond) {
-    va_list args;
-    va_start(args, format);
-    sc_puts("assert failed: ");
-    sc_vprintf(format, args);
-    sc_puts("\npanic\n");
-    va_end(args);
-    halt();
-  }
-}
-
-void panic(char *string) {
-  panicf("%s", string);
-}
-
-void panicf(char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  sc_puts("panic: ");
-  sc_vprintf(format, args);
-  sc_puts("\n");
-  halt();
-}
-
 void halt() {
   while (1) {}
 }

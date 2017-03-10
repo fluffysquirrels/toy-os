@@ -4,26 +4,28 @@
 #include "stdbool.h"
 #include "stdint.h"
 
-
 #define STR_INNER(x) #x
 #define STR(x) STR_INNER(x)
 
 void sc_logf(const char *file, uint32_t line, const char *func, char *format, ...);
 
+#define ASSERT(cond) ASSERT_MSG(cond, "")
 
-#define ASSERT(cond)                                                \
+#define ASSERT_MSG(cond, msg)                                       \
   if (!(cond)) {                                                    \
     sc_LOGF("Assert failed: %s\n"                                   \
-            "panic\n",                                              \
-            #cond);                                                 \
+            "    %s\n"                                              \
+            "Panic.\n",                                             \
+            #cond, msg);                                            \
     halt();                                                         \
   }
+
 
 // Assert lhs op rhs.
 // `op' should be a binary condition operator, like `<=' or `!='.
 // `lhs' and `rhs' should both be integer-valued expressions that
 // can be cast to uint64_t.
-#define ASSERT_INT_BINOP(lhs, op, rhs)                          \
+#define ASSERT_INT_BINOP(lhs, op, rhs)                           \
   if (!((lhs) op (rhs))) {                                       \
     sc_LOGF("Assert failed: needed %s %s %s\n"                   \
             "  left side  %s = %llu\n"                           \
@@ -32,7 +34,7 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
             #lhs, (uint64_t) (lhs),                              \
             #rhs, (uint64_t) (rhs));                             \
     halt();                                                      \
-}
+  }
 
 #define PANIC(str) PANICF("%s", str)
 
@@ -46,7 +48,6 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 #define sc_LOG_IF(cond, msg)\
   sc_LOGF_IF(cond, "%s", msg)
 
-
 #define sc_LOGF_IF(cond, format, ...)\
   if (cond) {\
     sc_LOGF(format, __VA_ARGS__);\
@@ -58,13 +59,6 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
 #define sc_LOGF(format, ...)\
   sc_logf(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
 
-#define STR_INNER(x) #x
-#define STR(x) STR_INNER(x)
-
-void assert(bool cond, char *string);
-void assertf(bool cond, char *format, ...);
-void panic(char *string) __attribute__ ((noreturn));
-void panicf(char *format, ...) __attribute__ ((noreturn));
 void halt() __attribute__ ((noreturn));
 void warn(char *string);
 

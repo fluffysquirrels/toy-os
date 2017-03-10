@@ -21,6 +21,6 @@ void kernel_init() {
 }
 
 void kernel_run() {
-  assert(init_complete, "didn't call kernel_init() before kernel_run()");
+  ASSERT_MSG(init_complete, "Must call kernel_init() before kernel_run().");
   scheduler_loop();
 }
