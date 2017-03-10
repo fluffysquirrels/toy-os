@@ -14,7 +14,7 @@ void warn(char *string) {
   sc_puts("\n");
 }
 
-void sc_logf(const char *file, uint32_t line, const char *func, char *format, ...) {
+void logf_(const char *file, uint32_t line, const char *func, char *format, ...) {
   sc_printf("%u %s:%u: %s(): ", (uint32_t) (timer_systemnow() / DURATION_MS), file, line, func);
   va_list args;
   va_start(args, format);

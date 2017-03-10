@@ -7,7 +7,7 @@
 #define STR_INNER(x) #x
 #define STR(x) STR_INNER(x)
 
-void sc_logf(const char *file, uint32_t line, const char *func, char *format, ...);
+void logf_(const char *file, uint32_t line, const char *func, char *format, ...);
 
 #define ASSERT(cond) ASSERT_MSG(cond, "")
 
@@ -57,7 +57,7 @@ void sc_logf(const char *file, uint32_t line, const char *func, char *format, ..
   LOGF("%s", msg)
 
 #define LOGF(format, ...)\
-  sc_logf(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
+  logf_(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
 
 void halt() __attribute__ ((noreturn));
 void warn(char *string);
