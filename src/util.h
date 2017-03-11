@@ -1,10 +1,8 @@
 #pragma once
-void *memset(void *bytes, int ch, int len);
 
-#define UNUSED(x) (void)(x)
-#ifndef NULL
-#define NULL 0
-#endif
+#include "c-utils.h"
+
+void *memset(void *bytes, int ch, int len);
 
 #define DEFINE_KEY_COMPARER(func_name, elt_t, key_t, key_member)\
   int func_name(elt_t *e1, elt_t *e2) {                         \
@@ -17,10 +15,3 @@ void *memset(void *bytes, int ch, int len);
     (k1) < (k2) ? -1            \
   : (k1) > (k2) ? +1            \
   : 0;
-
-
-#define MAX(a,b) \
-  ((a) < (b) ? (b) : (a))
-
-#define MIN(a,b) \
-  ((a) < (b) ? (a) : (b))

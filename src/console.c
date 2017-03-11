@@ -19,7 +19,7 @@ void sc_print_mem_region(volatile uint32_t *start_addr, int32_t bytes) {
   }
 }
 
-int puts(char *string) {
+int puts(const char *string) {
   int bytes_written = 0;
   while(*string) {
     sc_putch(*string);
@@ -106,7 +106,7 @@ int sc_print_uint64_dec(uint64_t u) {
   return puts(buffCurr);
 }
 
-int printf(char *format, ...) {
+int printf(const char *format, ...) {
   va_list args;
   va_start(args, format);
   int ret = vprintf(format, args);
@@ -114,12 +114,12 @@ int printf(char *format, ...) {
   return ret;
 }
 
-static bool peekeq(char *buff, char *test);
+static bool peekeq(const char *buff, const char *test);
 
-int vprintf(char *format, va_list args) {
+int vprintf(const char *format, va_list args) {
   int chars_written = 0;
 
-  char *curr = format;
+  const char *curr = format;
   while (*curr != '\0') {
     if (*curr != '%') {
       sc_putch(*curr);
@@ -184,9 +184,9 @@ int vprintf(char *format, va_list args) {
 // param buff is a null terminated string
 // param test is a null terminated string
 // The beginning of buff should match all of test.
-static bool peekeq(char *buff, char *test) {
+static bool peekeq(const char *buff, const char *test) {
   while(1) {
-    if (*test == NULL) {
+    if (*test == '\0') {
       return true;
     }
     // *test != NULL

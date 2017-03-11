@@ -12,7 +12,10 @@ typedef unsigned int err_t;
 #define E_BUFFERSIZE    5
 
 typedef int iochar_t;
+
+#ifndef EOF
 #define EOF -1
+#endif // EOF
 
 // time is a time in nanoseconds since some starting point.
 typedef uint64_t time;
