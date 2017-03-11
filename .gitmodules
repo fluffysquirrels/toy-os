@@ -1,0 +1,3 @@
+[submodule "c-utils"]
+	path = c-utils
+	url = git@bitbucket.org:FluffySquirrels/c-utils.git
