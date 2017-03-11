@@ -13,13 +13,12 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
 
 #define ASSERT_MSG(cond, msg)                                       \
   if (!(cond)) {                                                    \
-    LOGF("Assert failed: %s\n"                                   \
+    LOGF("Assert failed: %s\n"                                      \
             "    %s\n"                                              \
             "Panic.\n",                                             \
             #cond, msg);                                            \
     halt();                                                         \
   }
-
 
 // Assert lhs op rhs.
 // `op' should be a binary condition operator, like `<=' or `!='.
@@ -40,22 +39,22 @@ void logf_(const char *file, uint32_t line, const char *func, char *format, ...)
 
 #define PANICF(format, ...)                         \
   printf("panic in %s() @ %s:%s : "                 \
-            , __func__, __FILE__, STR(__LINE__));   \
+         , __func__, __FILE__, STR(__LINE__));      \
   printf(format "\n", __VA_ARGS__);                 \
   halt();
 
-#define LOG_IF(cond, msg)\
+#define LOG_IF(cond, msg)                       \
   LOGF_IF(cond, "%s", msg)
 
-#define LOGF_IF(cond, format, ...)\
-  if (cond) {\
-    LOGF(format, __VA_ARGS__);\
+#define LOGF_IF(cond, format, ...)              \
+  if (cond) {                                   \
+    LOGF(format, __VA_ARGS__);                  \
   }
 
-#define LOG(msg)\
+#define LOG(msg)                                \
   LOGF("%s", msg)
 
-#define LOGF(format, ...)\
+#define LOGF(format, ...)                                   \
   logf_(__FILE__, __LINE__, __func__, format, __VA_ARGS__)
 
 void halt() __attribute__ ((noreturn));
