@@ -4,27 +4,6 @@
 #include "uart.h"
 #include "util.h"
 
-void halt() {
-  while (1) {}
-}
-
-void warn(char *string) {
-  puts("warn: ");
-  puts(string);
-  puts("\n");
-}
-
-void logf_(const char *file, uint32_t line, const char *func, char *format, ...) {
-  printf("%lu %s:%lu: %s(): ",
-         (uint32_t) (timer_systemnow() / DURATION_MS),
-         file, line, func);
-  va_list args;
-  va_start(args, format);
-  vprintf(format, args);
-  va_end(args);
-  puts("\n");
-}
-
 void sc_print_uint32_mem(char *name, volatile uint32_t *addr) {
   printf("%s @ %p = %lx\n", name, (void *) addr, *addr);
 }
