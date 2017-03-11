@@ -13,14 +13,20 @@ include $(CURRENT_CONFIG_FILE)
 ARCH_DIR=src/arch/$(CONFIG_ARCH)
 
 SOURCES.c := $(wildcard src/*.c)
+SOURCES.c := $(wildcard c-utils/src/*.c)
 SOURCES.c += $(wildcard $(ARCH_DIR)/*.c)
 SOURCES.c += third_party/FreeRTOS/heap_4.c
+SOURCES.h := $(wildcard c-utils/src/*.h)
 SOURCES.h := $(wildcard src/*.h)
 SOURCES.S := $(wildcard src/*.S)
 
 CFLAGS_ARCH=-std=c99 -march=armv7-a -msoft-float -fPIC -mapcs-frame -marm -fno-stack-protector -ggdb -DCONFIG_ARCH_$(CONFIG_ARCH)=1 -ffunction-sections -fdata-sections
 CFLAGS_ERRORS=-Wall -Wextra -Werror
-CFLAGS_INCLUDES=-I$(ARCH_DIR) -Isrc -I.
+CFLAGS_INCLUDES+=-I$(ARCH_DIR)
+CFLAGS_INCLUDES+=-Isrc
+CFLAGS_INCLUDES+=-I.
+CFLAGS_INCLUDES+=-Ic-utils/src
+
 CFLAGS+=$(CFLAGS_ARCH) $(CFLAGS_ERRORS) $(CFLAGS_INCLUDES)
 
 LDFLAGS+= --section-start=.text.startup=0x10000 --section-start=.text=0x10000 --fatal-warnings --gc-sections --omagic
